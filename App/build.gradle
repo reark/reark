@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.6.+'
+    }
+}
+
+apply plugin: 'android'
+
+sourceSets {
+    instrumentTest {
+        java.srcDir file('src/instrumentTest/java')
+        resources.srcDir file('src/instrumentTest/res')
+    }
+}
+
+configurations {
+    instrumentTestCompile.extendsFrom runtime
+    instrumentTestRuntime.extendsFrom instrumentTestCompile
+}
+
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+    compile 'com.android.support:appcompat-v7:+'
+    instrumentTestCompile files("$project.buildDir/classes/release")
+    instrumentTestCompile 'junit:junit:4.10'
+    instrumentTestCompile 'org.robolectric:robolectric:2.1.+'
+    instrumentTestCompile 'com.google.android:android:4.0.1.2'
+    instrumentTestCompile 'org.roboguice:roboguice:2.0'
+    instrumentTestCompile 'com.netflix.rxjava:rxjava-core:0.15.1'
+    instrumentTestCompile 'com.netflix.rxjava:rxjava-android:0.15.1'
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.0"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 19
+    }
+}
+
+task instrumentTest(type:Test, dependsOn: assemble) {
+    testClassesDir = project.sourceSets.instrumentTest.output.classesDir
+    classpath = project.sourceSets.instrumentTest.runtimeClasspath
+}
+
+check.dependsOn instrumentTest

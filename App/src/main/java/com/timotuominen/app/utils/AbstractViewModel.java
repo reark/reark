@@ -7,5 +7,6 @@ import java.lang.reflect.Field;
  */
 public abstract class AbstractViewModel {
     public void unsubscribe() {
+        SubscriptionAnnotationUtils.unsubscribeAllAnnotated(this);
     }
 }

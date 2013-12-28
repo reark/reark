@@ -6,7 +6,7 @@ import java.util.List;
 import rx.Subscription;
 
 /**
- * Created by ttuo on 12/25/13.
+ * Created by tehmou on 12/25/13.
  */
 public class SubscriptionManager {
     final private List<Subscription> subscriptions = new ArrayList<Subscription>();

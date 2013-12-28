@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Created by ttuo on 12/25/13.
+ * Created by tehmou on 12/25/13.
  */
 public class SubscriptionAnnotationUtils {
     final static String TAG =  SubscriptionAnnotationUtils.class.getCanonicalName();

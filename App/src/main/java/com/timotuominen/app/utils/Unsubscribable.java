@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by ttuo on 12/25/13.
+ * Created by tehmou on 12/25/13.
  */
 @Target(ElementType.FIELD)
 @Inherited

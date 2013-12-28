@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 
 
 /**
- * Created by ttuo on 12/25/13.
+ * Created by tehmou on 12/25/13.
  */
 public class SubscriptionAnnotationUtilsTest extends TestCase {
     public void testUnsubscribeAllAnnotated() {

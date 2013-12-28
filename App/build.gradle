@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:0.7.+'
     }
 }
 
@@ -26,7 +26,6 @@ configurations {
 }
 
 dependencies {
-    compile 'org.roboguice:roboguice:2.0'
     compile 'com.netflix.rxjava:rxjava-core:0.15.1'
     compile 'com.netflix.rxjava:rxjava-android:0.15.1'
     compile 'com.android.support:appcompat-v7:+'
@@ -34,7 +33,6 @@ dependencies {
     instrumentTestCompile 'junit:junit:4.10'
     instrumentTestCompile "org.mockito:mockito-all:1.9.5"
     instrumentTestCompile 'org.robolectric:robolectric:2.1.+'
-    instrumentTestCompile 'org.roboguice:roboguice:2.0'
     instrumentTestCompile 'com.netflix.rxjava:rxjava-core:0.15.1'
     instrumentTestCompile 'com.netflix.rxjava:rxjava-android:0.15.1'
     instrumentTestCompile 'com.google.android:android:4.0.1.2'
@@ -47,6 +45,13 @@ android {
     defaultConfig {
         minSdkVersion 7
         targetSdkVersion 19
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
     }
 }
 

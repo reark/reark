@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 
 
 /**
- * Created by ttuo on 12/25/13.
+ * Created by tehmou on 12/25/13.
  */
 public class SubscriptionManagerTest extends TestCase {
     private SubscriptionManager subscriptionManager;

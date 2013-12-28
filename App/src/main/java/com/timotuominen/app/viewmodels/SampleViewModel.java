@@ -7,10 +7,6 @@ import com.timotuominen.app.utils.Unsubscribable;
 import com.timotuominen.app.utils.ViewModelValue;
 import com.timotuominen.app.utils.ViewModelValueWritable;
 
-import java.util.concurrent.TimeUnit;
-
-import rx.Observable;
-import rx.android.concurrency.AndroidSchedulers;
 import rx.util.functions.Action1;
 
 /**
@@ -26,7 +22,7 @@ public class SampleViewModel extends ViewModel {
         name.setValue("Initial Value");
 
         subscriptionManager.add(
-                DataLayer.getInstance().getIntervalStream()
+                DataLayer.getInstance().getIntervalNumberStream()
                         .subscribe(new Action1<Long>() {
                             @Override
                             public void call(Long aLong) {

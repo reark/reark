@@ -54,12 +54,13 @@ public class BookViewModel {
                     }
                 });
         dataStore.getBookPrice(bookId)
-                .subscribe(new Action1<Integer>() {
+                .map(new rx.functions.Func1<Integer, String>() {
                     @Override
-                    public void call(Integer integer) {
-                        bookPrice.onNext(integer + " EUR");
+                    public String call(Integer integer) {
+                        return "Price: " + integer + " EUR";
                     }
-                });
+                })
+                .subscribe(bookPrice);
     }
 
     public void unsubscribeFromDataStore() {

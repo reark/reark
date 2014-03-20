@@ -1,0 +1,1 @@
+See related [a slides](http://www.slideshare.net/TimoTuominen1/rxjava-architectures-on-android-8-android-livecode)

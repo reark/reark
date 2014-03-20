@@ -1,7 +1,7 @@
 package com.tehmou.rxbookapp.utils;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import rx.Subscription;
 
@@ -9,10 +9,12 @@ import rx.Subscription;
  * Created by ttuo on 19/03/14.
  */
 public class SubscriptionManager {
-    final private List<Subscription> subscriptions = new ArrayList<Subscription>();
+    final private Collection<Subscription> subscriptions = new ArrayList<Subscription>();
 
     public void add(Subscription subscription) {
-        subscriptions.add(subscription);
+        if (!subscriptions.contains(subscription)) {
+            subscriptions.add(subscription);
+        }
     }
 
     public void unsubscribeAll() {

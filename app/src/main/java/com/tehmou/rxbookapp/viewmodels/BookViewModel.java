@@ -6,10 +6,11 @@ import com.tehmou.rxbookapp.pojo.Book;
 import com.tehmou.rxbookapp.utils.SubscriptionManager;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by ttuo on 19/03/14.
@@ -39,7 +40,16 @@ public class BookViewModel {
     }
 
     public void subscribeToDataStore() {
-        dataStore.getBook(bookId)
+        subscriptionManager.add(createBookSubscription());
+        subscriptionManager.add(createBookPriceSubscription());
+    }
+
+    public void unsubscribeFromDataStore() {
+        subscriptionManager.unsubscribeAll();
+    }
+
+    private Subscription createBookSubscription() {
+        return dataStore.getBook(bookId)
                 .flatMap(new Func1<Book, Observable<Author>>() {
                     @Override
                     public Observable<Author> call(Book book) {
@@ -53,7 +63,10 @@ public class BookViewModel {
                         authorName.onNext(author.name);
                     }
                 });
-        dataStore.getBookPrice(bookId)
+    }
+
+    private Subscription createBookPriceSubscription() {
+        return dataStore.getBookPrice(bookId)
                 .map(new rx.functions.Func1<Integer, String>() {
                     @Override
                     public String call(Integer integer) {
@@ -62,9 +75,4 @@ public class BookViewModel {
                 })
                 .subscribe(bookPrice);
     }
-
-    public void unsubscribeFromDataStore() {
-        subscriptionManager.unsubscribeAll();
-    }
-
 }

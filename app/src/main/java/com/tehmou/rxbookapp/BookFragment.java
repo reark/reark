@@ -9,20 +9,21 @@ import android.widget.TextView;
 
 import com.tehmou.rxbookapp.data.DataStore;
 import com.tehmou.rxbookapp.utils.SubscriptionManager;
+import com.tehmou.rxbookapp.utils.SubscriptionUtils;
 import com.tehmou.rxbookapp.viewmodels.BookViewModel;
 
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * Created by ttuo on 19/03/14.
  */
 public class BookFragment extends Fragment {
-
     final private SubscriptionManager subscriptionManager = new SubscriptionManager();
     private BookViewModel bookViewModel;
+
+    private TextView bookNameTextView;
+    private TextView bookAuthorTextView;
+    private TextView bookPriceTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,44 +40,30 @@ public class BookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final TextView bookNameTextView = (TextView) view.findViewById(R.id.book_name);
-        subscriptionManager.add(subscribeTextView(bookViewModel.getBookName(), bookNameTextView));
-
-        final TextView bookAuthorTextView = (TextView) view.findViewById(R.id.book_author);
-        subscriptionManager.add(subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView));
-
-        final TextView bookPriceTextView = (TextView) view.findViewById(R.id.book_price);
-        subscriptionManager.add(subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView));
+        bookNameTextView = (TextView) getView().findViewById(R.id.book_name);
+        bookAuthorTextView = (TextView) getView().findViewById(R.id.book_author);
+        bookPriceTextView = (TextView) getView().findViewById(R.id.book_price);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        subscriptionManager.unsubscribeAll();
-    }
-
-    static private Subscription subscribeTextView(Observable<String> observable, final TextView textView) {
-        return observable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        textView.setText(s);
-                    }
-                });
+    private void subscribeTextView(Observable<String> observable,
+                                   final TextView textView) {
+        subscriptionManager.add(SubscriptionUtils.subscribeTextViewText(observable, textView));
     }
 
     @Override
     public void onResume() {
         super.onResume();
         bookViewModel.subscribeToDataStore();
+
+        subscribeTextView(bookViewModel.getBookName(), bookNameTextView);
+        subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView);
+        subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         bookViewModel.unsubscribeFromDataStore();
+        subscriptionManager.unsubscribeAll();
     }
-
 }

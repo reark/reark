@@ -6,19 +6,18 @@ import com.tehmou.rxbookapp.pojo.Book;
 import com.tehmou.rxbookapp.utils.SubscriptionManager;
 
 import rx.Observable;
-import rx.Subscription;
+import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by ttuo on 19/03/14.
  */
 public class BookViewModel {
+    final private SubscriptionManager subscriptionManager = new SubscriptionManager();
+
     final private String bookId;
     final private DataStore dataStore;
-    final private SubscriptionManager subscriptionManager = new SubscriptionManager();
 
     final private Subject<String, String> bookName = BehaviorSubject.create("Loading name..");
     final private Subject<String, String> bookPrice = BehaviorSubject.create("Loading book price..");
@@ -40,39 +39,48 @@ public class BookViewModel {
     }
 
     public void subscribeToDataStore() {
-        subscriptionManager.add(createBookSubscription());
-        subscriptionManager.add(createBookPriceSubscription());
+        subscriptionManager.add(createBookNameObservable().subscribe(bookName));
+        subscriptionManager.add(createAuthorNameObservable().subscribe(authorName));
+        subscriptionManager.add(createBookPriceObservable().subscribe(bookPrice));
     }
 
     public void unsubscribeFromDataStore() {
         subscriptionManager.unsubscribeAll();
     }
 
-    private Subscription createBookSubscription() {
+    private Observable<String> createBookNameObservable() {
         return dataStore.getBook(bookId)
-                .flatMap(new Func1<Book, Observable<Author>>() {
+                .map(new Func1<Book, String>() {
                     @Override
-                    public Observable<Author> call(Book book) {
-                        bookName.onNext(book.name);
-                        return dataStore.getAuthor(book.authorId);
-                    }
-                })
-                .subscribe(new Action1<Author>() {
-                    @Override
-                    public void call(Author author) {
-                        authorName.onNext(author.name);
+                    public String call(Book book) {
+                        return book.name;
                     }
                 });
     }
 
-    private Subscription createBookPriceSubscription() {
+    private Observable<String> createAuthorNameObservable() {
+        return dataStore.getBook(bookId)
+                .flatMap(new Func1<Book, Observable<Author>>() {
+                    @Override
+                    public Observable<Author> call(Book book) {
+                        return dataStore.getAuthor(book.authorId);
+                    }
+                })
+                .map(new Func1<Author, String>() {
+                    @Override
+                    public String call(Author author) {
+                        return author.name;
+                    }
+                });
+    }
+
+    private Observable<String> createBookPriceObservable() {
         return dataStore.getBookPrice(bookId)
-                .map(new rx.functions.Func1<Integer, String>() {
+                .map(new Func1<Integer, String>() {
                     @Override
                     public String call(Integer integer) {
                         return "Price: " + integer + " EUR";
                     }
-                })
-                .subscribe(bookPrice);
+                });
     }
 }

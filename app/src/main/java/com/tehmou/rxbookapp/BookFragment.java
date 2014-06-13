@@ -8,17 +8,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tehmou.rxbookapp.data.DataStore;
-import com.tehmou.rxbookapp.utils.SubscriptionManager;
 import com.tehmou.rxbookapp.utils.SubscriptionUtils;
 import com.tehmou.rxbookapp.viewmodels.BookViewModel;
 
 import rx.Observable;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by ttuo on 19/03/14.
  */
 public class BookFragment extends Fragment {
-    final private SubscriptionManager subscriptionManager = new SubscriptionManager();
+    final private CompositeSubscription compositeSubscription = new CompositeSubscription();
+
     private BookViewModel bookViewModel;
 
     private TextView bookNameTextView;
@@ -47,7 +48,7 @@ public class BookFragment extends Fragment {
 
     private void subscribeTextView(Observable<String> observable,
                                    final TextView textView) {
-        subscriptionManager.add(SubscriptionUtils.subscribeTextViewText(observable, textView));
+        compositeSubscription.add(SubscriptionUtils.subscribeTextViewText(observable, textView));
     }
 
     @Override
@@ -64,6 +65,6 @@ public class BookFragment extends Fragment {
     public void onPause() {
         super.onPause();
         bookViewModel.unsubscribeFromDataStore();
-        subscriptionManager.unsubscribeAll();
+        compositeSubscription.clear();
     }
 }

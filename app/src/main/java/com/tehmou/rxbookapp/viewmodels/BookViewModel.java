@@ -3,18 +3,18 @@ package com.tehmou.rxbookapp.viewmodels;
 import com.tehmou.rxbookapp.data.DataStore;
 import com.tehmou.rxbookapp.pojo.Author;
 import com.tehmou.rxbookapp.pojo.Book;
-import com.tehmou.rxbookapp.utils.SubscriptionManager;
 
 import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by ttuo on 19/03/14.
  */
 public class BookViewModel {
-    final private SubscriptionManager subscriptionManager = new SubscriptionManager();
+    final private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     final private String bookId;
     final private DataStore dataStore;
@@ -39,13 +39,13 @@ public class BookViewModel {
     }
 
     public void subscribeToDataStore() {
-        subscriptionManager.add(createBookNameObservable().subscribe(bookName));
-        subscriptionManager.add(createAuthorNameObservable().subscribe(authorName));
-        subscriptionManager.add(createBookPriceObservable().subscribe(bookPrice));
+        compositeSubscription.add(createBookNameObservable().subscribe(bookName));
+        compositeSubscription.add(createAuthorNameObservable().subscribe(authorName));
+        compositeSubscription.add(createBookPriceObservable().subscribe(bookPrice));
     }
 
     public void unsubscribeFromDataStore() {
-        subscriptionManager.unsubscribeAll();
+        compositeSubscription.clear();
     }
 
     private Observable<String> createBookNameObservable() {

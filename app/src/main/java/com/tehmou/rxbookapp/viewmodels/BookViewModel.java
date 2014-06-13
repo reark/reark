@@ -14,9 +14,10 @@ import rx.subjects.Subject;
  * Created by ttuo on 19/03/14.
  */
 public class BookViewModel {
+    final private SubscriptionManager subscriptionManager = new SubscriptionManager();
+
     final private String bookId;
     final private DataStore dataStore;
-    final private SubscriptionManager subscriptionManager = new SubscriptionManager();
 
     final private Subject<String, String> bookName = BehaviorSubject.create("Loading name..");
     final private Subject<String, String> bookPrice = BehaviorSubject.create("Loading book price..");

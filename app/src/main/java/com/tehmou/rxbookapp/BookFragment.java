@@ -20,7 +20,6 @@ import rx.functions.Action1;
  * Created by ttuo on 19/03/14.
  */
 public class BookFragment extends Fragment {
-
     final private SubscriptionManager subscriptionManager = new SubscriptionManager();
     private BookViewModel bookViewModel;
 
@@ -48,7 +47,13 @@ public class BookFragment extends Fragment {
         bookPriceTextView = (TextView) getView().findViewById(R.id.book_price);
     }
 
-    static private Subscription subscribeTextView(Observable<String> observable, final TextView textView) {
+    private void subscribeTextView(Observable<String> observable,
+                                   final TextView textView) {
+        subscriptionManager.add(subscribeTextViewUtil(observable, textView));
+    }
+
+    static private Subscription subscribeTextViewUtil(Observable<String> observable,
+                                                  final TextView textView) {
         return observable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
@@ -64,9 +69,9 @@ public class BookFragment extends Fragment {
         super.onResume();
         bookViewModel.subscribeToDataStore();
 
-        subscriptionManager.add(subscribeTextView(bookViewModel.getBookName(), bookNameTextView));
-        subscriptionManager.add(subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView));
-        subscriptionManager.add(subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView));
+        subscribeTextView(bookViewModel.getBookName(), bookNameTextView);
+        subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView);
+        subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView);
     }
 
     @Override
@@ -75,5 +80,4 @@ public class BookFragment extends Fragment {
         bookViewModel.unsubscribeFromDataStore();
         subscriptionManager.unsubscribeAll();
     }
-
 }

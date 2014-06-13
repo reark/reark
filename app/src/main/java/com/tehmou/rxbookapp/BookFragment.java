@@ -24,6 +24,10 @@ public class BookFragment extends Fragment {
     final private SubscriptionManager subscriptionManager = new SubscriptionManager();
     private BookViewModel bookViewModel;
 
+    private TextView bookNameTextView;
+    private TextView bookAuthorTextView;
+    private TextView bookPriceTextView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,21 +43,9 @@ public class BookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        final TextView bookNameTextView = (TextView) view.findViewById(R.id.book_name);
-        subscriptionManager.add(subscribeTextView(bookViewModel.getBookName(), bookNameTextView));
-
-        final TextView bookAuthorTextView = (TextView) view.findViewById(R.id.book_author);
-        subscriptionManager.add(subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView));
-
-        final TextView bookPriceTextView = (TextView) view.findViewById(R.id.book_price);
-        subscriptionManager.add(subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView));
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        subscriptionManager.unsubscribeAll();
+        bookNameTextView = (TextView) getView().findViewById(R.id.book_name);
+        bookAuthorTextView = (TextView) getView().findViewById(R.id.book_author);
+        bookPriceTextView = (TextView) getView().findViewById(R.id.book_price);
     }
 
     static private Subscription subscribeTextView(Observable<String> observable, final TextView textView) {
@@ -71,12 +63,17 @@ public class BookFragment extends Fragment {
     public void onResume() {
         super.onResume();
         bookViewModel.subscribeToDataStore();
+
+        subscriptionManager.add(subscribeTextView(bookViewModel.getBookName(), bookNameTextView));
+        subscriptionManager.add(subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView));
+        subscriptionManager.add(subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView));
     }
 
     @Override
     public void onPause() {
         super.onPause();
         bookViewModel.unsubscribeFromDataStore();
+        subscriptionManager.unsubscribeAll();
     }
 
 }

@@ -8,8 +8,8 @@ import com.tehmou.rxbookapp.utils.SubscriptionManager;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by ttuo on 19/03/14.

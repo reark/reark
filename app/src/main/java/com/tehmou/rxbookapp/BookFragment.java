@@ -11,7 +11,7 @@ import com.tehmou.rxbookapp.data.DataStore;
 import com.tehmou.rxbookapp.viewmodels.BookViewModel;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Created by ttuo on 19/03/14.

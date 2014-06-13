@@ -6,7 +6,7 @@ import com.tehmou.rxbookapp.pojo.Book;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 /**
  * Created by ttuo on 19/03/14.

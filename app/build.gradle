@@ -34,8 +34,8 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.netflix.rxjava:rxjava-core:0.17.1'
-    compile 'com.netflix.rxjava:rxjava-android:0.17.1'
+    compile 'com.netflix.rxjava:rxjava-core:0.19.1'
+    compile 'com.netflix.rxjava:rxjava-android:0.19.1'
 
     // Unit test build
     testCompile 'junit:junit:4.8.2'

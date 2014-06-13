@@ -9,12 +9,10 @@ import android.widget.TextView;
 
 import com.tehmou.rxbookapp.data.DataStore;
 import com.tehmou.rxbookapp.utils.SubscriptionManager;
+import com.tehmou.rxbookapp.utils.SubscriptionUtils;
 import com.tehmou.rxbookapp.viewmodels.BookViewModel;
 
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * Created by ttuo on 19/03/14.
@@ -49,19 +47,7 @@ public class BookFragment extends Fragment {
 
     private void subscribeTextView(Observable<String> observable,
                                    final TextView textView) {
-        subscriptionManager.add(subscribeTextViewUtil(observable, textView));
-    }
-
-    static private Subscription subscribeTextViewUtil(Observable<String> observable,
-                                                  final TextView textView) {
-        return observable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        textView.setText(s);
-                    }
-                });
+        subscriptionManager.add(SubscriptionUtils.subscribeTextViewText(observable, textView));
     }
 
     @Override

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.tehmou.rxbookapp.data.DataStore;
 import com.tehmou.rxbookapp.utils.SubscriptionUtils;
 import com.tehmou.rxbookapp.viewmodels.BookViewModel;
+import com.tehmou.rxbookapp.views.RxTextView;
 
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
@@ -18,13 +19,11 @@ import rx.subscriptions.CompositeSubscription;
  * Created by ttuo on 19/03/14.
  */
 public class BookFragment extends Fragment {
-    final private CompositeSubscription compositeSubscription = new CompositeSubscription();
-
     private BookViewModel bookViewModel;
 
-    private TextView bookNameTextView;
-    private TextView bookAuthorTextView;
-    private TextView bookPriceTextView;
+    private RxTextView bookNameTextView;
+    private RxTextView bookAuthorTextView;
+    private RxTextView bookPriceTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,14 +40,9 @@ public class BookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bookNameTextView = (TextView) getView().findViewById(R.id.book_name);
-        bookAuthorTextView = (TextView) getView().findViewById(R.id.book_author);
-        bookPriceTextView = (TextView) getView().findViewById(R.id.book_price);
-    }
-
-    private void subscribeTextView(Observable<String> observable,
-                                   final TextView textView) {
-        compositeSubscription.add(SubscriptionUtils.subscribeTextViewText(observable, textView));
+        bookNameTextView = (RxTextView) getView().findViewById(R.id.book_name);
+        bookAuthorTextView = (RxTextView) getView().findViewById(R.id.book_author);
+        bookPriceTextView = (RxTextView) getView().findViewById(R.id.book_price);
     }
 
     @Override
@@ -56,15 +50,14 @@ public class BookFragment extends Fragment {
         super.onResume();
         bookViewModel.subscribeToDataStore();
 
-        subscribeTextView(bookViewModel.getBookName(), bookNameTextView);
-        subscribeTextView(bookViewModel.getAuthorName(), bookAuthorTextView);
-        subscribeTextView(bookViewModel.getBookPrice(), bookPriceTextView);
+        bookNameTextView.bindTo(bookViewModel.getBookName());
+        bookAuthorTextView.bindTo(bookViewModel.getAuthorName());
+        bookPriceTextView.bindTo(bookViewModel.getBookPrice());
     }
 
     @Override
     public void onPause() {
         super.onPause();
         bookViewModel.unsubscribeFromDataStore();
-        compositeSubscription.clear();
     }
 }

@@ -5,15 +5,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.tehmou.rxbookapp.data.DataStore;
-import com.tehmou.rxbookapp.utils.SubscriptionUtils;
 import com.tehmou.rxbookapp.viewmodels.BookViewModel;
-import com.tehmou.rxbookapp.views.RxTextView;
-
-import rx.Observable;
-import rx.subscriptions.CompositeSubscription;
+import com.tehmou.rxbookapp.views.BookInfoView;
 
 /**
  * Created by ttuo on 19/03/14.
@@ -21,9 +16,7 @@ import rx.subscriptions.CompositeSubscription;
 public class BookFragment extends Fragment {
     private BookViewModel bookViewModel;
 
-    private RxTextView bookNameTextView;
-    private RxTextView bookAuthorTextView;
-    private RxTextView bookPriceTextView;
+    private BookInfoView bookInfoView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,19 +33,14 @@ public class BookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bookNameTextView = (RxTextView) getView().findViewById(R.id.book_name);
-        bookAuthorTextView = (RxTextView) getView().findViewById(R.id.book_author);
-        bookPriceTextView = (RxTextView) getView().findViewById(R.id.book_price);
+        bookInfoView = (BookInfoView) view.findViewById(R.id.book_info_view);
+        bookInfoView.setViewModel(bookViewModel);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         bookViewModel.subscribeToDataStore();
-
-        bookNameTextView.bindTo(bookViewModel.getBookName());
-        bookAuthorTextView.bindTo(bookViewModel.getAuthorName());
-        bookPriceTextView.bindTo(bookViewModel.getBookPrice());
     }
 
     @Override

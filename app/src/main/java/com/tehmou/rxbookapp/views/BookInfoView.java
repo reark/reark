@@ -39,9 +39,12 @@ public class BookInfoView extends LinearLayout {
     }
 
     public void setViewModel(BookViewModel viewModel) {
-        rxBinderUtil.bindProperty(viewModel.getBookName(), setBookName);
-        rxBinderUtil.bindProperty(viewModel.getBookPrice(), setBookPrice);
-        rxBinderUtil.bindProperty(viewModel.getAuthorName(), setAuthorName);
+        rxBinderUtil.clear();
+        if (viewModel != null) {
+            rxBinderUtil.bindProperty(viewModel.getBookName(), setBookName);
+            rxBinderUtil.bindProperty(viewModel.getBookPrice(), setBookPrice);
+            rxBinderUtil.bindProperty(viewModel.getAuthorName(), setAuthorName);
+        }
     }
 
     final private Action1<String> setBookName = new Action1<String>() {

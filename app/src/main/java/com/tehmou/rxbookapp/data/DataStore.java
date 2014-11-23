@@ -24,11 +24,11 @@ public class DataStore {
     public DataStore() { }
 
     public Observable<Book> getBook(String bookId) {
-        return Observable.from(new Book(bookId)).delay(700, TimeUnit.MILLISECONDS);
+        return Observable.just(new Book(bookId)).delay(700, TimeUnit.MILLISECONDS);
     }
 
     public Observable<Author> getAuthor(String authorId) {
-        return Observable.from(new Author(authorId)).delay(5, TimeUnit.SECONDS);
+        return Observable.just(new Author(authorId)).delay(5, TimeUnit.SECONDS);
     }
 
     public Observable<Integer> getBookPrice(String bookId) {

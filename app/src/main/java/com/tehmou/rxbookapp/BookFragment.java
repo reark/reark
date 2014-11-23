@@ -34,18 +34,24 @@ public class BookFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bookInfoView = (BookInfoView) view.findViewById(R.id.book_info_view);
-        bookInfoView.setViewModel(bookViewModel);
+        bookViewModel.subscribeToDataStore();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        bookViewModel.unsubscribeFromDataStore();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        bookViewModel.subscribeToDataStore();
+        bookInfoView.setViewModel(bookViewModel);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        bookViewModel.unsubscribeFromDataStore();
+        bookInfoView.setViewModel(null);
     }
 }

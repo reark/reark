@@ -1,0 +1,17 @@
+---
+layout: default
+---
+
+<div class="home">
+
+  <h1 class="page-heading">Contents</h1>
+
+  <ul class="post-list">
+    {% for page in site.pages %}
+      {% if page.title %}
+      <a class="post-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+</div>

@@ -36,7 +36,7 @@ View Model has two important responsibilities:
 
 The suggested VM life cycle is much like that of fragment, and not by coincidence.
 
-<img src="/images/android_rx_viewmodel_lifecycle.svg"/>
+<img src="{{ "/images/android_rx_viewmodel_lifecycle.svg" | prepend: site.baseurl }}"/>
 
 The data layer offers a permanent subscription to a data source, and it pushes a new item whenever new data arrives. This connection should be established in onViewCreated and released in onViewDestroyed. <i>More details of a good data layer architecture will follow in another article.</i>
 

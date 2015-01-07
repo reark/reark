@@ -32,26 +32,26 @@ public class RxBinderUtil {
     public <U> void bindProperty(final Observable<U> observable,
                                  final Action1<U> setter) {
         compositeSubscription.add(
-                subscribeSetter(observable, new WeakReference<Action1<U>>(setter), tag));
+                subscribeSetter(observable, setter, tag));
     }
 
     static private <U> Subscription subscribeSetter(final Observable<U> observable,
-                                                    final WeakReference<Action1<U>> weakSetter,
+                                                    final Action1<U> setter,
                                                     final String tag) {
         return observable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new WeakSetterSubscriber<U>(weakSetter, tag));
+                .subscribe(new SetterSubscriber<U>(setter, tag));
     }
 
-    static private class WeakSetterSubscriber<U> extends Subscriber<U> {
-        final static private String TAG = WeakSetterSubscriber.class.getCanonicalName();
+    static private class SetterSubscriber<U> extends Subscriber<U> {
+        final static private String TAG = SetterSubscriber.class.getCanonicalName();
 
-        final private WeakReference<Action1<U>> weakSetter;
+        final private Action1<U> setter;
         final private String tag;
 
-        public WeakSetterSubscriber(final WeakReference<Action1<U>> weakSetter,
+        public SetterSubscriber(final Action1<U> setter,
                                     final String tag) {
-            this.weakSetter = weakSetter;
+            this.setter = setter;
             this.tag = tag;
         }
 
@@ -67,9 +67,7 @@ public class RxBinderUtil {
 
         @Override
         public void onNext(U u) {
-            if (weakSetter.get() != null) {
-                weakSetter.get().call(u);
-            }
+            setter.call(u);
         }
     }
 }

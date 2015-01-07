@@ -7,21 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tehmou.rxbookapp.data.DataStore;
-import com.tehmou.rxbookapp.viewmodels.BookViewModel;
-import com.tehmou.rxbookapp.views.BookInfoView;
+import com.tehmou.rxbookapp.view.RepositoriesView;
+import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
 /**
  * Created by ttuo on 19/03/14.
  */
-public class BookFragment extends Fragment {
-    private BookViewModel bookViewModel;
+public class RepositoriesFragment extends Fragment {
 
-    private BookInfoView bookInfoView;
+    private RepositoriesViewModel repositoriesViewModel;
+    private RepositoriesView repositoriesView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bookViewModel = new BookViewModel("436346");
+        repositoriesViewModel = new RepositoriesViewModel("fab");
     }
 
     @Override
@@ -33,25 +33,25 @@ public class BookFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bookInfoView = (BookInfoView) view.findViewById(R.id.book_info_view);
-        bookViewModel.subscribeToDataStore();
+        repositoriesView = (RepositoriesView) view.findViewById(R.id.repositories_view);
+        repositoriesViewModel.subscribeToDataStore();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        bookViewModel.unsubscribeFromDataStore();
+        repositoriesViewModel.unsubscribeFromDataStore();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        bookInfoView.setViewModel(bookViewModel);
+        repositoriesView.setViewModel(repositoriesViewModel);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        bookInfoView.setViewModel(null);
+        repositoriesView.setViewModel(null);
     }
 }

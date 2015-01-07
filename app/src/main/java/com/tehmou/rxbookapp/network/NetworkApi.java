@@ -17,7 +17,7 @@ public class NetworkApi {
     public NetworkApi() {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.github.com")
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.NONE)
                 .build();
         gitHubService = restAdapter.create(GitHubService.class);
     }

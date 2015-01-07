@@ -13,8 +13,8 @@ public final class DataStoreModule {
 
     @Provides
     @Singleton
-    public DataStore provideDataStoreModule() {
-        return new DataStore();
+    public DataLayer provideDataStoreModule() {
+        return new DataLayer();
     }
 
 }

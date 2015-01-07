@@ -15,25 +15,26 @@ import rx.schedulers.Schedulers;
 /**
  * Created by ttuo on 19/03/14.
  */
-public class DataStore {
+public class DataLayer {
     final private NetworkApi networkApi;
+    final private RepositoryStore repositoryStore;
 
-    static private DataStore instance;
+    static private DataLayer instance;
 
-    static public DataStore getInstance() {
+    static public DataLayer getInstance() {
         if (instance == null) {
-            instance = new DataStore();
+            instance = new DataLayer();
         }
         return instance;
     }
 
-    public DataStore() {
+    public DataLayer() {
         networkApi = new NetworkApi();
+        repositoryStore = new RepositoryStore();
     }
 
     public Observable<List<GitHubRepository>> getGitHub(final String search) {
-        return Observable
-                .create(new Observable.OnSubscribe<List<GitHubRepository>>() {
+        Observable.create(new Observable.OnSubscribe<List<GitHubRepository>>() {
                     @Override
                     public void call(Subscriber<? super List<GitHubRepository>> subscriber) {
                         try {
@@ -47,6 +48,10 @@ public class DataStore {
                         }
                     }
                 })
-                .subscribeOn(Schedulers.computation());
+                .subscribeOn(Schedulers.computation())
+                .subscribe((repositories) -> {
+                    repositoryStore.put(search, repositories);
+                });
+        return repositoryStore.getRepositoriesForSearch(search);
     }
 }

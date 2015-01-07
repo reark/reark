@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tehmou.rxbookapp.data.DataStore;
+import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 

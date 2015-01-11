@@ -13,6 +13,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
+
 import java.util.HashMap;
 
 /**
@@ -79,39 +81,90 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        String tableName;
-        String idColumn = null;
-        String idStr = null;
-        switch (URI_MATCHER.match(uri)) {
-            case REPOSITORIES:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                break;
-            case REPOSITORIES_ID:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                idColumn = GitHubRepositoryContract.ID;
-                idStr = uri.getLastPathSegment();
-                break;
-            case REPOSITORIES_SEARCH:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                break;
-            case REPOSITORIES_SEARCH_ID:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                idColumn = GitHubRepositorySearchContract.ID;
-                idStr = uri.getLastPathSegment();
-                break;
-            case REPOSITORIES_SEARCH_MAPPING:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                break;
-            case REPOSITORIES_SEARCH_MAPPING_ID:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                idColumn = GitHubRepositorySearchMappingContract.ID;
-                idStr = uri.getLastPathSegment();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI" + uri);
+        final int match = URI_MATCHER.match(uri);
+        String tableName = getTableName(match);
+        String idColumn = getIdColumnName(match);
+        String idStr = uri.getLastPathSegment();
+        String where = getWhere(selection, idColumn, idStr);
+        int count = db.delete(tableName, where, selectionArgs);
+        if (count > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
         }
-        String where = "";
-        if (idStr != null) {
+        return count;
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        final int match = URI_MATCHER.match(uri);
+        String tableName = getTableName(match);
+        String idColumn = getIdColumnName(match);
+        long id;
+        if (idColumn != null) {
+            id = db.insertWithOnConflict(tableName,
+                    null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        } else {
+            id = db.insert(tableName, null, values);
+        }
+        return getUriForId(id, uri);
+    }
+
+    @Override
+    public Cursor query(Uri uri, String[] projection,
+                        String selection, String[] selectionArgs,
+                        String sortOrder) {
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        final int match = URI_MATCHER.match(uri);
+        String tableName = getTableName(match);
+        String idColumn = getIdColumnName(match);
+        String idStr = uri.getLastPathSegment();
+
+        if (TextUtils.isEmpty(sortOrder)) {
+            sortOrder = getDefaultSortOrder(match);
+        }
+
+        String where = getWhere(selection, idColumn, idStr);
+        builder.setTables(tableName);
+        builder.appendWhere(where);
+        Cursor cursor =
+                builder.query(
+                        db,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+        cursor.setNotificationUri(
+                getContext().getContentResolver(),
+                uri);
+        return cursor;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues values,
+                      String selection, String[] selectionArgs) {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        final int match = URI_MATCHER.match(uri);
+        String idStr = uri.getLastPathSegment();
+        String idColumn = getIdColumnName(match);
+        String tableName = getTableName(match);
+
+        String where = getWhere(selection, idColumn, idStr);
+        int count = db.update(tableName, values, where, selectionArgs);
+        if (count > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return count;
+    }
+
+    private String getWhere(final String selection,
+                            final String idColumn,
+                            final String idStr) {
+        String where = null;
+        if (idColumn != null) {
             where = idColumn + " = " + idStr;
             if (TextUtils.isEmpty(selection)) {
                 where += " AND " + selection;
@@ -119,11 +172,16 @@ public class MyContentProvider extends ContentProvider {
         } else if (!TextUtils.isEmpty(selection)) {
             where = selection;
         }
-        int count = db.delete(tableName, where, selectionArgs);
-        if (count > 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+        return where;
+    }
+
+    private Uri getUriForId(long id, Uri uri) {
+        if (id > 0) {
+            Uri itemUri = ContentUris.withAppendedId(uri, id);
+            getContext().getContentResolver().notifyChange(itemUri, null);
+            return itemUri;
         }
-        return count;
+        throw new SQLException("Problem while inserting into uri: " + uri);
     }
 
     @Override
@@ -146,163 +204,53 @@ public class MyContentProvider extends ContentProvider {
         }
     }
 
-    @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        String tableName;
-        boolean insertWithId = false;
-        switch (URI_MATCHER.match(uri)) {
+    private String getTableName(final int match) {
+        switch (match) {
             case REPOSITORIES:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                break;
             case REPOSITORIES_ID:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                insertWithId = true;
-                break;
+                return GitHubRepositorySearchContract.TABLE_NAME;
             case REPOSITORIES_SEARCH:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                break;
             case REPOSITORIES_SEARCH_ID:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                insertWithId = true;
-                break;
+                return GitHubRepositorySearchContract.TABLE_NAME;
             case REPOSITORIES_SEARCH_MAPPING:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                break;
             case REPOSITORIES_SEARCH_MAPPING_ID:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                insertWithId = true;
-                break;
+                return GitHubRepositorySearchMappingContract.TABLE_NAME;
             default:
-                throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
+                throw new IllegalArgumentException("Unsupported URI: " + match);
         }
-        long id;
-        if (insertWithId) {
-            id = db.insertWithOnConflict(tableName,
-                    null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        } else {
-            id = db.insert(tableName, null, values);
-        }
-        return getUriForId(id, uri);
     }
 
-    @Override
-    public Cursor query(Uri uri, String[] projection,
-                        String selection, String[] selectionArgs,
-                        String sortOrder) {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        String tableName;
-        String where = "";
-        switch (URI_MATCHER.match(uri)) {
+    private String getIdColumnName(final int match) {
+        switch (match) {
             case REPOSITORIES:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = GitHubRepositoryContract.SORT_ORDER_DEFAULT;
-                }
-                break;
-            case REPOSITORIES_ID:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                where = GitHubRepositoryContract.ID + " = " + uri.getLastPathSegment();
-                break;
             case REPOSITORIES_SEARCH:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = GitHubRepositorySearchContract.SORT_ORDER_DEFAULT;
-                }
-                break;
-            case REPOSITORIES_SEARCH_ID:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                where = GitHubRepositorySearchContract.ID + " = " + uri.getLastPathSegment();
-                break;
             case REPOSITORIES_SEARCH_MAPPING:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = GitHubRepositorySearchMappingContract.SORT_ORDER_DEFAULT;
-                }
-                break;
+                return null;
+            case REPOSITORIES_ID:
+                return GitHubRepositoryContract.ID;
+            case REPOSITORIES_SEARCH_ID:
+                return GitHubRepositorySearchContract.ID;
             case REPOSITORIES_SEARCH_MAPPING_ID:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                where = GitHubRepositorySearchMappingContract.ID + " = " + uri.getLastPathSegment();
-                break;
+                return GitHubRepositorySearchMappingContract.ID;
             default:
-                throw new IllegalArgumentException("Unsupported URI: " + uri);
+                throw new IllegalArgumentException("Unsupported URI: " + match);
         }
-        builder.setTables(tableName);
-        builder.appendWhere(where);
-        Cursor cursor =
-                builder.query(
-                        db,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
-        cursor.setNotificationUri(
-                getContext().getContentResolver(),
-                uri);
-        return cursor;
     }
 
-    @Override
-    public int update(Uri uri, ContentValues values,
-                      String selection, String[] selectionArgs) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        String idColumn = null;
-        String idStr = null;
-        String tableName;
-        switch (URI_MATCHER.match(uri)) {
+    private String getDefaultSortOrder(final int match) {
+        switch (match) {
             case REPOSITORIES:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                break;
-            case REPOSITORIES_ID:
-                tableName = GitHubRepositoryContract.TABLE_NAME;
-                idStr = uri.getLastPathSegment();
-                idColumn = GitHubRepositoryContract.ID;
-                break;
+                return GitHubRepositoryContract.SORT_ORDER_DEFAULT;
             case REPOSITORIES_SEARCH:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                break;
-            case REPOSITORIES_SEARCH_ID:
-                tableName = GitHubRepositorySearchContract.TABLE_NAME;
-                idStr = uri.getLastPathSegment();
-                idColumn = GitHubRepositorySearchContract.ID;
-                break;
+                return GitHubRepositorySearchContract.SORT_ORDER_DEFAULT;
             case REPOSITORIES_SEARCH_MAPPING:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                break;
+                return GitHubRepositorySearchMappingContract.SORT_ORDER_DEFAULT;
+            case REPOSITORIES_ID:
+            case REPOSITORIES_SEARCH_ID:
             case REPOSITORIES_SEARCH_MAPPING_ID:
-                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
-                idStr = uri.getLastPathSegment();
-                idColumn = GitHubRepositorySearchMappingContract.ID;
-                break;
+                return null;
             default:
-                throw new IllegalArgumentException("Unsupported URI: " + uri);
+                throw new IllegalArgumentException("Unsupported URI: " + match);
         }
-        String where = "";
-        if (idStr != null) {
-            where = idColumn + " = " + idStr;
-            if (TextUtils.isEmpty(selection)) {
-                where += " AND " + selection;
-            }
-        } else if (!TextUtils.isEmpty(selection)) {
-            where = selection;
-        }
-        int count = db.update(tableName, values, where, selectionArgs);
-        if (count > 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
-        return count;
     }
-
-    private Uri getUriForId(long id, Uri uri) {
-        if (id > 0) {
-            Uri itemUri = ContentUris.withAppendedId(uri, id);
-            getContext().getContentResolver().notifyChange(itemUri, null);
-            return itemUri;
-        }
-        throw new SQLException("Problem while inserting into uri: " + uri);
-    }
-
 }

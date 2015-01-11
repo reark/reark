@@ -79,52 +79,47 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        int count;
-        String idStr;
-        String where;
+        String tableName;
+        String idColumn = null;
+        String idStr = null;
         switch (URI_MATCHER.match(uri)) {
             case REPOSITORIES:
-                count = db.delete(
-                        GitHubRepositoryContract.TABLE_NAME, selection, selectionArgs);
+                tableName = GitHubRepositoryContract.TABLE_NAME;
                 break;
             case REPOSITORIES_ID:
+                tableName = GitHubRepositoryContract.TABLE_NAME;
+                idColumn = GitHubRepositoryContract.ID;
                 idStr = uri.getLastPathSegment();
-                where = GitHubRepositoryContract.ID + " = " + idStr;
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                count = db.delete(
-                        GitHubRepositoryContract.TABLE_NAME, where, selectionArgs);
                 break;
             case REPOSITORIES_SEARCH:
-                count = db.delete(
-                        GitHubRepositorySearchContract.TABLE_NAME, selection, selectionArgs);
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
                 break;
             case REPOSITORIES_SEARCH_ID:
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
+                idColumn = GitHubRepositorySearchContract.ID;
                 idStr = uri.getLastPathSegment();
-                where = GitHubRepositorySearchContract.ID + " = " + idStr;
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                count = db.delete(
-                        GitHubRepositorySearchContract.TABLE_NAME, where, selectionArgs);
                 break;
             case REPOSITORIES_SEARCH_MAPPING:
-                count = db.delete(
-                        GitHubRepositorySearchMappingContract.TABLE_NAME, selection, selectionArgs);
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
                 break;
             case REPOSITORIES_SEARCH_MAPPING_ID:
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
+                idColumn = GitHubRepositorySearchMappingContract.ID;
                 idStr = uri.getLastPathSegment();
-                where = GitHubRepositorySearchMappingContract.ID + " = " + idStr;
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                count = db.delete(
-                        GitHubRepositorySearchMappingContract.TABLE_NAME, where, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI" + uri);
         }
+        String where = "";
+        if (idStr != null) {
+            where = idColumn + " = " + idStr;
+            if (TextUtils.isEmpty(selection)) {
+                where += " AND " + selection;
+            }
+        } else if (!TextUtils.isEmpty(selection)) {
+            where = selection;
+        }
+        int count = db.delete(tableName, where, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -154,32 +149,41 @@ public class MyContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        long id;
+        String tableName;
+        boolean insertWithId = false;
         switch (URI_MATCHER.match(uri)) {
             case REPOSITORIES:
-                id = db.insert(GitHubRepositoryContract.TABLE_NAME, null, values);
-                return getUriForId(id, uri);
+                tableName = GitHubRepositoryContract.TABLE_NAME;
+                break;
             case REPOSITORIES_ID:
-                id = db.insertWithOnConflict(GitHubRepositoryContract.TABLE_NAME,
-                        null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                return getUriForId(id, uri);
+                tableName = GitHubRepositoryContract.TABLE_NAME;
+                insertWithId = true;
+                break;
             case REPOSITORIES_SEARCH:
-                id = db.insert(GitHubRepositorySearchContract.TABLE_NAME, null, values);
-                return getUriForId(id, uri);
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
+                break;
             case REPOSITORIES_SEARCH_ID:
-                id = db.insertWithOnConflict(GitHubRepositoryContract.TABLE_NAME,
-                        null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                return getUriForId(id, uri);
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
+                insertWithId = true;
+                break;
             case REPOSITORIES_SEARCH_MAPPING:
-                id = db.insert(GitHubRepositorySearchMappingContract.TABLE_NAME, null, values);
-                return getUriForId(id, uri);
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
+                break;
             case REPOSITORIES_SEARCH_MAPPING_ID:
-                id = db.insertWithOnConflict(GitHubRepositorySearchMappingContract.TABLE_NAME,
-                        null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                return getUriForId(id, uri);
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
+                insertWithId = true;
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
         }
+        long id;
+        if (insertWithId) {
+            id = db.insertWithOnConflict(tableName,
+                    null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        } else {
+            id = db.insert(tableName, null, values);
+        }
+        return getUriForId(id, uri);
     }
 
     @Override
@@ -188,43 +192,44 @@ public class MyContentProvider extends ContentProvider {
                         String sortOrder) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        String tableName;
+        String where = "";
         switch (URI_MATCHER.match(uri)) {
             case REPOSITORIES:
-                builder.setTables(GitHubRepositoryContract.TABLE_NAME);
+                tableName = GitHubRepositoryContract.TABLE_NAME;
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = GitHubRepositoryContract.SORT_ORDER_DEFAULT;
                 }
                 break;
             case REPOSITORIES_ID:
-                builder.setTables(GitHubRepositoryContract.TABLE_NAME);
-                builder.appendWhere(
-                        GitHubRepositoryContract.ID + " = " + uri.getLastPathSegment());
+                tableName = GitHubRepositoryContract.TABLE_NAME;
+                where = GitHubRepositoryContract.ID + " = " + uri.getLastPathSegment();
                 break;
             case REPOSITORIES_SEARCH:
-                builder.setTables(GitHubRepositorySearchContract.TABLE_NAME);
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = GitHubRepositorySearchContract.SORT_ORDER_DEFAULT;
                 }
                 break;
             case REPOSITORIES_SEARCH_ID:
-                builder.setTables(GitHubRepositorySearchContract.TABLE_NAME);
-                builder.appendWhere(
-                        GitHubRepositorySearchContract.ID + " = " + uri.getLastPathSegment());
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
+                where = GitHubRepositorySearchContract.ID + " = " + uri.getLastPathSegment();
                 break;
             case REPOSITORIES_SEARCH_MAPPING:
-                builder.setTables(GitHubRepositorySearchMappingContract.TABLE_NAME);
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = GitHubRepositorySearchMappingContract.SORT_ORDER_DEFAULT;
                 }
                 break;
             case REPOSITORIES_SEARCH_MAPPING_ID:
-                builder.setTables(GitHubRepositorySearchMappingContract.TABLE_NAME);
-                builder.appendWhere(
-                        GitHubRepositorySearchMappingContract.ID + " = " + uri.getLastPathSegment());
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
+                where = GitHubRepositorySearchMappingContract.ID + " = " + uri.getLastPathSegment();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
+        builder.setTables(tableName);
+        builder.appendWhere(where);
         Cursor cursor =
                 builder.query(
                         db,
@@ -244,52 +249,47 @@ public class MyContentProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values,
                       String selection, String[] selectionArgs) {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        int count = 0;
-        String idStr;
-        String where;
+        String idColumn = null;
+        String idStr = null;
+        String tableName;
         switch (URI_MATCHER.match(uri)) {
             case REPOSITORIES:
-                count = db.update(GitHubRepositoryContract.TABLE_NAME,
-                        values, selection, selectionArgs);
+                tableName = GitHubRepositoryContract.TABLE_NAME;
                 break;
             case REPOSITORIES_ID:
+                tableName = GitHubRepositoryContract.TABLE_NAME;
                 idStr = uri.getLastPathSegment();
-                where = GitHubRepositoryContract.ID + " = " + idStr;
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                count = db.update(GitHubRepositoryContract.TABLE_NAME,
-                        values, where, selectionArgs);
+                idColumn = GitHubRepositoryContract.ID;
                 break;
             case REPOSITORIES_SEARCH:
-                count = db.update(GitHubRepositorySearchContract.TABLE_NAME,
-                        values, selection, selectionArgs);
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
                 break;
             case REPOSITORIES_SEARCH_ID:
+                tableName = GitHubRepositorySearchContract.TABLE_NAME;
                 idStr = uri.getLastPathSegment();
-                where = GitHubRepositorySearchContract.ID + " = " + idStr;
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                count = db.update(GitHubRepositorySearchContract.TABLE_NAME,
-                        values, where, selectionArgs);
+                idColumn = GitHubRepositorySearchContract.ID;
                 break;
             case REPOSITORIES_SEARCH_MAPPING:
-                count = db.update(GitHubRepositorySearchMappingContract.TABLE_NAME,
-                        values, selection, selectionArgs);
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
                 break;
             case REPOSITORIES_SEARCH_MAPPING_ID:
+                tableName = GitHubRepositorySearchMappingContract.TABLE_NAME;
                 idStr = uri.getLastPathSegment();
-                where = GitHubRepositorySearchMappingContract.ID + " = " + idStr;
-                if (!TextUtils.isEmpty(selection)) {
-                    where += " AND " + selection;
-                }
-                count = db.update(GitHubRepositorySearchMappingContract.TABLE_NAME,
-                        values, where, selectionArgs);
+                idColumn = GitHubRepositorySearchMappingContract.ID;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
+        String where = "";
+        if (idStr != null) {
+            where = idColumn + " = " + idStr;
+            if (TextUtils.isEmpty(selection)) {
+                where += " AND " + selection;
+            }
+        } else if (!TextUtils.isEmpty(selection)) {
+            where = selection;
+        }
+        int count = db.update(tableName, values, where, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }

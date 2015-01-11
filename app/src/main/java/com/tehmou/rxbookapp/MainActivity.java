@@ -1,9 +1,16 @@
 package com.tehmou.rxbookapp;
 
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
+import com.tehmou.rxbookapp.data.provider.MyContentProvider;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -19,6 +26,15 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new RepositoriesFragment())
                     .commit();
         }
+        addRepository(new GitHubRepository("myname"));
+    }
+
+    private void addRepository(GitHubRepository repository) {
+        ContentValues values = new ContentValues();
+        values.put(GitHubRepositoryContract.NAME, repository.getName());
+        Uri uri = getContentResolver().insert(
+                GitHubRepositoryContract.CONTENT_URI, values);
+        Log.d(TAG, "Added repository: " + uri);
     }
 
 

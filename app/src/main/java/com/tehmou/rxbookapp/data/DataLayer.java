@@ -17,7 +17,7 @@ import rx.schedulers.Schedulers;
  */
 public class DataLayer {
     final private NetworkApi networkApi;
-    final private RepositoryStore repositoryStore;
+    final private GitHubRepositoryStore gitHubRepositoryStore;
 
     static private DataLayer instance;
 
@@ -30,7 +30,7 @@ public class DataLayer {
 
     public DataLayer() {
         networkApi = new NetworkApi();
-        repositoryStore = new RepositoryStore();
+        gitHubRepositoryStore = new GitHubRepositoryStore();
     }
 
     public Observable<List<GitHubRepository>> getGitHub(final String search) {
@@ -50,8 +50,8 @@ public class DataLayer {
                 })
                 .subscribeOn(Schedulers.computation())
                 .subscribe((repositories) -> {
-                    repositoryStore.put(search, repositories);
+                    gitHubRepositoryStore.put(search, repositories);
                 });
-        return repositoryStore.getRepositoriesForSearch(search);
+        return gitHubRepositoryStore.getRepositoriesForSearch(search);
     }
 }

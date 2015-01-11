@@ -5,19 +5,13 @@ package com.tehmou.rxbookapp.pojo;
  */
 public class GitHubRepository {
     final private String name;
-    final private String fullName;
 
-    public GitHubRepository(String name, String fullName) {
+    public GitHubRepository(String name) {
         this.name = name;
-        this.fullName = fullName;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getFullName() {
-        return fullName;
     }
 
     @Override

@@ -13,7 +13,7 @@ import rx.subjects.Subject;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class RepositoryStore {
+public class GitHubRepositoryStore {
     final private Map<String, List<GitHubRepository>> hash = new ConcurrentHashMap<>();
     final private Map<String, Subject<List<GitHubRepository>, List<GitHubRepository>>> subjectsHash = new ConcurrentHashMap<>();
 

@@ -34,18 +34,15 @@ public class DataLayer {
     }
 
     public Observable<List<GitHubRepository>> getGitHub(final String search) {
-        Observable.create(new Observable.OnSubscribe<List<GitHubRepository>>() {
-                    @Override
-                    public void call(Subscriber<? super List<GitHubRepository>> subscriber) {
-                        try {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("q", search);
-                            List<GitHubRepository> results = networkApi.search(params);
-                            subscriber.onNext(results);
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
+        Observable.<List<GitHubRepository>>create((subscriber) -> {
+                    try {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("q", search);
+                        List<GitHubRepository> results = networkApi.search(params);
+                        subscriber.onNext(results);
+                        subscriber.onCompleted();
+                    } catch (Exception e) {
+                        subscriber.onError(e);
                     }
                 })
                 .subscribeOn(Schedulers.computation())

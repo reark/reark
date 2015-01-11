@@ -22,8 +22,8 @@ public class GitHubRepositoryContract {
     public static final String SORT_ORDER_DEFAULT = NAME + " ASC";
 
     public static final String CREATE_DB_TABLE = " CREATE TABLE " + TABLE_NAME
-            + " (id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + " name TEXT NOT NULL);";
+            + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + " " + NAME + " TEXT NOT NULL);";
 
     public static final String DROP_DB_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 }

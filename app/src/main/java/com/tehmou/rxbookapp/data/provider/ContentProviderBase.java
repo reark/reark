@@ -53,12 +53,13 @@ abstract public class ContentProviderBase extends ContentProvider {
         String idColumn = getIdColumnName(match);
         long id;
         if (idColumn != null) {
-            id = db.insertWithOnConflict(tableName,
+            db.insertWithOnConflict(tableName,
                     null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            return uri;
         } else {
             id = db.insert(tableName, null, values);
+            return getUriForId(id, uri);
         }
-        return getUriForId(id, uri);
     }
 
     @Override
@@ -78,12 +79,11 @@ abstract public class ContentProviderBase extends ContentProvider {
 
         String where = getWhere(selection, idColumn, idStr);
         builder.setTables(tableName);
-        builder.appendWhere(where);
         Cursor cursor =
                 builder.query(
                         db,
                         projection,
-                        selection,
+                        where,
                         selectionArgs,
                         null,
                         null,

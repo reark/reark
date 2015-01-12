@@ -11,10 +11,10 @@ import rx.subjects.Subject;
 /**
  * Created by ttuo on 11/01/15.
  */
-public class StoreBase<T> {
+public class HashStoreBase<T> {
     static private int counter = 0;
 
-    private static final String TAG = StoreBase.class.getSimpleName();
+    private static final String TAG = HashStoreBase.class.getSimpleName();
     final private Map<String, T> hash = new ConcurrentHashMap<String, T>();
     final private Map<String, Subject<T, T>> subjectsHash = new ConcurrentHashMap<>();
 

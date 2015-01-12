@@ -49,7 +49,7 @@ public class MyContentProvider extends ContentProviderBase {
         String where = null;
         if (idColumn != null) {
             where = idColumn + " = " + idStr;
-            if (TextUtils.isEmpty(selection)) {
+            if (!TextUtils.isEmpty(selection)) {
                 where += " AND " + selection;
             }
         } else if (!TextUtils.isEmpty(selection)) {

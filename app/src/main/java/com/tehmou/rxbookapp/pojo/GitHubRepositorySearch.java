@@ -9,9 +9,9 @@ import java.util.List;
  */
 public class GitHubRepositorySearch {
     final private String search;
-    final private List<String> items;
+    final private List<Integer> items;
 
-    public GitHubRepositorySearch(final String search, final List<String> items) {
+    public GitHubRepositorySearch(final String search, final List<Integer> items) {
         this.search = search;
         this.items = items;
     }
@@ -20,7 +20,7 @@ public class GitHubRepositorySearch {
         return search;
     }
 
-    public List<String> getItems() {
+    public List<Integer> getItems() {
         return items;
     }
 }

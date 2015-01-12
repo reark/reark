@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
 import com.tehmou.rxbookapp.data.provider.MyContentProvider;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
@@ -17,16 +18,18 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private DataLayer dataLayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataLayer = new DataLayer(getContentResolver());
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new RepositoriesFragment())
                     .commit();
         }
-        addRepository(new GitHubRepository("myname"));
     }
 
     private void addRepository(GitHubRepository repository) {
@@ -56,5 +59,9 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public DataLayer getDataLayer() {
+        return dataLayer;
     }
 }

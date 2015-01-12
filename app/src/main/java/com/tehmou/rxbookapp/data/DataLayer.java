@@ -1,5 +1,7 @@
 package com.tehmou.rxbookapp.data;
 
+import android.content.ContentResolver;
+
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
@@ -23,18 +25,9 @@ public class DataLayer {
     final private GitHubRepositoryStore gitHubRepositoryStore;
     final private GitHubRepositorySearchStore gitHubRepositorySearchStore;
 
-    static private DataLayer instance;
-
-    static public DataLayer getInstance() {
-        if (instance == null) {
-            instance = new DataLayer();
-        }
-        return instance;
-    }
-
-    public DataLayer() {
+    public DataLayer(ContentResolver contentResolver) {
         networkApi = new NetworkApi();
-        gitHubRepositoryStore = new GitHubRepositoryStore();
+        gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
         gitHubRepositorySearchStore = new GitHubRepositorySearchStore();
     }
 
@@ -52,9 +45,10 @@ public class DataLayer {
                 })
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {
-                    final List<String> repositoryIds = new ArrayList<String>();
+                    final List<Integer> repositoryIds = new ArrayList<>();
                     for (GitHubRepository repository : repositories) {
-                        repositoryIds.add(gitHubRepositoryStore.put(repository));
+                        gitHubRepositoryStore.put(repository);
+                        repositoryIds.add(repository.getId());
                     }
                     GitHubRepositorySearch gitHubRepositorySearch =
                             new GitHubRepositorySearch(search, repositoryIds);
@@ -66,7 +60,7 @@ public class DataLayer {
         return gitHubRepositorySearchStore.getStream(search);
     }
 
-    public Observable<GitHubRepository> getGitHubRepository(String repositoryId) {
+    public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {
         return gitHubRepositoryStore.getStream(repositoryId);
     }
 }

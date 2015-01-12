@@ -50,13 +50,10 @@ public class RepositoriesViewModel {
                 dataLayer.getGitHubRepositorySearch(search)
                         .flatMap((repositorySearch) -> {
                             final List<Observable<GitHubRepository>> observables = new ArrayList<>();
-                            for (String repositoryId : repositorySearch.getItems()) {
+                            for (int repositoryId : repositorySearch.getItems()) {
                                 Log.d(TAG, "Process repositoryId: " + repositoryId);
                                 final Observable<GitHubRepository> observable =
                                         dataLayer.getGitHubRepository(repositoryId);
-                                observable.subscribe((repository) -> {
-                                           Log.d(TAG, repository.toString());
-                                        });
                                 observables.add(observable);
                             }
                             return Observable.combineLatest(

@@ -1,5 +1,9 @@
 package com.tehmou.rxbookapp.data;
 
+import android.content.ContentResolver;
+
+import com.tehmou.rxbookapp.RxBookApp;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -12,9 +16,14 @@ import dagger.Provides;
 public final class DataStoreModule {
 
     @Provides
+    public ContentResolver contentResolver() {
+        return RxBookApp.getInstance().getContentResolver();
+    }
+
+    @Provides
     @Singleton
-    public DataLayer provideDataStoreModule() {
-        return new DataLayer();
+    public DataLayer provideDataStoreModule(ContentResolver contentResolver) {
+        return new DataLayer(contentResolver);
     }
 
 }

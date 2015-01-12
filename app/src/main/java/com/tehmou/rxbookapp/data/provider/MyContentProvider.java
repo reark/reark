@@ -21,7 +21,7 @@ public class MyContentProvider extends ContentProviderBase {
     static final int REPOSITORIES_SEARCH_ID = 4;
 
     static final String DATABASE_NAME = "database";
-    static final int DATABASE_VERSION = 2;
+    static final int DATABASE_VERSION = 3;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {

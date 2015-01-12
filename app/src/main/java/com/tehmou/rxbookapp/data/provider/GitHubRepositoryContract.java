@@ -17,13 +17,15 @@ public class GitHubRepositoryContract {
     public static final Uri CONTENT_URI = Uri.parse("content://" + MyContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
 
     public static final String ID = "id";
-    public static final String NAME = "name";
+    public static final String JSON = "json";
 
-    public static final String SORT_ORDER_DEFAULT = NAME + " ASC";
+    public static final String[] PROJECTION = new String[] { ID, JSON };
+
+    public static final String SORT_ORDER_DEFAULT = ID + " ASC";
 
     public static final String CREATE_DB_TABLE = " CREATE TABLE " + TABLE_NAME
             + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + " " + NAME + " TEXT NOT NULL);";
+            + JSON + " TEXT NOT NULL);";
 
     public static final String DROP_DB_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 }

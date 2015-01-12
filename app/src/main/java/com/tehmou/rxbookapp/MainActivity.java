@@ -32,15 +32,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void addRepository(GitHubRepository repository) {
-        ContentValues values = new ContentValues();
-        values.put(GitHubRepositoryContract.NAME, repository.getName());
-        Uri uri = getContentResolver().insert(
-                GitHubRepositoryContract.CONTENT_URI, values);
-        Log.d(TAG, "Added repository: " + uri);
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         

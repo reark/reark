@@ -1,6 +1,6 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.pojo.GitHubResults;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import retrofit.http.QueryMap;
  */
 public interface GitHubService {
     @GET("/search/repositories")
-    public GitHubResults search(
+    public GitHubRepositorySearchResults search(
             @QueryMap Map<String, String> search
     );
 }

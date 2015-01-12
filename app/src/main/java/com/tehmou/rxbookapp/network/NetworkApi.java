@@ -1,7 +1,7 @@
 package com.tehmou.rxbookapp.network;
 
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.pojo.GitHubResults;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class NetworkApi {
     }
 
     public List<GitHubRepository> search(Map<String, String> search) {
-        GitHubResults results = gitHubService.search(search);
+        GitHubRepositorySearchResults results = gitHubService.search(search);
         return results.getItems();
     }
 }

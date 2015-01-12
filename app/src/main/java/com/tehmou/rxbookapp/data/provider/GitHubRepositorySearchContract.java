@@ -18,14 +18,14 @@ public class GitHubRepositorySearchContract {
 
     public static final String ID = "id";
     public static final String SEARCH = "search";
-    public static final String LIST = "list";
+    public static final String ITEMS = "list";
 
     public static final String SORT_ORDER_DEFAULT = SEARCH + " ASC";
 
     public static final String CREATE_DB_TABLE = " CREATE TABLE " + TABLE_NAME
             + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + SEARCH + " TEXT NOT NULL, "
-            + LIST + " TEXT NOT NULL);";
+            + ITEMS + " TEXT NOT NULL);";
 
     public static final String DROP_DB_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 }

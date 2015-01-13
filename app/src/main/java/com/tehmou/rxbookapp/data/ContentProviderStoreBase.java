@@ -10,6 +10,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
+import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import java.lang.reflect.Type;
@@ -49,10 +50,10 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     protected void insertOrUpdate(T item) {
-        Uri uri = Uri.withAppendedPath(GitHubRepositoryContract.CONTENT_URI, "" + getIdFor(item));
+        Uri uri = Uri.withAppendedPath(getContentUri(), getIdFor(item).toString());
         ContentValues values = new ContentValues();
-        values.put(GitHubRepositoryContract.ID, getIdFor(item).toString());
-        values.put(GitHubRepositoryContract.JSON, new Gson().toJson(item));
+        values.put(SerializedJsonContract.ID, getIdFor(item).toString());
+        values.put(SerializedJsonContract.JSON, new Gson().toJson(item));
         if (contentResolver.update(uri, values, null, null) == 0) {
             final Uri resultUri = contentResolver.insert(uri, values);
             Log.v(TAG, "Inserted at " + resultUri);
@@ -62,8 +63,8 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     protected T query(U id) {
-        Uri uri = Uri.withAppendedPath(GitHubRepositoryContract.CONTENT_URI, "" + id);
-        Cursor cursor = contentResolver.query(uri, GitHubRepositoryContract.PROJECTION, null, null, null);
+        Uri uri = Uri.withAppendedPath(getContentUri(), id.toString());
+        Cursor cursor = contentResolver.query(uri, SerializedJsonContract.PROJECTION, null, null, null);
         T gitHubRepository = null;
         if (cursor.moveToFirst()) {
             final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositoryContract.JSON));
@@ -77,4 +78,5 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     abstract protected U getIdFor(T item);
+    abstract protected Uri getContentUri();
 }

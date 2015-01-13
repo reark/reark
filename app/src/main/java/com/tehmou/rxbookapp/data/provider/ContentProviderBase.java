@@ -25,7 +25,7 @@ abstract public class ContentProviderBase extends ContentProvider {
     public boolean onCreate() {
         createUriMatcher();
         Context context = getContext();
-        databaseHelper = createDatabaseHelper(context);;
+        databaseHelper = createDatabaseHelper(context);
         db = databaseHelper.getWritableDatabase();
         if (db != null) {
             return true;
@@ -39,7 +39,8 @@ abstract public class ContentProviderBase extends ContentProvider {
         String tableName = getTableName(match);
         String idColumn = getIdColumnName(match);
         String idStr = uri.getLastPathSegment();
-        String where = getWhere(selection, idColumn, idStr);
+        String where = getWhere(selection, idColumn, idStr,
+                getDatabaseContractForMatch(match));
         int count = db.delete(tableName, where, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -79,7 +80,8 @@ abstract public class ContentProviderBase extends ContentProvider {
             sortOrder = getDefaultSortOrder(match);
         }
 
-        String where = getWhere(selection, idColumn, idStr);
+        String where = getWhere(selection, idColumn, idStr,
+                getDatabaseContractForMatch(match));
         builder.setTables(tableName);
         Cursor cursor =
                 builder.query(
@@ -106,7 +108,8 @@ abstract public class ContentProviderBase extends ContentProvider {
         String idColumn = getIdColumnName(match);
         String tableName = getTableName(match);
 
-        String where = getWhere(selection, idColumn, idStr);
+        String where = getWhere(selection, idColumn, idStr,
+                getDatabaseContractForMatch(match));
         int count = db.update(tableName, values, where, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -116,10 +119,11 @@ abstract public class ContentProviderBase extends ContentProvider {
 
     protected String getWhere(final String selection,
                               final String idColumn,
-                              final String idStr) {
+                              final String idStr,
+                              DatabaseContract databaseContract) {
         String where = null;
         if (idColumn != null) {
-            where = idColumn + " = " + idStr;
+            where = idColumn + " = " + databaseContract.getIdSqlString(idStr);
             if (!TextUtils.isEmpty(selection)) {
                 where += " AND " + selection;
             }
@@ -138,6 +142,7 @@ abstract public class ContentProviderBase extends ContentProvider {
         throw new SQLException("Problem while inserting into uri: " + uri);
     }
 
+    abstract protected DatabaseContract getDatabaseContractForMatch(final int match);
     abstract protected String getTableName(final int match);
     abstract protected String getIdColumnName(final int match);
     abstract protected String getDefaultSortOrder(final int match);

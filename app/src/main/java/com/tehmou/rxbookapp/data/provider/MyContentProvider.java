@@ -24,7 +24,7 @@ public class MyContentProvider extends ContentProviderBase {
     }
 
     static final String DATABASE_NAME = "database";
-    static final int DATABASE_VERSION = 3;
+    static final int DATABASE_VERSION = 6;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {
@@ -82,11 +82,15 @@ public class MyContentProvider extends ContentProviderBase {
         int i = 0;
         for (DatabaseContract databaseContract : databaseContracts) {
             URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName(), i++);
-            URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName() + "/#", i++);
+            URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName() + "/*", i++);
         }
     }
 
-    private DatabaseContract getDatabaseContractForMatch(final int match) {
+    @Override
+    protected DatabaseContract getDatabaseContractForMatch(final int match) {
+        if (match == -1) {
+            throw new IllegalArgumentException("Unknown URI");
+        }
         return databaseContracts.get(match / 2);
     }
 

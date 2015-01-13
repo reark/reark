@@ -7,6 +7,7 @@ public interface DatabaseContract {
     public String getName();
     public String getDefaultSortOrder();
     public String getIdColumnName();
+    public String getIdSqlString(String id);
     public String getCreateTable();
     public String getDropTable();
     public String getSingleMimeType();

@@ -28,7 +28,7 @@ public class DataLayer {
     public DataLayer(ContentResolver contentResolver) {
         networkApi = new NetworkApi();
         gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
-        gitHubRepositorySearchStore = new GitHubRepositorySearchStore();
+        gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
     }
 
     public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
@@ -50,13 +50,9 @@ public class DataLayer {
                         gitHubRepositoryStore.put(repository);
                         repositoryIds.add(repository.getId());
                     }
-                    GitHubRepositorySearch gitHubRepositorySearch =
-                            new GitHubRepositorySearch(search, repositoryIds);
-                    return gitHubRepositorySearch;
+                    return new GitHubRepositorySearch(search, repositoryIds);
                 })
-                .subscribe((repositorySearch) -> {
-                    gitHubRepositorySearchStore.put(search, repositorySearch);
-                });
+                .subscribe(gitHubRepositorySearchStore::put);
         return gitHubRepositorySearchStore.getStream(search);
     }
 

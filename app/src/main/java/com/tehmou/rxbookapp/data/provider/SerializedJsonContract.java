@@ -15,7 +15,7 @@ abstract public class SerializedJsonContract implements DatabaseContract {
 
     public String getCreateTable() {
         return " CREATE TABLE " + getTableName()
-                + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + " ( " + getCreateIdColumn() + ", "
                 + JSON + " TEXT NOT NULL);";
     }
 
@@ -33,4 +33,5 @@ abstract public class SerializedJsonContract implements DatabaseContract {
     }
 
     abstract protected String getTableName();
+    abstract protected String getCreateIdColumn();
 }

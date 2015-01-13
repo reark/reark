@@ -68,7 +68,9 @@ public class RepositoriesViewModel {
                                     }
                             );
                         })
-                       .subscribe(repositories));
+                        .doOnNext((repositories) ->
+                                Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel"))
+                        .subscribe(repositories));
     }
 
     public void unsubscribeFromDataStore() {

@@ -1,8 +1,10 @@
 package com.tehmou.rxbookapp.data;
 
 import android.content.ContentResolver;
+import android.net.Uri;
 
 import com.google.gson.reflect.TypeToken;
+import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 /**
@@ -18,5 +20,10 @@ public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubReposi
     @Override
     protected Integer getIdFor(GitHubRepository item) {
         return item.getId();
+    }
+
+    @Override
+    protected Uri getContentUri() {
+        return GitHubRepositoryContract.CONTENT_URI;
     }
 }

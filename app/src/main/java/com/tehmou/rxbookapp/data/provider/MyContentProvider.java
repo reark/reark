@@ -1,13 +1,13 @@
 package com.tehmou.rxbookapp.data.provider;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.UriMatcher;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ttuo on 10/01/15.
@@ -15,10 +15,13 @@ import android.text.TextUtils;
 public class MyContentProvider extends ContentProviderBase {
     public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.provider.MyContentProvider";
 
-    static final int REPOSITORIES = 1;
-    static final int REPOSITORIES_ID = 2;
-    static final int REPOSITORIES_SEARCH = 3;
-    static final int REPOSITORIES_SEARCH_ID = 4;
+    static final List<DatabaseContract> databaseContracts;
+
+    static {
+        databaseContracts = new ArrayList<>();
+        databaseContracts.add(new GitHubRepositoryContract());
+        databaseContracts.add(new GitHubRepositorySearchContract());
+    }
 
     static final String DATABASE_NAME = "database";
     static final int DATABASE_VERSION = 3;
@@ -30,102 +33,42 @@ public class MyContentProvider extends ContentProviderBase {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL(GitHubRepositoryContract.CREATE_DB_TABLE);
-            db.execSQL(GitHubRepositorySearchContract.CREATE_DB_TABLE);
+            for (DatabaseContract databaseContract : databaseContracts) {
+                db.execSQL(databaseContract.getCreateTable());
+            }
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL(GitHubRepositoryContract.DROP_DB_TABLE);
-            db.execSQL(GitHubRepositorySearchContract.DROP_DB_TABLE);
+            for (DatabaseContract databaseContract : databaseContracts) {
+                db.execSQL(databaseContract.getDropTable());
+            }
             onCreate(db);
         }
     }
 
     @Override
-    protected String getWhere(final String selection,
-                            final String idColumn,
-                            final String idStr) {
-        String where = null;
-        if (idColumn != null) {
-            where = idColumn + " = " + idStr;
-            if (!TextUtils.isEmpty(selection)) {
-                where += " AND " + selection;
-            }
-        } else if (!TextUtils.isEmpty(selection)) {
-            where = selection;
-        }
-        return where;
+    protected String getIdColumnName(int match) {
+        return getDatabaseContractForMatch(match).getIdColumnName();
     }
 
     @Override
-    protected Uri getUriForId(long id, Uri uri) {
-        if (id > 0) {
-            Uri itemUri = ContentUris.withAppendedId(uri, id);
-            getContext().getContentResolver().notifyChange(itemUri, null);
-            return itemUri;
-        }
-        throw new SQLException("Problem while inserting into uri: " + uri);
+    protected String getDefaultSortOrder(int match) {
+        return getDatabaseContractForMatch(match).getDefaultSortOrder();
+    }
+
+    @Override
+    protected String getTableName(int match) {
+        return getDatabaseContractForMatch(match).getName();
     }
 
     @Override
     public String getType(Uri uri) {
-        switch (URI_MATCHER.match(uri)) {
-            case REPOSITORIES:
-                return GitHubRepositoryContract.MULTIPLE_REPOSITORY_MIME_TYPE;
-            case REPOSITORIES_ID:
-                return GitHubRepositoryContract.SINGLE_REPOSITORY_MIME_TYPE;
-            case REPOSITORIES_SEARCH:
-                return GitHubRepositorySearchContract.MULTIPLE_REPOSITORY_SEARCH_MIME_TYPE;
-            case REPOSITORIES_SEARCH_ID:
-                return GitHubRepositorySearchContract.SINGLE_REPOSITORY_SEARCH_MIME_TYPE;
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    protected String getTableName(final int match) {
-        switch (match) {
-            case REPOSITORIES:
-            case REPOSITORIES_ID:
-                return GitHubRepositoryContract.TABLE_NAME;
-            case REPOSITORIES_SEARCH:
-            case REPOSITORIES_SEARCH_ID:
-                return GitHubRepositorySearchContract.TABLE_NAME;
-            default:
-                throw new IllegalArgumentException("Unsupported URI: " + match);
-        }
-    }
-
-    @Override
-    protected String getIdColumnName(final int match) {
-        switch (match) {
-            case REPOSITORIES:
-            case REPOSITORIES_SEARCH:
-                return null;
-            case REPOSITORIES_ID:
-                return GitHubRepositoryContract.ID;
-            case REPOSITORIES_SEARCH_ID:
-                return GitHubRepositorySearchContract.ID;
-            default:
-                throw new IllegalArgumentException("Unsupported URI: " + match);
-        }
-    }
-
-    @Override
-    protected String getDefaultSortOrder(final int match) {
-        switch (match) {
-            case REPOSITORIES:
-                return GitHubRepositoryContract.SORT_ORDER_DEFAULT;
-            case REPOSITORIES_SEARCH:
-                return GitHubRepositorySearchContract.SORT_ORDER_DEFAULT;
-            case REPOSITORIES_ID:
-            case REPOSITORIES_SEARCH_ID:
-                return null;
-            default:
-                throw new IllegalArgumentException("Unsupported URI: " + match);
-        }
+        final int match = URI_MATCHER.match(uri);
+        final DatabaseContract databaseContract = getDatabaseContractForMatch(match);
+        final boolean isIdUri = isIdUri(match);
+        return isIdUri ?
+                databaseContract.getSingleMimeType() : databaseContract.getMultipleMimeType();
     }
 
     @Override
@@ -136,9 +79,18 @@ public class MyContentProvider extends ContentProviderBase {
     @Override
     protected void createUriMatcher() {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URI_MATCHER.addURI(PROVIDER_NAME, "repositories", REPOSITORIES);
-        URI_MATCHER.addURI(PROVIDER_NAME, "repositories/#", REPOSITORIES_ID);
-        URI_MATCHER.addURI(PROVIDER_NAME, "repositories_search", REPOSITORIES_SEARCH);
-        URI_MATCHER.addURI(PROVIDER_NAME, "repositories_search/#", REPOSITORIES_SEARCH_ID);
+        int i = 0;
+        for (DatabaseContract databaseContract : databaseContracts) {
+            URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName(), i++);
+            URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName() + "/#", i++);
+        }
+    }
+
+    private DatabaseContract getDatabaseContractForMatch(final int match) {
+        return databaseContracts.get(match / 2);
+    }
+
+    private boolean isIdUri(final int match) {
+        return match % 2 != 0;
     }
 }

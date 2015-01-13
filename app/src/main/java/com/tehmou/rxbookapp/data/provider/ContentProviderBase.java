@@ -1,10 +1,12 @@
 package com.tehmou.rxbookapp.data.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -112,8 +114,30 @@ abstract public class ContentProviderBase extends ContentProvider {
         return count;
     }
 
-    abstract protected String getWhere(final String selection, final String idColumn, final String idStr);
-    abstract protected Uri getUriForId(long id, Uri uri);
+    protected String getWhere(final String selection,
+                              final String idColumn,
+                              final String idStr) {
+        String where = null;
+        if (idColumn != null) {
+            where = idColumn + " = " + idStr;
+            if (!TextUtils.isEmpty(selection)) {
+                where += " AND " + selection;
+            }
+        } else if (!TextUtils.isEmpty(selection)) {
+            where = selection;
+        }
+        return where;
+    }
+
+    protected Uri getUriForId(long id, Uri uri) {
+        if (id > 0) {
+            Uri itemUri = ContentUris.withAppendedId(uri, id);
+            getContext().getContentResolver().notifyChange(itemUri, null);
+            return itemUri;
+        }
+        throw new SQLException("Problem while inserting into uri: " + uri);
+    }
+
     abstract protected String getTableName(final int match);
     abstract protected String getIdColumnName(final int match);
     abstract protected String getDefaultSortOrder(final int match);

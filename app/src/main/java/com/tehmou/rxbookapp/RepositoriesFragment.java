@@ -10,6 +10,8 @@ import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
+import rx.Observable;
+
 /**
  * Created by ttuo on 19/03/14.
  */
@@ -21,7 +23,7 @@ public class RepositoriesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        repositoriesViewModel = new RepositoriesViewModel("fab");
+        repositoriesViewModel = new RepositoriesViewModel();
     }
 
     @Override

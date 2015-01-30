@@ -58,9 +58,11 @@ abstract public class ContentProviderBase extends ContentProvider {
         if (idColumn != null) {
             db.insertWithOnConflict(tableName,
                     null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            getContext().getContentResolver().notifyChange(uri, null);
             return uri;
         } else {
             id = db.insert(tableName, null, values);
+            getContext().getContentResolver().notifyChange(uri, null);
             return getUriForId(id, uri);
         }
     }

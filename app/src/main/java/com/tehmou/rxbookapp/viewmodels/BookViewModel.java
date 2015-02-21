@@ -1,8 +1,11 @@
 package com.tehmou.rxbookapp.viewmodels;
 
+import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataStore;
 import com.tehmou.rxbookapp.pojo.Author;
 import com.tehmou.rxbookapp.pojo.Book;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.functions.Func1;
@@ -16,8 +19,10 @@ import rx.subscriptions.CompositeSubscription;
 public class BookViewModel {
     final private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    @Inject
+    DataStore dataStore;
+
     final private String bookId;
-    final private DataStore dataStore;
 
     final private Subject<String, String> bookName = BehaviorSubject.create("Loading name..");
     final private Subject<String, String> bookPrice = BehaviorSubject.create("Loading book price..");
@@ -33,9 +38,9 @@ public class BookViewModel {
         return authorName;
     }
 
-    public BookViewModel(final DataStore dataStore, final String bookId) {
+    public BookViewModel(final String bookId) {
+        RxBookApp.getInstance().getGraph().inject(this);
         this.bookId = bookId;
-        this.dataStore = dataStore;
     }
 
     public void subscribeToDataStore() {

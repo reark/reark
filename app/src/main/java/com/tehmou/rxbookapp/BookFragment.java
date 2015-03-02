@@ -21,7 +21,7 @@ public class BookFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bookViewModel = new BookViewModel(DataStore.getInstance(), "436346");
+        bookViewModel = new BookViewModel("436346");
     }
 
     @Override

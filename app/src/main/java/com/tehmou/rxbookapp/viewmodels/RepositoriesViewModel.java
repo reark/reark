@@ -30,7 +30,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class RepositoriesViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
-    final private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private CompositeSubscription compositeSubscription;
 
     @Inject
     DataLayer dataLayer;
@@ -51,6 +51,10 @@ public class RepositoriesViewModel {
 
     public void subscribeToDataStore() {
         Log.v(TAG, "subscribeToDataStore");
+
+        if (compositeSubscription == null) {
+            compositeSubscription = new CompositeSubscription();
+        }
 
         compositeSubscription.add(
                 Observable.switchOnNext(
@@ -88,6 +92,7 @@ public class RepositoriesViewModel {
     public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");
         compositeSubscription.clear();
+        compositeSubscription = null;
     }
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {

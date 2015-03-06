@@ -2,7 +2,6 @@ package com.tehmou.rxbookapp.data;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,21 +9,13 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
-import com.tehmou.rxbookapp.data.provider.MyContentProvider;
 import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -101,16 +92,16 @@ abstract public class ContentProviderStoreBase<T, U> {
 
     protected T query(Uri uri) {
         Cursor cursor = contentResolver.query(uri, SerializedJsonContract.PROJECTION, null, null, null);
-        T gitHubRepository = null;
+        T value = null;
         if (cursor.moveToFirst()) {
-            final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositoryContract.JSON));
-            gitHubRepository = new Gson().fromJson(json, type);
+            final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
+            value = new Gson().fromJson(json, type);
         } else {
             Log.e(TAG, "Could not find with id: " + uri);
         }
         cursor.close();
-        Log.d(TAG, "" + gitHubRepository);
-        return gitHubRepository;
+        Log.d(TAG, "" + value);
+        return value;
     }
 
     private Uri getUriForId(U id) {

@@ -30,6 +30,9 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class RepositoriesViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
+
+    private static final int MAX_REPOSITORIES_DISPLAYED = 5;
+
     private CompositeSubscription compositeSubscription;
 
     @Inject
@@ -64,12 +67,19 @@ public class RepositoriesViewModel {
                                 .map(dataLayer::getGitHubRepositorySearch)
                 )
                 .flatMap((repositorySearch) -> {
+                    Log.d(TAG, "Found " + repositorySearch.getItems().size() +
+                            " repositories with search " + repositorySearch.getSearch());
                     final List<Observable<GitHubRepository>> observables = new ArrayList<>();
                     for (int repositoryId : repositorySearch.getItems()) {
-                        Log.d(TAG, "Process repositoryId: " + repositoryId);
+                        Log.v(TAG, "Process repositoryId: " + repositoryId);
                         final Observable<GitHubRepository> observable =
-                                dataLayer.getGitHubRepository(repositoryId);
+                                dataLayer.getGitHubRepository(repositoryId)
+                                        .doOnNext((repository) ->
+                                                Log.v(TAG, "Received repository " + repository.getId()));
                         observables.add(observable);
+                        if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {
+                            break;
+                        }
                     }
                     return Observable.combineLatest(
                             observables,

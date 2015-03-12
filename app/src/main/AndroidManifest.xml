@@ -17,6 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name=".data.provider.MyContentProvider"
+            android:authorities="com.tehmou.rxbookapp.data.provider.MyContentProvider"
+            android:exported="false">
+        </provider>
     </application>
 
 </manifest>

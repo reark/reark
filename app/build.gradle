@@ -5,7 +5,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath 'org.robolectric:robolectric-gradle-plugin:0.14.1'
     }
 }
 
@@ -16,6 +15,7 @@ repositories {
 
 apply plugin: 'com.android.application'
 apply plugin: 'robolectric'
+apply plugin: 'retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
@@ -23,7 +23,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 16
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+retrolambda {
+    javaVersion JavaVersion.VERSION_1_6
 }
 
 dependencies {
@@ -44,6 +52,9 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0-SNAPSHOT'
     apt 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT'
     compile 'javax.annotation:jsr250-api:1.0'
+    compile 'com.squareup.retrofit:retrofit:1.6.1'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
 
     // Unit test build
     testCompile 'junit:junit:4.8.2'

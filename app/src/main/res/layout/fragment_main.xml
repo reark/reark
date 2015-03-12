@@ -8,28 +8,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.tehmou.rxbookapp.MainActivity$PlaceholderFragment">
-
-    <com.tehmou.rxbookapp.views.BookInfoView
-        android:id="@+id/book_info_view"
+    <com.tehmou.rxbookapp.view.RepositoriesView
+        android:id="@+id/repositories_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/book_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/book_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/book_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </com.tehmou.rxbookapp.views.BookInfoView>
-
+        android:layout_height="match_parent">
+        <EditText
+            android:id="@+id/repositories_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:height="50dp"/>
+        <ListView
+            android:id="@+id/repositories_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"/>
+    </com.tehmou.rxbookapp.view.RepositoriesView>
 </LinearLayout>

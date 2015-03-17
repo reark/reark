@@ -1,25 +1,27 @@
-import junit.framework.TestCase;
+package com.tehmou.rxbookapp.test;
 
-import java.lang.Exception;
-import java.lang.Override;
+import org.junit.Before;
+import org.junit.Test;
 
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
-import static org.mockito.Mockito.*;
-
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by tehmou on 12/25/13.
  */
-public class SubscriptionManagerTest extends TestCase {
+public class SubscriptionManagerTest {
     private CompositeSubscription subscriptionManager;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         subscriptionManager = new CompositeSubscription();
     }
 
+    @Test
     public void testUnsubscribe() {
         Subscription subscriptionA = mock(Subscription.class);
         Subscription subscriptionB = mock(Subscription.class);
@@ -30,6 +32,7 @@ public class SubscriptionManagerTest extends TestCase {
         verify(subscriptionB).unsubscribe();
     }
 
+    @Test
     public void testUnsubscribeOnlyOnce() {
         Subscription subscriptionA = new TestSubscription();
         subscriptionManager.add(subscriptionA);

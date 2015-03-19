@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tehmou.rxbookapp" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name="com.tehmou.rxbookapp.RxBookApp"
         android:allowBackup="true"

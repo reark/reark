@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="rxandroid-0.24.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.reactivex/rxandroid/0.24.0/42dab493b8f74b164e082f281480c9d493ff89da/rxandroid-0.24.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.reactivex/rxandroid/0.24.0/34200cf193629ced72360d463627d009700bb9e/rxandroid-0.24.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -6,6 +6,7 @@ import org.junit.Test;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,7 +28,9 @@ public class SubscriptionManagerTest {
         Subscription subscriptionB = mock(Subscription.class);
         subscriptionManager.add(subscriptionA);
         subscriptionManager.add(subscriptionB);
+
         subscriptionManager.unsubscribe();
+
         verify(subscriptionA).unsubscribe();
         verify(subscriptionB).unsubscribe();
     }
@@ -37,7 +40,10 @@ public class SubscriptionManagerTest {
         Subscription subscriptionA = new TestSubscription();
         subscriptionManager.add(subscriptionA);
         subscriptionManager.add(subscriptionA);
+
         subscriptionManager.unsubscribe();
+
+        assertTrue(subscriptionManager.isUnsubscribed());
     }
 
     static class TestSubscription implements Subscription {

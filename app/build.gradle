@@ -37,6 +37,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 retrolambda {
@@ -57,5 +61,5 @@ dependencies {
 
     // Unit test build
     testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile 'org.mockito:mockito-core:1.9.5'
 }

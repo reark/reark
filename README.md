@@ -5,15 +5,32 @@ This is a rough example project of what can be done with RxJava to create an app
 
 ![High-level architecture](http://tehmou.github.io/rx-android-architecture/images/architecture.png "High-level architecture")
 
-To use the app start writing a search in the text box of at least 3 characters. This will trigger a request, the five first results of which will be shown as a list.
+
+Application Structure
+=====================
+
+To use the app start writing a search in the text box of at least 3 characters. This will trigger a request, the five first results of which will be shown as a list. The input also throttled in a way that makes it trigger when the user stops typing. This is a very good basic example of Rx streams.
+
+`.filter((string) -> string.length() > 2)
+.throttleLast(500, TimeUnit.MILLISECONDS)`
+
+The input is turned into a series of strings in the View layer, which the View Model then processes.
+
+A network request to the search API is triggered based on the search string, which happens in the Data Layer. The results of the request are written in two stores, the GitHubRepositorySearchStore and GitHubRepositoryStore. The search store contains only the ids of the results of the query, while the actual repository POJOs are written in the repository store. A repository POJO can thus be contained in multiple searches, which can often be the case if the first match stays the same, for instance.
+
+In this example the data from the backend is likely to stay the same, but this structure nevertheless enables us to keep the data consistent across the application&mdash;even if the same data object is updated from multiple APIs.
+
+switchOnNext is used instead of flatMap to make sure we discard the results of the previous request as soon as a new one is made.
+
+
+Tests
+=====
 
 You can run the test(s) on command line in the project folder:
 
 `./gradlew test`
 
-See related
-[slides](http://www.slideshare.net/TimoTuominen1/rxjava-architectures-on-android-android-livecode-berlin)
-
+Currently the tests are not extensive, but we are working on it. The View Models in particular will be fully unit tested.
 
 
 View Models
@@ -53,7 +70,7 @@ View Model has two important responsibilities:
 
 The suggested VM life cycle is much like that of fragment, and not by coincidence.
 
-![View Model life cycle](http://tehmou.github.io/rx-android-architecture/images/android_rx_viewmodel_lifecycle.svg "View Model life cycle)
+![View Model life cycle](http://tehmou.github.io/rx-android-architecture/images/android_rx_viewmodel_lifecycle.svg "View Model life cycle")
 
 The data layer offers a permanent subscription to a data source, and it pushes a new item whenever new data arrives. This connection should be established in onViewCreated and released in onViewDestroyed. **More details of a good data layer architecture will follow in another article.**
 

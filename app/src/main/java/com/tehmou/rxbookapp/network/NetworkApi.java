@@ -12,7 +12,7 @@ import retrofit.RestAdapter;
  * Created by ttuo on 06/01/15.
  */
 public class NetworkApi {
-    private GitHubService gitHubService;
+    private final GitHubService gitHubService;
 
     public NetworkApi() {
         RestAdapter restAdapter = new RestAdapter.Builder()

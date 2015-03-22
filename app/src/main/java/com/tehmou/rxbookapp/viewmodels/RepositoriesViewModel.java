@@ -38,7 +38,7 @@ public class RepositoriesViewModel {
     @Inject
     DataLayer dataLayer;
 
-    private PublishSubject<Observable<String>> searchString = PublishSubject.create();
+    private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
 
     final private Subject<List<GitHubRepository>, List<GitHubRepository>> repositories
             = BehaviorSubject.create();

@@ -37,7 +37,7 @@ public class RxBinderUtil {
                                                     final String tag) {
         return observable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SetterSubscriber<U>(setter, tag));
+                .subscribe(new SetterSubscriber<>(setter, tag));
     }
 
     static private class SetterSubscriber<U> extends Subscriber<U> {

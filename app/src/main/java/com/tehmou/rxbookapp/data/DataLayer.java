@@ -32,7 +32,7 @@ public class DataLayer {
     public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
         Observable.<List<GitHubRepository>>create((subscriber) -> {
                     try {
-                        Map<String, String> params = new HashMap<String, String>();
+                        Map<String, String> params = new HashMap<>();
                         params.put("q", search);
                         List<GitHubRepository> results = networkApi.search(params);
                         subscriber.onNext(results);

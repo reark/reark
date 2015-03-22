@@ -1,5 +1,9 @@
 package com.tehmou.rxbookapp.data;
 
+import com.google.gson.Gson;
+
+import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.ContentObserver;
@@ -7,9 +11,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
-
-import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

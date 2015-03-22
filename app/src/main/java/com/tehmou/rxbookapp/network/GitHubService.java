@@ -1,7 +1,5 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-
 import java.util.Map;
 
 import retrofit.http.GET;

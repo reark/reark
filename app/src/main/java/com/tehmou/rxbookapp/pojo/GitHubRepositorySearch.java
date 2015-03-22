@@ -1,7 +1,5 @@
 package com.tehmou.rxbookapp.pojo;
 
-import com.tehmou.rxbookapp.network.GitHubService;
-
 import java.util.List;
 
 /**

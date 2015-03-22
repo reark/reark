@@ -1,16 +1,13 @@
 package com.tehmou.rxbookapp;
 
+import com.tehmou.rxbookapp.view.RepositoriesView;
+import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.tehmou.rxbookapp.data.DataLayer;
-import com.tehmou.rxbookapp.view.RepositoriesView;
-import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
-
-import rx.Observable;
 
 /**
  * Created by ttuo on 19/03/14.

@@ -1,11 +1,11 @@
 package com.tehmou.rxbookapp;
 
+import com.tehmou.rxbookapp.data.DataLayer;
+
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.tehmou.rxbookapp.data.DataLayer;
 
 
 public class MainActivity extends ActionBarActivity {

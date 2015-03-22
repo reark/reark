@@ -7,7 +7,6 @@ import android.widget.EditText;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 /**

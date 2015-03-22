@@ -1,17 +1,11 @@
 package com.tehmou.rxbookapp;
 
-import android.content.ContentValues;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.tehmou.rxbookapp.data.DataLayer;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
-import com.tehmou.rxbookapp.data.provider.MyContentProvider;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 
 public class MainActivity extends ActionBarActivity {

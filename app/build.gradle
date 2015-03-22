@@ -15,7 +15,7 @@ repositories {
 
 apply plugin: 'com.android.application'
 apply plugin: 'robolectric'
-apply plugin: 'retrolambda'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {

@@ -93,13 +93,15 @@ abstract public class ContentProviderStoreBase<T, U> {
     protected T query(Uri uri) {
         Cursor cursor = contentResolver.query(uri, SerializedJsonContract.PROJECTION, null, null, null);
         T value = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
-            value = new Gson().fromJson(json, type);
-        } else {
-            Log.e(TAG, "Could not find with id: " + uri);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
+                value = new Gson().fromJson(json, type);
+            } else {
+                Log.e(TAG, "Could not find with id: " + uri);
+            }
+            cursor.close();
         }
-        cursor.close();
         Log.d(TAG, "" + value);
         return value;
     }

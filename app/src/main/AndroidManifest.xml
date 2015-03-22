@@ -20,8 +20,8 @@
             </intent-filter>
         </activity>
         <provider
-            android:name=".data.provider.MyContentProvider"
-            android:authorities="com.tehmou.rxbookapp.data.provider.MyContentProvider"
+            android:name=".data.provider.GithubContentProvider"
+            android:authorities="com.tehmou.rxbookapp.data.provider.GithubContentProvider"
             android:exported="false">
         </provider>
     </application>

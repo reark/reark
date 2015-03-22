@@ -12,7 +12,7 @@ public class GitHubRepositoryContract extends SerializedJsonContract {
             "vnd.android.cursor.dir/vnd.tehmou.android.rxbookapp.repository";
 
     private static final String TABLE_NAME = "repositories";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + MyContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.parse("content://" + GithubContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
 
     @Override
     protected String getTableName() {

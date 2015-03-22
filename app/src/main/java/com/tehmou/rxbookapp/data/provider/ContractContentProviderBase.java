@@ -12,23 +12,18 @@ import java.util.List;
 /**
  * Created by ttuo on 10/01/15.
  */
-public class MyContentProvider extends ContentProviderBase {
-    public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.provider.MyContentProvider";
-
-    static final List<DatabaseContract> databaseContracts;
-
-    static {
-        databaseContracts = new ArrayList<>();
-        databaseContracts.add(new GitHubRepositoryContract());
-        databaseContracts.add(new GitHubRepositorySearchContract());
-    }
-
-    static final String DATABASE_NAME = "database";
-    static final int DATABASE_VERSION = 6;
+abstract public class ContractContentProviderBase extends ContentProviderBase {
+    protected final List<DatabaseContract> databaseContracts = new ArrayList<>();
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        final List<DatabaseContract> databaseContracts;
+
+        DatabaseHelper(Context context,
+                       String databaseName,
+                       int databaseVersion,
+                       List<DatabaseContract> databaseContracts) {
+            super(context, databaseName, null, databaseVersion);
+            this.databaseContracts = databaseContracts;
         }
 
         @Override
@@ -73,7 +68,8 @@ public class MyContentProvider extends ContentProviderBase {
 
     @Override
     protected SQLiteOpenHelper createDatabaseHelper(Context context) {
-        return new DatabaseHelper(context);
+        return new DatabaseHelper(context, getDatabaseName(),
+                getDatabaseVersion(), databaseContracts);
     }
 
     @Override
@@ -81,8 +77,8 @@ public class MyContentProvider extends ContentProviderBase {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         int i = 0;
         for (DatabaseContract databaseContract : databaseContracts) {
-            URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName(), i++);
-            URI_MATCHER.addURI(PROVIDER_NAME, databaseContract.getName() + "/*", i++);
+            URI_MATCHER.addURI(getProviderName(), databaseContract.getName(), i++);
+            URI_MATCHER.addURI(getProviderName(), databaseContract.getName() + "/*", i++);
         }
     }
 
@@ -97,4 +93,8 @@ public class MyContentProvider extends ContentProviderBase {
     private boolean isIdUri(final int match) {
         return match % 2 != 0;
     }
+
+    abstract protected String getProviderName();
+    abstract protected String getDatabaseName();
+    abstract protected int getDatabaseVersion();
 }

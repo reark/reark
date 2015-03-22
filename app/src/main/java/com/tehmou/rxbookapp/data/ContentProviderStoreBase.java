@@ -93,7 +93,7 @@ abstract public class ContentProviderStoreBase<T, U> {
     protected T query(Uri uri) {
         Cursor cursor = contentResolver.query(uri, SerializedJsonContract.PROJECTION, null, null, null);
         T value = null;
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
             value = new Gson().fromJson(json, type);
         } else {

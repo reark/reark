@@ -1,11 +1,12 @@
 package com.tehmou.rxbookapp.data;
 
-import android.content.ContentResolver;
-import android.net.Uri;
-
 import com.google.gson.reflect.TypeToken;
+
 import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+
+import android.content.ContentResolver;
+import android.net.Uri;
 
 /**
  * Created by ttuo on 07/01/15.

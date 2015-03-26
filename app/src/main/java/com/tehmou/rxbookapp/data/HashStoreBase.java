@@ -15,7 +15,7 @@ public class HashStoreBase<T> {
     static private int counter = 0;
 
     private static final String TAG = HashStoreBase.class.getSimpleName();
-    final private Map<String, T> hash = new ConcurrentHashMap<String, T>();
+    final private Map<String, T> hash = new ConcurrentHashMap<>();
     final private Map<String, Subject<T, T>> subjectsHash = new ConcurrentHashMap<>();
 
     public String put(T item) {

@@ -1,8 +1,8 @@
 package com.tehmou.rxbookapp.data;
 
-import android.content.ContentResolver;
-
 import com.tehmou.rxbookapp.RxBookApp;
+
+import android.content.ContentResolver;
 
 import javax.inject.Singleton;
 

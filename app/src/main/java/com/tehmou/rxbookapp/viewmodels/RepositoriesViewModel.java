@@ -1,24 +1,18 @@
 package com.tehmou.rxbookapp.viewmodels;
 
 import com.tehmou.rxbookapp.RxBookApp;
-import android.util.Log;
-
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-import com.tehmou.rxbookapp.view.RepositoriesView;
+
+import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.functions.Func1;
-import rx.functions.FuncN;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -38,7 +32,7 @@ public class RepositoriesViewModel {
     @Inject
     DataLayer dataLayer;
 
-    private PublishSubject<Observable<String>> searchString = PublishSubject.create();
+    private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
 
     final private Subject<List<GitHubRepository>, List<GitHubRepository>> repositories
             = BehaviorSubject.create();

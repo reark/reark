@@ -1,5 +1,9 @@
 package com.tehmou.rxbookapp.data;
 
+import com.google.gson.Gson;
+
+import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.ContentObserver;
@@ -7,9 +11,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
-
-import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -93,13 +94,15 @@ abstract public class ContentProviderStoreBase<T, U> {
     protected T query(Uri uri) {
         Cursor cursor = contentResolver.query(uri, SerializedJsonContract.PROJECTION, null, null, null);
         T value = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
-            value = new Gson().fromJson(json, type);
-        } else {
-            Log.e(TAG, "Could not find with id: " + uri);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
+                value = new Gson().fromJson(json, type);
+            } else {
+                Log.e(TAG, "Could not find with id: " + uri);
+            }
+            cursor.close();
         }
-        cursor.close();
         Log.d(TAG, "" + value);
         return value;
     }

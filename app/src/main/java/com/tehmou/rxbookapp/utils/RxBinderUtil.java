@@ -2,14 +2,11 @@ package com.tehmou.rxbookapp.utils;
 
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -40,7 +37,7 @@ public class RxBinderUtil {
                                                     final String tag) {
         return observable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SetterSubscriber<U>(setter, tag));
+                .subscribe(new SetterSubscriber<>(setter, tag));
     }
 
     static private class SetterSubscriber<U> extends Subscriber<U> {

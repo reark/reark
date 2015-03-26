@@ -1,10 +1,10 @@
 package com.tehmou.rxbookapp.data;
 
-import android.content.ContentResolver;
-
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+
+import android.content.ContentResolver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 
@@ -34,7 +32,7 @@ public class DataLayer {
     public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
         Observable.<List<GitHubRepository>>create((subscriber) -> {
                     try {
-                        Map<String, String> params = new HashMap<String, String>();
+                        Map<String, String> params = new HashMap<>();
                         params.put("q", search);
                         List<GitHubRepository> results = networkApi.search(params);
                         subscriber.onNext(results);

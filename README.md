@@ -155,3 +155,9 @@ It is advisable not to expose any data directly from the fetcher, but instead as
 For global error handling the Fetcher can additionally have a way to subscribing to all errors.
 
 An interesting aspect of this design is that the Fetcher can run in a separate service/process, as long as the Store uses a backing that is shared across all subscribers. This enables integrating seamlessly to the Android platform.
+
+
+License
+=======
+
+The code found here is licensed under the [MIT License](http://creativecommons.org/licenses/MIT/)

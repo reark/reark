@@ -9,14 +9,26 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.RxBookApp;
+import com.tehmou.rxbookapp.data.DataLayer;
+
+import javax.inject.Inject;
 
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by ttuo on 26/03/15.
  */
 public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
+
+    @Inject
+    DataLayer dataLayer;
+
+    public WidgetService() {
+        RxBookApp.getInstance().getGraph().inject(this);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -28,6 +40,13 @@ public class WidgetService extends Service {
         RemoteViews remoteViews = new RemoteViews(getApplication().getPackageName(), R.layout.widget_layout);
         remoteViews.setTextViewText(R.id.widget_layout_text, "lolz");
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+
+        dataLayer.getGitHubRepository(15491874)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(repository -> {
+                    remoteViews.setTextViewText(R.id.widget_layout_text, repository.getName());
+                    appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+                });
 
         return super.onStartCommand(intent, flags, startId);
     }

@@ -9,15 +9,11 @@ import android.view.MenuItem;
 
 
 public class MainActivity extends ActionBarActivity {
-
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private DataLayer dataLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataLayer = new DataLayer(getContentResolver());
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -44,9 +40,5 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public DataLayer getDataLayer() {
-        return dataLayer;
     }
 }

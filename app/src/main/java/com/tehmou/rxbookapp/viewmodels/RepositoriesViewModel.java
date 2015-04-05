@@ -22,15 +22,10 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by ttuo on 19/03/14.
  */
-public class RepositoriesViewModel {
+public class RepositoriesViewModel extends AbstractViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
-
-    private CompositeSubscription compositeSubscription;
-
-    @Inject
-    DataLayer dataLayer;
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
 
@@ -46,12 +41,9 @@ public class RepositoriesViewModel {
         Log.v(TAG, "RepositoriesViewModel");
     }
 
-    public void subscribeToDataStore() {
-        Log.v(TAG, "subscribeToDataStore");
-
-        if (compositeSubscription == null) {
-            compositeSubscription = new CompositeSubscription();
-        }
+    @Override
+    protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
+        Log.v(TAG, "subscribeToDataStoreInternal");
 
         compositeSubscription.add(
                 Observable.switchOnNext(
@@ -91,12 +83,6 @@ public class RepositoriesViewModel {
                     Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
                     RepositoriesViewModel.this.repositories.onNext(repositories);
                 }));
-    }
-
-    public void unsubscribeFromDataStore() {
-        Log.v(TAG, "unsubscribeToDataStore");
-        compositeSubscription.clear();
-        compositeSubscription = null;
     }
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {

@@ -14,6 +14,7 @@ import com.tehmou.rxbookapp.data.DataLayer;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by ttuo on 26/03/15.
@@ -21,8 +22,12 @@ import rx.android.schedulers.AndroidSchedulers;
 public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
 
+    private static final int REPOSITORY_ID = 15491874;
+
     @Inject
     DataLayer dataLayer;
+
+    private CompositeSubscription subscriptions;
 
     public WidgetService() {
         RxBookApp.getInstance().getGraph().inject(this);
@@ -30,27 +35,46 @@ public class WidgetService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final int appWidgetId = intent.getIntExtra("id", 1);
-        Log.d(TAG, "onStartCommand(" + appWidgetId + ")");
+        if (intent.hasExtra("widgetId")) {
+            final int appWidgetId = intent.getIntExtra("widgetId", 0);
+            Log.d(TAG, "onStartCommand(" + appWidgetId + ")");
+            updateWidget(appWidgetId);
+        } else {
+            Log.e(TAG, "onStartCommand(<no widgetId>)");
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void updateWidget(final int widgetId) {
         AppWidgetManager appWidgetManager = AppWidgetManager
                 .getInstance(getApplicationContext());
 
         RemoteViews remoteViews = new RemoteViews(getApplication().getPackageName(), R.layout.widget_layout);
         remoteViews.setTextViewText(R.id.widget_layout_title, "Loading repository..");
-        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+        appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
-        dataLayer.getGitHubRepository(15491874)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(repository -> {
-                    remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());
-                    remoteViews.setTextViewText(R.id.widget_layout_stargazers,
-                            "stars: " + repository.getStargazersCount());
-                    remoteViews.setTextViewText(R.id.widget_layout_forks,
-                            "watching: " + repository.getForksCount());
-                    appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
-                });
+        clearSubscriptions();
+        subscriptions.add(
+                dataLayer.getGitHubRepository(REPOSITORY_ID)
+                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .subscribe(repository -> {
+                            remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());
+                            remoteViews.setTextViewText(R.id.widget_layout_stargazers,
+                                    "stars: " + repository.getStargazersCount());
+                            remoteViews.setTextViewText(R.id.widget_layout_forks,
+                                    "watching: " + repository.getForksCount());
+                            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+                        })
+        );
 
-        return super.onStartCommand(intent, flags, startId);
+        dataLayer.fetchGitHubRepository(REPOSITORY_ID);
+    }
+
+    private void clearSubscriptions() {
+        if (subscriptions != null) {
+            subscriptions.clear();
+        }
+        subscriptions = new CompositeSubscription();
     }
 
     @Override

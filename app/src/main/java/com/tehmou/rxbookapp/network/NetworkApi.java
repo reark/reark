@@ -25,4 +25,8 @@ public class NetworkApi {
         GitHubRepositorySearchResults results = gitHubService.search(search);
         return results.getItems();
     }
+
+    public GitHubRepository getRepository(int id) {
+        return gitHubService.getRepository(id);
+    }
 }

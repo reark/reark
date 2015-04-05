@@ -23,9 +23,8 @@ public class WidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             Intent intentService = new Intent(context, WidgetService.class);
             intentService.setAction("refresh");
-            intentService.putExtra("id", appWidgetId);
+            intentService.putExtra("widgetId", appWidgetId);
             context.startService(intentService);
         }
-
     }
 }

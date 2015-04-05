@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.RemoteViewsService;
 
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
@@ -14,7 +13,6 @@ import com.tehmou.rxbookapp.data.DataLayer;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -38,13 +36,17 @@ public class WidgetService extends Service {
                 .getInstance(getApplicationContext());
 
         RemoteViews remoteViews = new RemoteViews(getApplication().getPackageName(), R.layout.widget_layout);
-        remoteViews.setTextViewText(R.id.widget_layout_text, "lolz");
+        remoteViews.setTextViewText(R.id.widget_layout_title, "Loading repository..");
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 
         dataLayer.getGitHubRepository(15491874)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(repository -> {
-                    remoteViews.setTextViewText(R.id.widget_layout_text, repository.getName());
+                    remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());
+                    remoteViews.setTextViewText(R.id.widget_layout_stargazers,
+                            "stars: " + repository.getStargazersCount());
+                    remoteViews.setTextViewText(R.id.widget_layout_forks,
+                            "watching: " + repository.getForksCount());
                     appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
                 });
 

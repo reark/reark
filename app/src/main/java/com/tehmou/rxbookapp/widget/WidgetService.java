@@ -35,7 +35,7 @@ public class WidgetService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.hasExtra("widgetId")) {
+        if (intent != null && intent.hasExtra("widgetId")) {
             final int appWidgetId = intent.getIntExtra("widgetId", 0);
             Log.d(TAG, "onStartCommand(" + appWidgetId + ")");
             updateWidget(appWidgetId);

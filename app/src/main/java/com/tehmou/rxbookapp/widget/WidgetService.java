@@ -55,7 +55,7 @@ public class WidgetService extends Service {
 
         clearSubscriptions();
         subscriptions.add(
-                dataLayer.getGitHubRepository(REPOSITORY_ID)
+                dataLayer.fetchAndGetGitHubRepository(REPOSITORY_ID)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {
                             remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());
@@ -66,8 +66,6 @@ public class WidgetService extends Service {
                             appWidgetManager.updateAppWidget(widgetId, remoteViews);
                         })
         );
-
-        dataLayer.fetchGitHubRepository(REPOSITORY_ID);
     }
 
     private void clearSubscriptions() {

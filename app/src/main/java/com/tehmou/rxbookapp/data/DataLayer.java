@@ -58,7 +58,12 @@ public class DataLayer {
         return gitHubRepositoryStore.getStream(repositoryId);
     }
 
-    public void fetchGitHubRepository(Integer repositoryId) {
+    public Observable<GitHubRepository> fetchAndGetGitHubRepository(Integer repositoryId) {
+        fetchGitHubRepository(repositoryId);
+        return getGitHubRepository(repositoryId);
+    }
+
+    private void fetchGitHubRepository(Integer repositoryId) {
         Observable.<GitHubRepository>create(subscriber -> {
                     try {
                         GitHubRepository repository = networkApi.getRepository(repositoryId);

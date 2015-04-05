@@ -25,9 +25,20 @@ abstract public class AbstractViewModel {
         subscribeToDataStoreInternal(compositeSubscription);
     }
 
+    public void dispose() {
+        Log.v(TAG, "dispose");
+
+        if (compositeSubscription != null) {
+            Log.e(TAG, "Disposing without calling unsubscribeFromDataStore first");
+
+            // Unsubscribe in case we are still for some reason subscribed
+            unsubscribeFromDataStore();
+        }
+    }
+
     abstract void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription);
 
-    protected void unsubscribeFromDataStore() {
+    public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");
         if (compositeSubscription != null) {
             compositeSubscription.clear();

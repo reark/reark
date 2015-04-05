@@ -1,5 +1,6 @@
-package com.tehmou.rxbookapp;
+package com.tehmou.rxbookapp.fragments;
 
+import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
@@ -26,7 +27,7 @@ public class RepositoriesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        return inflater.inflate(R.layout.repositories_fragment, container, false);
     }
 
     @Override
@@ -34,12 +35,6 @@ public class RepositoriesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         repositoriesView = (RepositoriesView) view.findViewById(R.id.repositories_view);
         repositoriesViewModel.subscribeToDataStore();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        repositoriesViewModel.unsubscribeFromDataStore();
     }
 
     @Override
@@ -52,5 +47,18 @@ public class RepositoriesFragment extends Fragment {
     public void onPause() {
         super.onPause();
         repositoriesView.setViewModel(null);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        repositoriesViewModel.unsubscribeFromDataStore();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        repositoriesViewModel.dispose();
+        repositoriesViewModel = null;
     }
 }

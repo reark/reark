@@ -22,7 +22,7 @@ import rx.Observable;
  */
 public class RepositoriesView extends FrameLayout {
     private static final String TAG = RepositoriesView.class.getSimpleName();
-    final private RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
+    private final RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
 
     private ArrayAdapter<GitHubRepository> listAdapter;
     private ListView listView;

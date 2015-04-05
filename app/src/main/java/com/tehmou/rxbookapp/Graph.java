@@ -1,7 +1,9 @@
 package com.tehmou.rxbookapp;
 
 import com.tehmou.rxbookapp.data.DataStoreModule;
+import com.tehmou.rxbookapp.fragments.RepositoryFragment;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
+import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 import com.tehmou.rxbookapp.widget.WidgetService;
 
 import javax.inject.Singleton;
@@ -16,6 +18,7 @@ import dagger.Component;
 public interface Graph {
 
     void inject(RepositoriesViewModel repositoriesViewModel);
+    void inject(RepositoryViewModel widgetService);
     void inject(WidgetService widgetService);
 
     public final static class Initializer {

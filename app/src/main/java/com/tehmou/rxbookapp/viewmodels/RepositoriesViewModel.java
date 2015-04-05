@@ -29,12 +29,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
 
-    final private Subject<List<GitHubRepository>, List<GitHubRepository>> repositories
+    private final BehaviorSubject<List<GitHubRepository>> repositories
             = BehaviorSubject.create();
-
-    public Observable<List<GitHubRepository>> getRepositories() {
-        return repositories;
-    }
 
     public RepositoriesViewModel() {
         RxBookApp.getInstance().getGraph().inject(this);
@@ -83,6 +79,10 @@ public class RepositoriesViewModel extends AbstractViewModel {
                     Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
                     RepositoriesViewModel.this.repositories.onNext(repositories);
                 }));
+    }
+
+    public Observable<List<GitHubRepository>> getRepositories() {
+        return repositories;
     }
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {

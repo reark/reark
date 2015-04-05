@@ -1,6 +1,7 @@
 package com.tehmou.rxbookapp;
 
-import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
+import com.tehmou.rxbookapp.fragments.RepositoryFragment;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -17,7 +18,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new RepositoriesFragment())
+                    .add(R.id.container, new RepositoryFragment())
                     .commit();
         }
     }

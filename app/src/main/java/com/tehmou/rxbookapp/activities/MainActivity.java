@@ -76,6 +76,9 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
         Log.d(TAG, "New repositoryId: " + repositoryId);
+        // We should probably send an intent to update the widget
+        // in case its service is not alive anymore. This works as
+        // long as it is alive, though.
         dataLayer.setUserSettings(new UserSettings(repositoryId));
     }
 }

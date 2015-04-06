@@ -10,6 +10,7 @@ import android.widget.RemoteViews;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import javax.inject.Inject;
 
@@ -21,8 +22,6 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
-
-    private static final int REPOSITORY_ID = 15491874;
 
     @Inject
     DataLayer dataLayer;
@@ -55,7 +54,9 @@ public class WidgetService extends Service {
 
         clearSubscriptions();
         subscriptions.add(
-                dataLayer.fetchAndGetGitHubRepository(REPOSITORY_ID)
+                dataLayer.getUserSettings()
+                        .map(UserSettings::getSelectedRepositoryId)
+                        .switchMap(dataLayer::fetchAndGetGitHubRepository)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {
                             remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());

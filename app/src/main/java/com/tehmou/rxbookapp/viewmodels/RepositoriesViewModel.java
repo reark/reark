@@ -28,6 +28,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
+    private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
     private final BehaviorSubject<List<GitHubRepository>> repositories
             = BehaviorSubject.create();
@@ -48,37 +49,37 @@ public class RepositoriesViewModel extends AbstractViewModel {
                                 .throttleLast(500, TimeUnit.MILLISECONDS)
                                 .map(dataLayer::getGitHubRepositorySearch)
                 )
-                .flatMap((repositorySearch) -> {
-                    Log.d(TAG, "Found " + repositorySearch.getItems().size() +
-                            " repositories with search " + repositorySearch.getSearch());
-                    final List<Observable<GitHubRepository>> observables = new ArrayList<>();
-                    for (int repositoryId : repositorySearch.getItems()) {
-                        Log.v(TAG, "Process repositoryId: " + repositoryId);
-                        final Observable<GitHubRepository> observable =
-                                dataLayer.getGitHubRepository(repositoryId)
-                                        .doOnNext((repository) ->
-                                                Log.v(TAG, "Received repository " + repository.getId()));
-                        observables.add(observable);
-                        if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {
-                            break;
-                        }
-                    }
-                    return Observable.combineLatest(
-                            observables,
-                            (args) -> {
-                                Log.v(TAG, "Combine items into a list");
-                                final List<GitHubRepository> list = new ArrayList<>();
-                                for (Object repository : args) {
-                                    list.add((GitHubRepository) repository);
+                        .flatMap((repositorySearch) -> {
+                            Log.d(TAG, "Found " + repositorySearch.getItems().size() +
+                                    " repositories with search " + repositorySearch.getSearch());
+                            final List<Observable<GitHubRepository>> observables = new ArrayList<>();
+                            for (int repositoryId : repositorySearch.getItems()) {
+                                Log.v(TAG, "Process repositoryId: " + repositoryId);
+                                final Observable<GitHubRepository> observable =
+                                        dataLayer.getGitHubRepository(repositoryId)
+                                                .doOnNext((repository) ->
+                                                        Log.v(TAG, "Received repository " + repository.getId()));
+                                observables.add(observable);
+                                if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {
+                                    break;
                                 }
-                                return list;
                             }
-                    );
-                })
-                .subscribe((repositories) -> {
-                    Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
-                    RepositoriesViewModel.this.repositories.onNext(repositories);
-                }));
+                            return Observable.combineLatest(
+                                    observables,
+                                    (args) -> {
+                                        Log.v(TAG, "Combine items into a list");
+                                        final List<GitHubRepository> list = new ArrayList<>();
+                                        for (Object repository : args) {
+                                            list.add((GitHubRepository) repository);
+                                        }
+                                        return list;
+                                    }
+                            );
+                        })
+                        .subscribe((repositories) -> {
+                            Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
+                            RepositoriesViewModel.this.repositories.onNext(repositories);
+                        }));
     }
 
     public Observable<List<GitHubRepository>> getRepositories() {
@@ -87,5 +88,13 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {
         this.searchString.onNext(searchStringObservable);
+    }
+
+    public void selectRepository(GitHubRepository repository) {
+        this.selectRepository.onNext(repository);
+    }
+
+    public Observable<GitHubRepository> getSelectRepository() {
+        return selectRepository;
     }
 }

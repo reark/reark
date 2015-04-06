@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.tehmou.rxbookapp.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.ChooseRepositoryActivity" />
+
         <provider
             android:name=".data.provider.GithubContentProvider"
             android:authorities="com.tehmou.rxbookapp.data.provider.GithubContentProvider"

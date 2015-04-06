@@ -1,16 +1,18 @@
-package com.tehmou.rxbookapp;
+package com.tehmou.rxbookapp.activities;
 
-import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
-import com.tehmou.rxbookapp.fragments.RepositoryFragment;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
+import com.tehmou.rxbookapp.fragments.RepositoryFragment;
 
-public class MainActivity extends ActionBarActivity {
-    private static final String TAG = MainActivity.class.getSimpleName();
+
+public class ChooseRepositoryActivity extends ActionBarActivity {
+    private static final String TAG = ChooseRepositoryActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +20,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new RepositoryFragment())
+                    .add(R.id.container, new RepositoriesFragment())
                     .commit();
         }
     }
@@ -41,5 +43,12 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void chooseRepository(int repositoryId) {
+        Intent data = new Intent();
+        data.putExtra("repositoryId", repositoryId);
+        setResult(0, data);
+        finish();
     }
 }

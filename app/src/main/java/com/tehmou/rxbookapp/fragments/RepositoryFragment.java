@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.view.RepositoryView;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 
@@ -34,6 +35,10 @@ public class RepositoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         repositoryView = (RepositoryView) view.findViewById(R.id.repository_view);
         viewModel.subscribeToDataStore();
+
+        view.findViewById(R.id.repository_fragment_choose_repository_button)
+                .setOnClickListener(e ->
+                        ((MainActivity) getActivity()).chooseRepository());
     }
 
     @Override

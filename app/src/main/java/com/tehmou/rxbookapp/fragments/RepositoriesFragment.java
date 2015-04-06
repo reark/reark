@@ -1,6 +1,7 @@
 package com.tehmou.rxbookapp.fragments;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.activities.ChooseRepositoryActivity;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
@@ -22,6 +23,10 @@ public class RepositoriesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         repositoriesViewModel = new RepositoriesViewModel();
+        repositoriesViewModel.getSelectRepository()
+                .subscribe(repository ->
+                        ((ChooseRepositoryActivity) getActivity())
+                                .chooseRepository(repository.getId()));
     }
 
     @Override

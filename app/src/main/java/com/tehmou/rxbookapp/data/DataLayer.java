@@ -3,6 +3,7 @@ package com.tehmou.rxbookapp.data;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.ContentResolver;
 
@@ -19,14 +20,16 @@ import rx.schedulers.Schedulers;
  * Created by ttuo on 19/03/14.
  */
 public class DataLayer {
-    final private NetworkApi networkApi;
-    final private GitHubRepositoryStore gitHubRepositoryStore;
-    final private GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    private final NetworkApi networkApi;
+    private final GitHubRepositoryStore gitHubRepositoryStore;
+    private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    private final UserSettingsStore userSettingsStore;
 
     public DataLayer(ContentResolver contentResolver) {
         networkApi = new NetworkApi();
         gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
         gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
+        userSettingsStore = new UserSettingsStore(contentResolver);
     }
 
     public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
@@ -75,5 +78,13 @@ public class DataLayer {
                 })
                 .subscribeOn(Schedulers.computation())
                 .subscribe(gitHubRepositoryStore::put);
+    }
+
+    public Observable<UserSettings> getUserSettings() {
+        return userSettingsStore.getStream(UserSettingsStore.DEFAULT_USER_ID);
+    }
+
+    public void setUserSettings(UserSettings userSettings) {
+        userSettingsStore.insertOrUpdate(userSettings);
     }
 }

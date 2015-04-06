@@ -1,7 +1,10 @@
 package com.tehmou.rxbookapp.activities;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.RxBookApp;
+import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.fragments.RepositoryFragment;
+import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +13,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 
 public class MainActivity extends ActionBarActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    @Inject
+    DataLayer dataLayer;
+
+    public MainActivity() {
+        RxBookApp.getInstance().getGraph().inject(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,5 +76,6 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
         Log.d(TAG, "New repositoryId: " + repositoryId);
+        dataLayer.setUserSettings(new UserSettings(repositoryId));
     }
 }

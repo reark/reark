@@ -47,8 +47,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
                         Observable.switchOnNext(searchString)
                                 .filter((string) -> string.length() > 2)
                                 .throttleLast(500, TimeUnit.MILLISECONDS)
-                                .map(dataLayer::getGitHubRepositorySearch)
-                )
+                                .map(dataLayer::getGitHubRepositorySearch))
                         .flatMap((repositorySearch) -> {
                             Log.d(TAG, "Found " + repositorySearch.getItems().size() +
                                     " repositories with search " + repositorySearch.getSearch());

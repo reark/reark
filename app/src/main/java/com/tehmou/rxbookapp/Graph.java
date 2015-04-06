@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp;
 
+import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.data.DataStoreModule;
 import com.tehmou.rxbookapp.fragments.RepositoryFragment;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
@@ -20,6 +21,7 @@ public interface Graph {
     void inject(RepositoriesViewModel repositoriesViewModel);
     void inject(RepositoryViewModel widgetService);
     void inject(WidgetService widgetService);
+    void inject(MainActivity mainActivity);
 
     public final static class Initializer {
 

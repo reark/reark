@@ -22,7 +22,6 @@ public class RepositoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new RepositoryViewModel();
-        viewModel.setRepositoryId(15491874);
     }
 
     @Override

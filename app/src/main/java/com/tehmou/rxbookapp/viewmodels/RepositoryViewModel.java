@@ -5,6 +5,7 @@ import android.util.Log;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import javax.inject.Inject;
 
@@ -18,8 +19,6 @@ import rx.subscriptions.CompositeSubscription;
 public class RepositoryViewModel extends AbstractViewModel {
     private static final String TAG = RepositoryViewModel.class.getSimpleName();
 
-    final private BehaviorSubject<Integer> repositoryId = BehaviorSubject.create();
-
     final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
     public RepositoryViewModel() {
@@ -30,7 +29,8 @@ public class RepositoryViewModel extends AbstractViewModel {
     @Override
     protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
         compositeSubscription.add(
-                repositoryId
+                dataLayer.getUserSettings()
+                        .map(UserSettings::getSelectedRepositoryId)
                         .switchMap(dataLayer::fetchAndGetGitHubRepository)
                         .subscribe(repository)
         );
@@ -38,9 +38,5 @@ public class RepositoryViewModel extends AbstractViewModel {
 
     public BehaviorSubject<GitHubRepository> getRepository() {
         return repository;
-    }
-
-    public void setRepositoryId(int repositoryId) {
-        this.repositoryId.onNext(repositoryId);
     }
 }

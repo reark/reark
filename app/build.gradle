@@ -4,7 +4,7 @@ buildscript {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.1.0'
     }
 }
 
@@ -14,7 +14,6 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'robolectric'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
@@ -38,6 +37,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 retrolambda {
@@ -57,6 +60,10 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
 
     // Unit test build
-    testCompile 'junit:junit:4.8.2'
-    testCompile "org.mockito:mockito-all:1.9.5"
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+
+    testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+
 }

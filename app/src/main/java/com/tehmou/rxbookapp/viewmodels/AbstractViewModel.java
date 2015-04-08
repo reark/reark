@@ -15,9 +15,6 @@ abstract public class AbstractViewModel {
     private static final String TAG = AbstractViewModel.class.getSimpleName();
     private CompositeSubscription compositeSubscription;
 
-    @Inject
-    DataLayer dataLayer;
-
     final public void subscribeToDataStore() {
         Log.v(TAG, "subscribeToDataStore");
         unsubscribeFromDataStore();

@@ -24,7 +24,10 @@ public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
 
     @Inject
-    DataLayer dataLayer;
+    DataLayer.GetUserSettings getUserSettings;
+
+    @Inject
+    DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
     private CompositeSubscription subscriptions;
 
@@ -54,9 +57,9 @@ public class WidgetService extends Service {
 
         clearSubscriptions();
         subscriptions.add(
-                dataLayer.getUserSettings()
+                getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
-                        .switchMap(dataLayer::fetchAndGetGitHubRepository)
+                        .switchMap(fetchAndGetGitHubRepository::call)
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {
                             remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());

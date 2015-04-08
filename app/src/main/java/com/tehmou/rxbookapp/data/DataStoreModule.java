@@ -16,6 +16,31 @@ import dagger.Provides;
 public final class DataStoreModule {
 
     @Provides
+    public DataLayer.GetUserSettings provideGetUserSettings(DataLayer dataLayer) {
+        return dataLayer::getUserSettings;
+    }
+
+    @Provides
+    public DataLayer.SetUserSettings provideSetUserSettings(DataLayer dataLayer) {
+        return dataLayer::setUserSettings;
+    }
+
+    @Provides
+    public DataLayer.FetchAndGetGitHubRepository provideFetchAndGetGitHubRepository(DataLayer dataLayer) {
+        return dataLayer::fetchAndGetGitHubRepository;
+    }
+
+    @Provides
+    public DataLayer.GetGitHubRepositorySearch provideGetGitHubRepositorySearch(DataLayer dataLayer) {
+        return dataLayer::getGitHubRepositorySearch;
+    }
+
+    @Provides
+    public DataLayer.GetGitHubRepository provideGetGitHubRepository(DataLayer dataLayer) {
+        return dataLayer::getGitHubRepository;
+    }
+
+    @Provides
     public ContentResolver contentResolver() {
         return RxBookApp.getInstance().getContentResolver();
     }

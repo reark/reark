@@ -19,6 +19,12 @@ import rx.subscriptions.CompositeSubscription;
 public class RepositoryViewModel extends AbstractViewModel {
     private static final String TAG = RepositoryViewModel.class.getSimpleName();
 
+    @Inject
+    DataLayer.GetUserSettings getUserSettings;
+
+    @Inject
+    DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
+
     final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
     public RepositoryViewModel() {
@@ -29,9 +35,9 @@ public class RepositoryViewModel extends AbstractViewModel {
     @Override
     protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
         compositeSubscription.add(
-                dataLayer.getUserSettings()
+                getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
-                        .switchMap(dataLayer::fetchAndGetGitHubRepository)
+                        .switchMap(fetchAndGetGitHubRepository::call)
                         .subscribe(repository)
         );
     }

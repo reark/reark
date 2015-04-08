@@ -87,4 +87,24 @@ public class DataLayer {
     public void setUserSettings(UserSettings userSettings) {
         userSettingsStore.insertOrUpdate(userSettings);
     }
+
+    public static interface GetUserSettings {
+        Observable<UserSettings> call();
+    }
+
+    public static interface SetUserSettings {
+        void call(UserSettings userSettings);
+    }
+
+    public static interface GetGitHubRepository {
+        Observable<GitHubRepository> call(int repositoryId);
+    }
+
+    public static interface FetchAndGetGitHubRepository extends GetGitHubRepository {
+
+    }
+
+    public static interface GetGitHubRepositorySearch {
+        Observable<GitHubRepositorySearch> call(String search);
+    }
 }

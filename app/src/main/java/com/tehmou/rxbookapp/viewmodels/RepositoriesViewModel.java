@@ -27,6 +27,12 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
+    @Inject
+    DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
+
+    @Inject
+    DataLayer.GetGitHubRepository getGitHubRepository;
+
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
@@ -47,7 +53,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
                         Observable.switchOnNext(searchString)
                                 .filter((string) -> string.length() > 2)
                                 .throttleLast(500, TimeUnit.MILLISECONDS)
-                                .map(dataLayer::getGitHubRepositorySearch))
+                                .map(getGitHubRepositorySearch::call))
                         .flatMap((repositorySearch) -> {
                             Log.d(TAG, "Found " + repositorySearch.getItems().size() +
                                     " repositories with search " + repositorySearch.getSearch());
@@ -55,7 +61,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
                             for (int repositoryId : repositorySearch.getItems()) {
                                 Log.v(TAG, "Process repositoryId: " + repositoryId);
                                 final Observable<GitHubRepository> observable =
-                                        dataLayer.getGitHubRepository(repositoryId)
+                                        getGitHubRepository.call(repositoryId)
                                                 .doOnNext((repository) ->
                                                         Log.v(TAG, "Received repository " + repository.getId()));
                                 observables.add(observable);

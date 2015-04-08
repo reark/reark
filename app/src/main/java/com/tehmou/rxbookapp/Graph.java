@@ -19,7 +19,7 @@ public interface Graph {
     public final static class Initializer {
 
         public static Graph init() {
-            return Dagger_Graph.builder()
+            return DaggerGraph.builder()
                     .build();
         }
     }

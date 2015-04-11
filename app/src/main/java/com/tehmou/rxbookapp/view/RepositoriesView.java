@@ -8,6 +8,8 @@ import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -22,12 +24,14 @@ import rx.Observable;
  */
 public class RepositoriesView extends FrameLayout {
     private static final String TAG = RepositoriesView.class.getSimpleName();
-    final private RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
+    private final RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
 
     private ArrayAdapter<GitHubRepository> listAdapter;
     private ListView listView;
     private EditText editText;
     private Observable<String> searchStringObservable;
+
+    private RepositoriesViewModel viewModel;
 
     public RepositoriesView(Context context) {
         super(context, null);
@@ -41,8 +45,14 @@ public class RepositoriesView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        this.listView = (ListView) findViewById(R.id.repositories_list_view);
+        listView = (ListView) findViewById(R.id.repositories_list_view);
         listAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (viewModel != null) {
+                GitHubRepository repository = listAdapter.getItem(position);
+                viewModel.selectRepository(repository);
+            }
+        });
         listView.setAdapter(listAdapter);
 
         this.editText = (EditText) findViewById(R.id.repositories_search);
@@ -50,6 +60,7 @@ public class RepositoriesView extends FrameLayout {
     }
 
     public void setViewModel(RepositoriesViewModel viewModel) {
+        this.viewModel = viewModel;
         rxBinderUtil.clear();
         if (viewModel != null) {
             rxBinderUtil.bindProperty(viewModel.getRepositories(), this::setRepositories);

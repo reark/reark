@@ -1,8 +1,11 @@
 package com.tehmou.rxbookapp.network;
 
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
+
 import java.util.Map;
 
 import retrofit.http.GET;
+import retrofit.http.Path;
 import retrofit.http.QueryMap;
 
 /**
@@ -13,4 +16,7 @@ public interface GitHubService {
     public GitHubRepositorySearchResults search(
             @QueryMap Map<String, String> search
     );
+
+    @GET("/repositories/{id}")
+    public GitHubRepository getRepository(@Path("id") Integer id);
 }

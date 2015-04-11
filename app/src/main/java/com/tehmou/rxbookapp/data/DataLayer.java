@@ -3,6 +3,7 @@ package com.tehmou.rxbookapp.data;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.ContentResolver;
 
@@ -19,14 +20,16 @@ import rx.schedulers.Schedulers;
  * Created by ttuo on 19/03/14.
  */
 public class DataLayer {
-    final private NetworkApi networkApi;
-    final private GitHubRepositoryStore gitHubRepositoryStore;
-    final private GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    private final NetworkApi networkApi;
+    private final GitHubRepositoryStore gitHubRepositoryStore;
+    private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    private final UserSettingsStore userSettingsStore;
 
     public DataLayer(ContentResolver contentResolver) {
         networkApi = new NetworkApi();
         gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
         gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
+        userSettingsStore = new UserSettingsStore(contentResolver);
     }
 
     public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
@@ -56,5 +59,52 @@ public class DataLayer {
 
     public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {
         return gitHubRepositoryStore.getStream(repositoryId);
+    }
+
+    public Observable<GitHubRepository> fetchAndGetGitHubRepository(Integer repositoryId) {
+        fetchGitHubRepository(repositoryId);
+        return getGitHubRepository(repositoryId);
+    }
+
+    private void fetchGitHubRepository(Integer repositoryId) {
+        Observable.<GitHubRepository>create(subscriber -> {
+                    try {
+                        GitHubRepository repository = networkApi.getRepository(repositoryId);
+                        subscriber.onNext(repository);
+                        subscriber.onCompleted();
+                    } catch (Exception e) {
+                        subscriber.onError(e);
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .subscribe(gitHubRepositoryStore::put);
+    }
+
+    public Observable<UserSettings> getUserSettings() {
+        return userSettingsStore.getStream(UserSettingsStore.DEFAULT_USER_ID);
+    }
+
+    public void setUserSettings(UserSettings userSettings) {
+        userSettingsStore.insertOrUpdate(userSettings);
+    }
+
+    public static interface GetUserSettings {
+        Observable<UserSettings> call();
+    }
+
+    public static interface SetUserSettings {
+        void call(UserSettings userSettings);
+    }
+
+    public static interface GetGitHubRepository {
+        Observable<GitHubRepository> call(int repositoryId);
+    }
+
+    public static interface FetchAndGetGitHubRepository extends GetGitHubRepository {
+
+    }
+
+    public static interface GetGitHubRepositorySearch {
+        Observable<GitHubRepositorySearch> call(String search);
     }
 }

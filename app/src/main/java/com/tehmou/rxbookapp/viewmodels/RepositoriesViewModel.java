@@ -22,84 +22,84 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by ttuo on 19/03/14.
  */
-public class RepositoriesViewModel {
+public class RepositoriesViewModel extends AbstractViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
-    private CompositeSubscription compositeSubscription;
+    @Inject
+    DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
 
     @Inject
-    DataLayer dataLayer;
+    DataLayer.GetGitHubRepository getGitHubRepository;
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
+    private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
-    final private Subject<List<GitHubRepository>, List<GitHubRepository>> repositories
+    private final BehaviorSubject<List<GitHubRepository>> repositories
             = BehaviorSubject.create();
-
-    public Observable<List<GitHubRepository>> getRepositories() {
-        return repositories;
-    }
 
     public RepositoriesViewModel() {
         RxBookApp.getInstance().getGraph().inject(this);
         Log.v(TAG, "RepositoriesViewModel");
     }
 
-    public void subscribeToDataStore() {
-        Log.v(TAG, "subscribeToDataStore");
-
-        if (compositeSubscription == null) {
-            compositeSubscription = new CompositeSubscription();
-        }
+    @Override
+    protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
+        Log.v(TAG, "subscribeToDataStoreInternal");
 
         compositeSubscription.add(
                 Observable.switchOnNext(
                         Observable.switchOnNext(searchString)
                                 .filter((string) -> string.length() > 2)
                                 .throttleLast(500, TimeUnit.MILLISECONDS)
-                                .map(dataLayer::getGitHubRepositorySearch)
-                )
-                .flatMap((repositorySearch) -> {
-                    Log.d(TAG, "Found " + repositorySearch.getItems().size() +
-                            " repositories with search " + repositorySearch.getSearch());
-                    final List<Observable<GitHubRepository>> observables = new ArrayList<>();
-                    for (int repositoryId : repositorySearch.getItems()) {
-                        Log.v(TAG, "Process repositoryId: " + repositoryId);
-                        final Observable<GitHubRepository> observable =
-                                dataLayer.getGitHubRepository(repositoryId)
-                                        .doOnNext((repository) ->
-                                                Log.v(TAG, "Received repository " + repository.getId()));
-                        observables.add(observable);
-                        if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {
-                            break;
-                        }
-                    }
-                    return Observable.combineLatest(
-                            observables,
-                            (args) -> {
-                                Log.v(TAG, "Combine items into a list");
-                                final List<GitHubRepository> list = new ArrayList<>();
-                                for (Object repository : args) {
-                                    list.add((GitHubRepository) repository);
+                                .map(getGitHubRepositorySearch::call))
+                        .flatMap((repositorySearch) -> {
+                            Log.d(TAG, "Found " + repositorySearch.getItems().size() +
+                                    " repositories with search " + repositorySearch.getSearch());
+                            final List<Observable<GitHubRepository>> observables = new ArrayList<>();
+                            for (int repositoryId : repositorySearch.getItems()) {
+                                Log.v(TAG, "Process repositoryId: " + repositoryId);
+                                final Observable<GitHubRepository> observable =
+                                        getGitHubRepository.call(repositoryId)
+                                                .doOnNext((repository) ->
+                                                        Log.v(TAG, "Received repository " + repository.getId()));
+                                observables.add(observable);
+                                if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {
+                                    break;
                                 }
-                                return list;
                             }
-                    );
-                })
-                .subscribe((repositories) -> {
-                    Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
-                    RepositoriesViewModel.this.repositories.onNext(repositories);
-                }));
+                            return Observable.combineLatest(
+                                    observables,
+                                    (args) -> {
+                                        Log.v(TAG, "Combine items into a list");
+                                        final List<GitHubRepository> list = new ArrayList<>();
+                                        for (Object repository : args) {
+                                            list.add((GitHubRepository) repository);
+                                        }
+                                        return list;
+                                    }
+                            );
+                        })
+                        .subscribe((repositories) -> {
+                            Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
+                            RepositoriesViewModel.this.repositories.onNext(repositories);
+                        }));
     }
 
-    public void unsubscribeFromDataStore() {
-        Log.v(TAG, "unsubscribeToDataStore");
-        compositeSubscription.clear();
-        compositeSubscription = null;
+    public Observable<List<GitHubRepository>> getRepositories() {
+        return repositories;
     }
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {
         this.searchString.onNext(searchStringObservable);
+    }
+
+    public void selectRepository(GitHubRepository repository) {
+        this.selectRepository.onNext(repository);
+    }
+
+    public Observable<GitHubRepository> getSelectRepository() {
+        return selectRepository;
     }
 }

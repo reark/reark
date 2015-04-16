@@ -41,34 +41,38 @@ public class NetworkService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
         if (intent != null) {
-            final String contentUriString = intent.getStringExtra("contentUriString");
-            if (contentUriString != null) {
-                final Uri uri = Uri.parse(contentUriString);
-                if (uri.equals(gitHubRepositoryStore.getContentUri())) {
-                    final int repositoryId = intent.getIntExtra("id", -1);
-                    if (repositoryId != -1) {
-                        fetchGitHubRepository(repositoryId);
-                    } else {
-                        Log.e(TAG, "No repositoryId provided in the intent extras");
-                    }
-                } else if (uri.equals(gitHubRepositorySearchStore.getContentUri())) {
-                    final String searchString = intent.getStringExtra("searchString");
-                    if (searchString != null) {
-                        fetchGitHubSearch(searchString);
-                    } else {
-                        Log.e(TAG, "No searchString provided in the intent extras");
-                    }
-                } else {
-                    Log.e(TAG, "Unknown Uri " + uri);
-                }
-            } else {
-                Log.e(TAG, "No Uri defined");
-            }
+            processIntent(intent);
         } else {
             Log.d(TAG, "Intent was null, no action taken");
         }
 
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void processIntent(Intent intent) {
+        final String contentUriString = intent.getStringExtra("contentUriString");
+        if (contentUriString != null) {
+            final Uri uri = Uri.parse(contentUriString);
+            if (uri.equals(gitHubRepositoryStore.getContentUri())) {
+                final int repositoryId = intent.getIntExtra("id", -1);
+                if (repositoryId != -1) {
+                    fetchGitHubRepository(repositoryId);
+                } else {
+                    Log.e(TAG, "No repositoryId provided in the intent extras");
+                }
+            } else if (uri.equals(gitHubRepositorySearchStore.getContentUri())) {
+                final String searchString = intent.getStringExtra("searchString");
+                if (searchString != null) {
+                    fetchGitHubSearch(searchString);
+                } else {
+                    Log.e(TAG, "No searchString provided in the intent extras");
+                }
+            } else {
+                Log.e(TAG, "Unknown Uri " + uri);
+            }
+        } else {
+            Log.e(TAG, "No Uri defined");
+        }
     }
 
     private void fetchGitHubRepository(final int repositoryId) {

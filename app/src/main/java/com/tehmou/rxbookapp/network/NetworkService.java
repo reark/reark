@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.tehmou.rxbookapp.data.GitHubRepositorySearchStore;
-import com.tehmou.rxbookapp.data.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
@@ -26,15 +24,13 @@ public class NetworkService extends Service {
     private static final String TAG = NetworkService.class.getSimpleName();
 
     private NetworkApi networkApi;
-    private GitHubRepositoryStore gitHubRepositoryStore;
-    private GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    private ServiceDataLayer serviceDataLayer;
 
     @Override
     public void onCreate() {
         super.onCreate();
         networkApi = new NetworkApi();
-        gitHubRepositoryStore = new GitHubRepositoryStore(getContentResolver());
-        gitHubRepositorySearchStore = new GitHubRepositorySearchStore(getContentResolver());
+        serviceDataLayer = new ServiceDataLayer(getContentResolver());
     }
 
     @Override
@@ -53,14 +49,14 @@ public class NetworkService extends Service {
         final String contentUriString = intent.getStringExtra("contentUriString");
         if (contentUriString != null) {
             final Uri uri = Uri.parse(contentUriString);
-            if (uri.equals(gitHubRepositoryStore.getContentUri())) {
+            if (uri.equals(serviceDataLayer.getGitHubRepositoryStore().getContentUri())) {
                 final int repositoryId = intent.getIntExtra("id", -1);
                 if (repositoryId != -1) {
                     fetchGitHubRepository(repositoryId);
                 } else {
                     Log.e(TAG, "No repositoryId provided in the intent extras");
                 }
-            } else if (uri.equals(gitHubRepositorySearchStore.getContentUri())) {
+            } else if (uri.equals(serviceDataLayer.getGitHubRepositorySearchStore().getContentUri())) {
                 final String searchString = intent.getStringExtra("searchString");
                 if (searchString != null) {
                     fetchGitHubSearch(searchString);
@@ -76,7 +72,7 @@ public class NetworkService extends Service {
     }
 
     private void fetchGitHubRepository(final int repositoryId) {
-        Log.d(TAG, "getGitHubRepository(" + repositoryId + ")");
+        Log.d(TAG, "fetchGitHubRepository(" + repositoryId + ")");
         Observable.<GitHubRepository>create(subscriber -> {
             try {
                 GitHubRepository repository = networkApi.getRepository(repositoryId);
@@ -87,11 +83,12 @@ public class NetworkService extends Service {
             }
         })
         .subscribeOn(Schedulers.computation())
-        .subscribe(gitHubRepositoryStore::put,
+        .subscribe(serviceDataLayer.getGitHubRepositoryStore()::put,
                 e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
     }
 
     private void fetchGitHubSearch(final String searchString) {
+        Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
         Observable.<List<GitHubRepository>>create((subscriber) -> {
             try {
                 Map<String, String> params = new HashMap<>();
@@ -107,12 +104,12 @@ public class NetworkService extends Service {
         .map((repositories) -> {
             final List<Integer> repositoryIds = new ArrayList<>();
             for (GitHubRepository repository : repositories) {
-                gitHubRepositoryStore.put(repository);
+                serviceDataLayer.getGitHubRepositoryStore().put(repository);
                 repositoryIds.add(repository.getId());
             }
             return new GitHubRepositorySearch(searchString, repositoryIds);
         })
-        .subscribe(gitHubRepositorySearchStore::put,
+        .subscribe(serviceDataLayer.getGitHubRepositorySearchStore()::put,
                 e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
     }
 

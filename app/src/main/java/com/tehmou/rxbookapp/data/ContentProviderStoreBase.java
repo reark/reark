@@ -99,7 +99,7 @@ abstract public class ContentProviderStoreBase<T, U> {
                 final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
                 value = new Gson().fromJson(json, type);
             } else {
-                Log.e(TAG, "Could not find with id: " + uri);
+                Log.v(TAG, "Could not find with id: " + uri);
             }
             cursor.close();
         }

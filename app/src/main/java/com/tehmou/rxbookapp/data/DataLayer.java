@@ -6,6 +6,7 @@ import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.ContentResolver;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import rx.schedulers.Schedulers;
  * Created by ttuo on 19/03/14.
  */
 public class DataLayer {
+    private static final String TAG = DataLayer.class.getSimpleName();
     private final NetworkApi networkApi;
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
@@ -53,7 +55,8 @@ public class DataLayer {
                     }
                     return new GitHubRepositorySearch(search, repositoryIds);
                 })
-                .subscribe(gitHubRepositorySearchStore::put);
+                .subscribe(gitHubRepositorySearchStore::put,
+                        e -> Log.e(TAG, "Error fetching GitHub repository search for '" + search + "'", e));
         return gitHubRepositorySearchStore.getStream(search);
     }
 
@@ -77,7 +80,8 @@ public class DataLayer {
                     }
                 })
                 .subscribeOn(Schedulers.computation())
-                .subscribe(gitHubRepositoryStore::put);
+                .subscribe(gitHubRepositoryStore::put,
+                        e -> Log.d(TAG, "Error fetching GitHub repository " + repositoryId, e));
     }
 
     public Observable<UserSettings> getUserSettings() {

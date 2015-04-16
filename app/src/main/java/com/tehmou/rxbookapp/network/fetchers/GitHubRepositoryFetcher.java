@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.tehmou.rxbookapp.data.GitHubRepositoryStore;
-import com.tehmou.rxbookapp.network.Fetcher;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
@@ -15,15 +14,14 @@ import rx.schedulers.Schedulers;
 /**
  * Created by ttuo on 16/04/15.
  */
-public class GitHubRepositoryFetcher implements Fetcher {
+public class GitHubRepositoryFetcher extends FetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
-    private final NetworkApi networkApi;
     private final GitHubRepositoryStore gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(NetworkApi networkApi,
                                    GitHubRepositoryStore gitHubRepositoryStore) {
-        this.networkApi = networkApi;
+        super(networkApi);
         this.gitHubRepositoryStore = gitHubRepositoryStore;
     }
 

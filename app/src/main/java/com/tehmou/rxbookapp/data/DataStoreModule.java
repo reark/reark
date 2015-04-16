@@ -33,7 +33,7 @@ public final class DataStoreModule {
 
     @Provides
     public DataLayer.GetGitHubRepositorySearch provideGetGitHubRepositorySearch(DataLayer dataLayer) {
-        return dataLayer::getGitHubRepositorySearch;
+        return dataLayer::fetchAndGetGitHubRepositorySearch;
     }
 
     @Provides

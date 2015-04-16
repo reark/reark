@@ -6,8 +6,15 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.tehmou.rxbookapp.data.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -20,12 +27,14 @@ public class NetworkService extends Service {
 
     private NetworkApi networkApi;
     private GitHubRepositoryStore gitHubRepositoryStore;
+    private GitHubRepositorySearchStore gitHubRepositorySearchStore;
 
     @Override
     public void onCreate() {
         super.onCreate();
         networkApi = new NetworkApi();
         gitHubRepositoryStore = new GitHubRepositoryStore(getContentResolver());
+        gitHubRepositorySearchStore = new GitHubRepositorySearchStore(getContentResolver());
     }
 
     @Override
@@ -37,10 +46,17 @@ public class NetworkService extends Service {
                 final Uri uri = Uri.parse(contentUriString);
                 if (uri.equals(gitHubRepositoryStore.getContentUri())) {
                     final int repositoryId = intent.getIntExtra("id", -1);
-                    if (repositoryId == -1) {
-                        Log.e(TAG, "No repositoryId provided in the intent extras");
+                    if (repositoryId != -1) {
+                        fetchGitHubRepository(repositoryId);
                     } else {
-                        getGitHubRepository(repositoryId);
+                        Log.e(TAG, "No repositoryId provided in the intent extras");
+                    }
+                } else if (uri.equals(gitHubRepositorySearchStore.getContentUri())) {
+                    final String searchString = intent.getStringExtra("searchString");
+                    if (searchString != null) {
+                        fetchGitHubSearch(searchString);
+                    } else {
+                        Log.e(TAG, "No searchString provided in the intent extras");
                     }
                 } else {
                     Log.e(TAG, "Unknown Uri " + uri);
@@ -55,7 +71,7 @@ public class NetworkService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void getGitHubRepository(final int repositoryId) {
+    private void fetchGitHubRepository(final int repositoryId) {
         Log.d(TAG, "getGitHubRepository(" + repositoryId + ")");
         Observable.<GitHubRepository>create(subscriber -> {
             try {
@@ -68,7 +84,32 @@ public class NetworkService extends Service {
         })
         .subscribeOn(Schedulers.computation())
         .subscribe(gitHubRepositoryStore::put,
-                e -> Log.d(TAG, "Error fetching GitHub repository " + repositoryId, e));
+                e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
+    }
+
+    private void fetchGitHubSearch(final String searchString) {
+        Observable.<List<GitHubRepository>>create((subscriber) -> {
+            try {
+                Map<String, String> params = new HashMap<>();
+                params.put("q", searchString);
+                List<GitHubRepository> results = networkApi.search(params);
+                subscriber.onNext(results);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        })
+        .subscribeOn(Schedulers.computation())
+        .map((repositories) -> {
+            final List<Integer> repositoryIds = new ArrayList<>();
+            for (GitHubRepository repository : repositories) {
+                gitHubRepositoryStore.put(repository);
+                repositoryIds.add(repository.getId());
+            }
+            return new GitHubRepositorySearch(searchString, repositoryIds);
+        })
+        .subscribe(gitHubRepositorySearchStore::put,
+                e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
     }
 
     @Override

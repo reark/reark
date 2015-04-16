@@ -25,7 +25,6 @@ import rx.schedulers.Schedulers;
  */
 public class DataLayer {
     private static final String TAG = DataLayer.class.getSimpleName();
-    private final NetworkApi networkApi;
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
     private final UserSettingsStore userSettingsStore;
@@ -34,36 +33,21 @@ public class DataLayer {
     public DataLayer(ContentResolver contentResolver,
                      Context context) {
         this.context = context;
-        networkApi = new NetworkApi();
         gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
         gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
         userSettingsStore = new UserSettingsStore(contentResolver);
     }
 
-    public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
-        Observable.<List<GitHubRepository>>create((subscriber) -> {
-                    try {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("q", search);
-                        List<GitHubRepository> results = networkApi.search(params);
-                        subscriber.onNext(results);
-                        subscriber.onCompleted();
-                    } catch (Exception e) {
-                        subscriber.onError(e);
-                    }
-                })
-                .subscribeOn(Schedulers.computation())
-                .map((repositories) -> {
-                    final List<Integer> repositoryIds = new ArrayList<>();
-                    for (GitHubRepository repository : repositories) {
-                        gitHubRepositoryStore.put(repository);
-                        repositoryIds.add(repository.getId());
-                    }
-                    return new GitHubRepositorySearch(search, repositoryIds);
-                })
-                .subscribe(gitHubRepositorySearchStore::put,
-                        e -> Log.e(TAG, "Error fetching GitHub repository search for '" + search + "'", e));
-        return gitHubRepositorySearchStore.getStream(search);
+    public Observable<GitHubRepositorySearch> fetchAndGetGitHubRepositorySearch(final String searchString) {
+        fetchGitHubRepositorySearch(searchString);
+        return gitHubRepositorySearchStore.getStream(searchString);
+    }
+
+    private void fetchGitHubRepositorySearch(final String searchString) {
+        Intent intent = new Intent(context, NetworkService.class);
+        intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
+        intent.putExtra("searchString", searchString);
+        context.startService(intent);
     }
 
     public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {

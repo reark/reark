@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
-import com.tehmou.rxbookapp.network.Fetcher;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
@@ -22,17 +21,16 @@ import rx.schedulers.Schedulers;
 /**
  * Created by ttuo on 16/04/15.
  */
-public class GitHubRepositorySearchFetcher implements Fetcher {
+public class GitHubRepositorySearchFetcher extends FetcherBase {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
-    private final NetworkApi networkApi;
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
 
     public GitHubRepositorySearchFetcher(NetworkApi networkApi,
                                          GitHubRepositoryStore gitHubRepositoryStore,
                                          GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        this.networkApi = networkApi;
+        super(networkApi);
         this.gitHubRepositoryStore = gitHubRepositoryStore;
         this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
     }

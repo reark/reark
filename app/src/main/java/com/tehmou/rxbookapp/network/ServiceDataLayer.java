@@ -6,20 +6,12 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.tehmou.rxbookapp.data.DataLayerBase;
+import com.tehmou.rxbookapp.network.fetchers.Fetcher;
 import com.tehmou.rxbookapp.network.fetchers.GitHubRepositoryFetcher;
 import com.tehmou.rxbookapp.network.fetchers.GitHubRepositorySearchFetcher;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import rx.Observable;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by ttuo on 16/04/15.

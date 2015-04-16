@@ -23,18 +23,15 @@ import rx.schedulers.Schedulers;
 /**
  * Created by ttuo on 19/03/14.
  */
-public class DataLayer {
+public class DataLayer extends DataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
-    private final GitHubRepositoryStore gitHubRepositoryStore;
-    private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
-    private final UserSettingsStore userSettingsStore;
     private final Context context;
+    protected final UserSettingsStore userSettingsStore;
 
     public DataLayer(ContentResolver contentResolver,
                      Context context) {
+        super(contentResolver);
         this.context = context;
-        gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
-        gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
         userSettingsStore = new UserSettingsStore(contentResolver);
     }
 

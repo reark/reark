@@ -8,7 +8,11 @@ import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 /**
@@ -17,6 +21,7 @@ import rx.schedulers.Schedulers;
 public class GitHubRepositoryFetcher extends FetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
+    private final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
     private final GitHubRepositoryStore gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(NetworkApi networkApi,
@@ -37,7 +42,20 @@ public class GitHubRepositoryFetcher extends FetcherBase {
 
     private void fetchGitHubRepository(final int repositoryId) {
         Log.d(TAG, "fetchGitHubRepository(" + repositoryId + ")");
-        Observable.<GitHubRepository>create(subscriber -> {
+        if (requestMap.containsKey(repositoryId) &&
+                !requestMap.get(repositoryId).isUnsubscribed()) {
+            Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
+            return;
+        }
+        Subscription subscription = createNetworkObservable(repositoryId)
+                .subscribeOn(Schedulers.computation())
+                .subscribe(gitHubRepositoryStore::put,
+                        e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
+        requestMap.put(repositoryId, subscription);
+    }
+
+    private Observable<GitHubRepository> createNetworkObservable(int repositoryId) {
+        return Observable.<GitHubRepository>create(subscriber -> {
             try {
                 GitHubRepository repository = networkApi.getRepository(repositoryId);
                 subscriber.onNext(repository);
@@ -45,10 +63,7 @@ public class GitHubRepositoryFetcher extends FetcherBase {
             } catch (Exception e) {
                 subscriber.onError(e);
             }
-        })
-                .subscribeOn(Schedulers.computation())
-                .subscribe(gitHubRepositoryStore::put,
-                        e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
+        });
     }
 
     @Override

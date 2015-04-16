@@ -47,17 +47,7 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
 
     private void fetchGitHubSearch(final String searchString) {
         Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
-        Observable.<List<GitHubRepository>>create((subscriber) -> {
-            try {
-                Map<String, String> params = new HashMap<>();
-                params.put("q", searchString);
-                List<GitHubRepository> results = networkApi.search(params);
-                subscriber.onNext(results);
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-        })
+        createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {
                     final List<Integer> repositoryIds = new ArrayList<>();
@@ -69,6 +59,20 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
                 })
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
+    }
+
+    private Observable<List<GitHubRepository>> createNetworkObservable(final String searchString) {
+        return Observable.<List<GitHubRepository>>create((subscriber) -> {
+            try {
+                Map<String, String> params = new HashMap<>();
+                params.put("q", searchString);
+                List<GitHubRepository> results = networkApi.search(params);
+                subscriber.onNext(results);
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                subscriber.onError(e);
+            }
+        });
     }
 
     @Override

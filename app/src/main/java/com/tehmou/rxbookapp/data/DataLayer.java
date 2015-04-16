@@ -1,11 +1,14 @@
 package com.tehmou.rxbookapp.data;
 
 import com.tehmou.rxbookapp.network.NetworkApi;
+import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -26,8 +29,11 @@ public class DataLayer {
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
     private final UserSettingsStore userSettingsStore;
+    private final Context context;
 
-    public DataLayer(ContentResolver contentResolver) {
+    public DataLayer(ContentResolver contentResolver,
+                     Context context) {
+        this.context = context;
         networkApi = new NetworkApi();
         gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
         gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
@@ -70,18 +76,10 @@ public class DataLayer {
     }
 
     private void fetchGitHubRepository(Integer repositoryId) {
-        Observable.<GitHubRepository>create(subscriber -> {
-                    try {
-                        GitHubRepository repository = networkApi.getRepository(repositoryId);
-                        subscriber.onNext(repository);
-                        subscriber.onCompleted();
-                    } catch (Exception e) {
-                        subscriber.onError(e);
-                    }
-                })
-                .subscribeOn(Schedulers.computation())
-                .subscribe(gitHubRepositoryStore::put,
-                        e -> Log.d(TAG, "Error fetching GitHub repository " + repositoryId, e));
+        Intent intent = new Intent(context, NetworkService.class);
+        intent.putExtra("contentUriString", gitHubRepositoryStore.getContentUri().toString());
+        intent.putExtra("id", repositoryId);
+        context.startService(intent);
     }
 
     public Observable<UserSettings> getUserSettings() {

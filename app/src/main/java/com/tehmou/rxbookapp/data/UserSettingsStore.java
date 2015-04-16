@@ -31,7 +31,7 @@ public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, In
     }
 
     @Override
-    protected Uri getContentUri() {
+    public Uri getContentUri() {
         return UserSettingsContract.CONTENT_URI;
     }
 

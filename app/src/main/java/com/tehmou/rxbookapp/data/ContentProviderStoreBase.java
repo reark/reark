@@ -112,5 +112,5 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     abstract protected U getIdFor(T item);
-    abstract protected Uri getContentUri();
+    abstract public Uri getContentUri();
 }

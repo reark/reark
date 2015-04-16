@@ -3,6 +3,7 @@ package com.tehmou.rxbookapp.data;
 import com.tehmou.rxbookapp.RxBookApp;
 
 import android.content.ContentResolver;
+import android.content.Context;
 
 import javax.inject.Singleton;
 
@@ -46,9 +47,15 @@ public final class DataStoreModule {
     }
 
     @Provides
+    public Context applicationContext() {
+        return RxBookApp.getInstance().getApplicationContext();
+    }
+
+    @Provides
     @Singleton
-    public DataLayer provideDataStoreModule(ContentResolver contentResolver) {
-        return new DataLayer(contentResolver);
+    public DataLayer provideDataStoreModule(ContentResolver contentResolver,
+                                            Context applicationContext) {
+        return new DataLayer(contentResolver, applicationContext);
     }
 
 }

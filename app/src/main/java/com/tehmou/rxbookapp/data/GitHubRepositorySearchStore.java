@@ -24,7 +24,7 @@ public class GitHubRepositorySearchStore extends ContentProviderStoreBase<GitHub
     }
 
     @Override
-    protected Uri getContentUri() {
+    public Uri getContentUri() {
         return GitHubRepositorySearchContract.CONTENT_URI;
     }
 }

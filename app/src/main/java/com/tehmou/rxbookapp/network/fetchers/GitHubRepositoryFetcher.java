@@ -21,7 +21,6 @@ import rx.schedulers.Schedulers;
 public class GitHubRepositoryFetcher extends FetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
-    private final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
     private final GitHubRepositoryStore gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(NetworkApi networkApi,

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 /**
@@ -47,7 +49,12 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
 
     private void fetchGitHubSearch(final String searchString) {
         Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
-        createNetworkObservable(searchString)
+        if (requestMap.containsKey(searchString.hashCode()) &&
+                !requestMap.get(searchString.hashCode()).isUnsubscribed()) {
+            Log.d(TAG, "Found an ongoing request for repository " + searchString);
+            return;
+        }
+        Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {
                     final List<Integer> repositoryIds = new ArrayList<>();
@@ -59,6 +66,7 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
                 })
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
+        requestMap.put(searchString.hashCode(), subscription);
     }
 
     private Observable<List<GitHubRepository>> createNetworkObservable(final String searchString) {

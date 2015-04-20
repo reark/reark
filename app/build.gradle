@@ -23,6 +23,8 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     dexOptions {
         preDexLibraries false
@@ -48,6 +50,10 @@ android {
         // https://github.com/square/okio/issues/58
         warning 'InvalidPackage'
     }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
 }
 
 retrolambda {
@@ -71,8 +77,15 @@ dependencies {
     // Unit test build
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.5'
-
     testCompile 'org.powermock:powermock-api-mockito:1.6.1'
     testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+
+    androidTestCompile 'com.android.support.test:runner:0.2'
+    androidTestCompile 'com.android.support.test:rules:0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.1'
+    androidTestCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestCompile "com.google.dexmaker:dexmaker:1.2"
+    androidTestCompile "com.google.dexmaker:dexmaker-mockito:1.2"
 
 }

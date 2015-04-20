@@ -38,6 +38,7 @@ public class RepositoryViewModel extends AbstractViewModel {
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
                         .switchMap(fetchAndGetGitHubRepository::call)
+                        .<GitHubRepository>dematerialize()
                         .subscribe(repository)
         );
     }

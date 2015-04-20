@@ -10,6 +10,7 @@ import android.widget.RemoteViews;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import javax.inject.Inject;
@@ -60,6 +61,7 @@ public class WidgetService extends Service {
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
                         .switchMap(fetchAndGetGitHubRepository::call)
+                        .<GitHubRepository>dematerialize()
                         .subscribeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {
                             remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());

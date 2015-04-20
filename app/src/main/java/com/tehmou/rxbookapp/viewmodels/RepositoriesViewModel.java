@@ -62,7 +62,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
                                 Log.v(TAG, "Process repositoryId: " + repositoryId);
                                 final Observable<GitHubRepository> observable =
                                         getGitHubRepository.call(repositoryId)
-                                                .doOnNext((repository) ->
+                                                .<GitHubRepository>dematerialize()
+                                                .doOnNext(repository ->
                                                         Log.v(TAG, "Received repository " + repository.getId()));
                                 observables.add(observable);
                                 if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {

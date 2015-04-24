@@ -3,13 +3,10 @@ package com.tehmou.rxbookapp.view;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.utils.RxBinderUtil;
-import com.tehmou.rxbookapp.utils.TextWatcherObservable;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -18,6 +15,7 @@ import android.widget.ListView;
 import java.util.List;
 
 import rx.Observable;
+import rx.android.widget.WidgetObservable;
 
 /**
  * Created by ttuo on 06/01/15.
@@ -56,7 +54,8 @@ public class RepositoriesView extends FrameLayout {
         listView.setAdapter(listAdapter);
 
         this.editText = (EditText) findViewById(R.id.repositories_search);
-        searchStringObservable = TextWatcherObservable.create(editText);
+        searchStringObservable = WidgetObservable.text(editText)
+                .map(onTextChangeEvent -> onTextChangeEvent.text().toString());
     }
 
     public void setViewModel(RepositoriesViewModel viewModel) {

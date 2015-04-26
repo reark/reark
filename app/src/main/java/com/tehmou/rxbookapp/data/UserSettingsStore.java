@@ -4,15 +4,13 @@ import android.content.ContentResolver;
 import android.net.Uri;
 
 import com.google.gson.reflect.TypeToken;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
 import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 /**
  * Created by ttuo on 07/01/15.
  */
-public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, Integer> {
+public class UserSettingsStore extends ContentProviderJsonStoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
     public static final int DEFAULT_USER_ID = 0;

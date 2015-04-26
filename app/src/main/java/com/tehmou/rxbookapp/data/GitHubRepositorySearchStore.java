@@ -11,7 +11,7 @@ import android.net.Uri;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class GitHubRepositorySearchStore extends ContentProviderStoreBase<GitHubRepositorySearch, String> {
+public class GitHubRepositorySearchStore extends ContentProviderJsonStoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
     public GitHubRepositorySearchStore(ContentResolver contentResolver) {

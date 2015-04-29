@@ -13,11 +13,12 @@ import com.tehmou.rxbookapp.pojo.UserSettings;
 public class UserSettingsStore extends ContentProviderJsonStoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
-    public static final int DEFAULT_USER_ID = 0;
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
     public UserSettingsStore(ContentResolver contentResolver) {
-        super(contentResolver, new TypeToken<UserSettings>() {}.getType());
+        super(contentResolver,
+                new UserSettingsContract(),
+                new TypeToken<UserSettings>() {}.getType());
         if (!hasUserSettings()) {
             insertOrUpdate(new UserSettings(DEFAULT_REPOSITORY_ID));
         }
@@ -25,15 +26,15 @@ public class UserSettingsStore extends ContentProviderJsonStoreBase<UserSettings
 
     @Override
     protected Integer getIdFor(UserSettings item) {
-        return DEFAULT_USER_ID;
+        return UserSettingsContract.DEFAULT_USER_ID;
     }
 
     @Override
-    protected Uri getContentUri() {
+    public Uri getContentUri() {
         return UserSettingsContract.CONTENT_URI;
     }
 
     private boolean hasUserSettings() {
-        return query(DEFAULT_USER_ID) != null;
+        return query(UserSettingsContract.DEFAULT_USER_ID) != null;
     }
 }

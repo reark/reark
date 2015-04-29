@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp.data;
 
+import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
@@ -81,7 +82,7 @@ public class DataLayer {
     }
 
     public Observable<UserSettings> getUserSettings() {
-        return userSettingsStore.getStream(UserSettingsStore.DEFAULT_USER_ID);
+        return userSettingsStore.getStream(UserSettingsContract.DEFAULT_USER_ID);
     }
 
     public void setUserSettings(UserSettings userSettings) {

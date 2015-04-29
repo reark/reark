@@ -15,7 +15,9 @@ public class GitHubRepositoryStore extends ContentProviderJsonStoreBase<GitHubRe
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(ContentResolver contentResolver) {
-        super(contentResolver, new TypeToken<GitHubRepository>() {}.getType());
+        super(contentResolver,
+                new GitHubRepositoryContract(),
+                new TypeToken<GitHubRepository>() {}.getType());
     }
 
     @Override
@@ -24,7 +26,7 @@ public class GitHubRepositoryStore extends ContentProviderJsonStoreBase<GitHubRe
     }
 
     @Override
-    protected Uri getContentUri() {
+    public Uri getContentUri() {
         return GitHubRepositoryContract.CONTENT_URI;
     }
 }

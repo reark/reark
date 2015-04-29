@@ -43,11 +43,6 @@ abstract public class ContractContentProviderBase extends ContentProviderBase {
     }
 
     @Override
-    protected String getIdColumnName(int match) {
-        return getDatabaseContractForMatch(match).getIdColumnName();
-    }
-
-    @Override
     protected String getDefaultSortOrder(int match) {
         return getDatabaseContractForMatch(match).getDefaultSortOrder();
     }

@@ -6,7 +6,7 @@ package com.tehmou.rxbookapp.data.provider;
 public class GithubContentProvider extends ContractContentProviderBase {
     public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.provider.GithubContentProvider";
     private static final String DATABASE_NAME = "database";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     public GithubContentProvider() {
         databaseContracts.add(new GitHubRepositoryContract());

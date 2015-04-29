@@ -3,14 +3,10 @@ package com.tehmou.rxbookapp.data;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.ContentObserver;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +67,7 @@ abstract public class ContentProviderStoreBase<T, U> {
 
     protected void insertOrUpdate(T item) {
         Uri uri = getUriForId(getIdFor(item));
-        ContentValues values = getValuesForItem(item);
+        ContentValues values = getContentValuesForItem(item);
         if (contentResolver.update(uri, values, null, null) == 0) {
             final Uri resultUri = contentResolver.insert(uri, values);
             Log.v(TAG, "Inserted at " + resultUri);
@@ -87,6 +83,6 @@ abstract public class ContentProviderStoreBase<T, U> {
     abstract protected T query(Uri uri);
     abstract protected Uri getUriForId(U id);
     abstract protected U getIdFor(T item);
-    abstract public Uri getContentUri();
-    abstract protected ContentValues getValuesForItem(T item);
+    abstract protected Uri getContentUri();
+    abstract protected ContentValues getContentValuesForItem(T item);
 }

@@ -4,8 +4,11 @@ import android.content.ContentValues;
 import android.net.Uri;
 
 import com.google.gson.Gson;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.google.gson.reflect.TypeToken;
+import com.tehmou.rxbookapp.data.base.contract.SerializedJsonContract;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+
+import java.lang.reflect.Type;
 
 /**
  * Created by ttuo on 11/01/15.
@@ -18,6 +21,7 @@ public class GitHubRepositorySearchContract extends SerializedJsonContract<GitHu
 
     static final String TABLE_NAME = "repository_searches";
     public static final Uri CONTENT_URI = Uri.parse("content://" + GithubContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
+    private static final Type TYPE = new TypeToken<GitHubRepositorySearch>() {}.getType();
 
     @Override
     protected String getTableName() {
@@ -49,5 +53,10 @@ public class GitHubRepositorySearchContract extends SerializedJsonContract<GitHu
 
     public String getWhere(Uri uri) {
         return ID + " = '" + uri.getLastPathSegment() + "'";
+    }
+
+    @Override
+    public Type getType() {
+        return TYPE;
     }
 }

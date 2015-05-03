@@ -1,12 +1,10 @@
-package com.tehmou.rxbookapp.data.provider;
+package com.tehmou.rxbookapp.data.base.provider;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -39,8 +37,7 @@ abstract public class ContentProviderBase extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final int match = URI_MATCHER.match(uri);
         String tableName = getTableName(match);
-        DatabaseContract databaseContract = getDatabaseContractForMatch(match);
-        String where = databaseContract.getWhere(uri);
+        String where = getWhere(match, uri);
         int count = db.delete(tableName, where, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -67,13 +64,12 @@ abstract public class ContentProviderBase extends ContentProvider {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         final int match = URI_MATCHER.match(uri);
         String tableName = getTableName(match);
-        DatabaseContract databaseContract = getDatabaseContractForMatch(match);
+        String where = getWhere(match, uri);
 
         if (TextUtils.isEmpty(sortOrder)) {
             sortOrder = getDefaultSortOrder(match);
         }
 
-        String where = databaseContract.getWhere(uri);
         builder.setTables(tableName);
         Cursor cursor =
                 builder.query(
@@ -101,9 +97,8 @@ abstract public class ContentProviderBase extends ContentProvider {
 
         final int match = URI_MATCHER.match(uri);
         String tableName = getTableName(match);
+        String where = getWhere(match, uri);
 
-        DatabaseContract databaseContract = getDatabaseContractForMatch(match);
-        String where = databaseContract.getWhere(uri);
         int count = db.update(tableName, values, where, selectionArgs);
         if (count > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -111,7 +106,7 @@ abstract public class ContentProviderBase extends ContentProvider {
         return count;
     }
 
-    abstract protected DatabaseContract getDatabaseContractForMatch(final int match);
+    abstract protected String getWhere(final int match, Uri uri);
     abstract protected String getTableName(final int match);
     abstract protected String getDefaultSortOrder(final int match);
     abstract protected SQLiteOpenHelper createDatabaseHelper(final Context context);

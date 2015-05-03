@@ -1,6 +1,9 @@
 package com.tehmou.rxbookapp.data;
 
 import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;

@@ -1,11 +1,14 @@
-package com.tehmou.rxbookapp.data;
+package com.tehmou.rxbookapp.data.base.store;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
+
+import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +25,12 @@ abstract public class ContentProviderStoreBase<T, U> {
 
     final protected ContentResolver contentResolver;
     final private Map<Uri, Subject<T, T>> subjectMap = new HashMap<>();
+    final private DatabaseContract<T> databaseContract;
 
-    public ContentProviderStoreBase(ContentResolver contentResolver) {
+    public ContentProviderStoreBase(ContentResolver contentResolver,
+                                    DatabaseContract<T> databaseContract) {
         this.contentResolver = contentResolver;
+        this.databaseContract = databaseContract;
         this.contentResolver.registerContentObserver(
                 getContentUri(), true, contentObserver);
     }
@@ -60,12 +66,12 @@ abstract public class ContentProviderStoreBase<T, U> {
         Uri uri = getUriForId(id);
         if (!subjectMap.containsKey(uri)) {
             Log.v(TAG, "Creating subject for id=" + id);
-            subjectMap.put(uri, PublishSubject.create());
+            subjectMap.put(uri, PublishSubject.<T>create());
         }
         return subjectMap.get(uri);
     }
 
-    protected void insertOrUpdate(T item) {
+    public void insertOrUpdate(T item) {
         Uri uri = getUriForId(getIdFor(item));
         ContentValues values = getContentValuesForItem(item);
         if (contentResolver.update(uri, values, null, null) == 0) {
@@ -80,9 +86,29 @@ abstract public class ContentProviderStoreBase<T, U> {
         return query(getUriForId(id));
     }
 
-    abstract protected T query(Uri uri);
-    abstract protected Uri getUriForId(U id);
+    protected T query(Uri uri) {
+        Cursor cursor = contentResolver.query(uri,
+                databaseContract.getProjection(), null, null, null);
+        T value = null;
+        if (cursor != null) {
+            value = databaseContract.read(cursor);
+            cursor.close();
+        }
+        if (value == null) {
+            Log.v(TAG, "Could not find with id: " + uri);
+        }
+        Log.d(TAG, "" + value);
+        return value;
+    }
+
+    protected ContentValues getContentValuesForItem(T item) {
+        return databaseContract.getContentValuesForItem(item);
+    }
+
+    protected Uri getUriForId(U id) {
+        return Uri.withAppendedPath(getContentUri(), id.toString());
+    }
+
     abstract protected U getIdFor(T item);
     abstract protected Uri getContentUri();
-    abstract protected ContentValues getContentValuesForItem(T item);
 }

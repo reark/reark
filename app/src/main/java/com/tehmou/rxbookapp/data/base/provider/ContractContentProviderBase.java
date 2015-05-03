@@ -1,10 +1,12 @@
-package com.tehmou.rxbookapp.data.provider;
+package com.tehmou.rxbookapp.data.base.provider;
 
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+
+import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,12 @@ import java.util.List;
  * Created by ttuo on 10/01/15.
  */
 abstract public class ContractContentProviderBase extends ContentProviderBase {
-    protected final List<DatabaseContract> databaseContracts = new ArrayList<>();
+    private final List<DatabaseContract> databaseContracts = new ArrayList<>();
+
+    protected void addDatabaseContract(DatabaseContract databaseContract) {
+        assert(databaseHelper == null);
+        databaseContracts.add(databaseContract);
+    }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
         final List<DatabaseContract> databaseContracts;
@@ -53,6 +60,11 @@ abstract public class ContractContentProviderBase extends ContentProviderBase {
     }
 
     @Override
+    protected String getWhere(int match, Uri uri) {
+        return getDatabaseContractForMatch(match).getWhere(uri);
+    }
+
+    @Override
     public String getType(Uri uri) {
         final int match = URI_MATCHER.match(uri);
         final DatabaseContract databaseContract = getDatabaseContractForMatch(match);
@@ -77,7 +89,6 @@ abstract public class ContractContentProviderBase extends ContentProviderBase {
         }
     }
 
-    @Override
     protected DatabaseContract getDatabaseContractForMatch(final int match) {
         if (match == -1) {
             throw new IllegalArgumentException("Unknown URI");

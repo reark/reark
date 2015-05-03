@@ -1,4 +1,4 @@
-package com.tehmou.rxbookapp.data.provider;
+package com.tehmou.rxbookapp.data.base.contract;
 
 import android.database.Cursor;
 
@@ -15,7 +15,7 @@ abstract public class SerializedJsonContract<T> implements DatabaseContract<T> {
     public static final String ID = "id";
     public static final String JSON = "json";
 
-    public static final String[] PROJECTION = new String[]{ID, JSON};
+    private static final String[] PROJECTION = new String[]{ ID, JSON };
 
     public String getDefaultSortOrder() {
         return ID + " ASC";
@@ -35,14 +35,20 @@ abstract public class SerializedJsonContract<T> implements DatabaseContract<T> {
         return getTableName();
     }
 
+    @Override
+    public String[] getProjection() {
+        return PROJECTION;
+    }
+
     abstract protected String getTableName();
     abstract protected String getCreateIdColumn();
+    abstract protected Type getType();
 
     @Override
-    public T read(Cursor cursor, Type type) {
+    public T read(Cursor cursor) {
         if (cursor.moveToFirst()) {
             final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
-            return new Gson().fromJson(json, type);
+            return new Gson().fromJson(json, getType());
         }
         return null;
     }

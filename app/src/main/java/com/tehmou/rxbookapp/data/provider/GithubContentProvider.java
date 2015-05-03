@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp.data.provider;
 
+import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
 import com.tehmou.rxbookapp.data.base.provider.ContractContentProviderBase;
 
 /**
@@ -11,9 +12,20 @@ public class GithubContentProvider extends ContractContentProviderBase {
     private static final int DATABASE_VERSION = 9;
 
     public GithubContentProvider() {
-        addDatabaseContract(new GitHubRepositoryContract());
-        addDatabaseContract(new GitHubRepositorySearchContract());
-        addDatabaseContract(new UserSettingsContract());
+        DatabaseContract gitHubRepositoryContract = new GitHubRepositoryContract();
+        addDatabaseContract(gitHubRepositoryContract);
+        addDatabaseRoute(
+                new GitHubRepositorySingleRoute(gitHubRepositoryContract.getTableName()));
+
+        DatabaseContract gitHubRepositorySearchContract = new GitHubRepositorySearchContract();
+        addDatabaseContract(gitHubRepositorySearchContract);
+        addDatabaseRoute(
+                new GitHubRepositorySearchSingleRoute(gitHubRepositorySearchContract.getTableName()));
+
+        DatabaseContract userSettingsContract = new UserSettingsContract();
+        addDatabaseContract(userSettingsContract);
+        addDatabaseRoute(
+                new UserSettingsSingleRoute(userSettingsContract.getTableName()));
     }
 
     @Override

@@ -17,10 +17,6 @@ abstract public class SerializedJsonContract<T> implements DatabaseContract<T> {
 
     private static final String[] PROJECTION = new String[]{ ID, JSON };
 
-    public String getDefaultSortOrder() {
-        return ID + " ASC";
-    }
-
     public String getCreateTable() {
         return " CREATE TABLE " + getTableName()
                 + " ( " + getCreateIdColumn() + ", "
@@ -31,16 +27,12 @@ abstract public class SerializedJsonContract<T> implements DatabaseContract<T> {
         return "DROP TABLE IF EXISTS " + getTableName();
     }
 
-    public String getName() {
-        return getTableName();
-    }
-
     @Override
     public String[] getProjection() {
         return PROJECTION;
     }
 
-    abstract protected String getTableName();
+    abstract public String getTableName();
     abstract protected String getCreateIdColumn();
     abstract protected Type getType();
 

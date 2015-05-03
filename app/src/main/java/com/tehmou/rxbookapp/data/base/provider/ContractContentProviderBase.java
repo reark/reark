@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
+import com.tehmou.rxbookapp.data.base.contract.DatabaseRoute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +17,16 @@ import java.util.List;
  */
 abstract public class ContractContentProviderBase extends ContentProviderBase {
     private final List<DatabaseContract> databaseContracts = new ArrayList<>();
+    private final List<DatabaseRoute> databaseRoutes = new ArrayList<>();
 
     protected void addDatabaseContract(DatabaseContract databaseContract) {
         assert(databaseHelper == null);
         databaseContracts.add(databaseContract);
+    }
+
+    protected void addDatabaseRoute(DatabaseRoute databaseRoute) {
+        assert(databaseHelper == null);
+        databaseRoutes.add(databaseRoute);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -51,26 +58,23 @@ abstract public class ContractContentProviderBase extends ContentProviderBase {
 
     @Override
     protected String getDefaultSortOrder(int match) {
-        return getDatabaseContractForMatch(match).getDefaultSortOrder();
+        return getDatabaseRouteForMatch(match).getDefaultSortOrder();
     }
 
     @Override
     protected String getTableName(int match) {
-        return getDatabaseContractForMatch(match).getName();
+        return getDatabaseRouteForMatch(match).getTableName();
     }
 
     @Override
     protected String getWhere(int match, Uri uri) {
-        return getDatabaseContractForMatch(match).getWhere(uri);
+        return getDatabaseRouteForMatch(match).getWhere(uri);
     }
 
     @Override
     public String getType(Uri uri) {
         final int match = URI_MATCHER.match(uri);
-        final DatabaseContract databaseContract = getDatabaseContractForMatch(match);
-        final boolean isIdUri = isIdUri(match);
-        return isIdUri ?
-                databaseContract.getSingleMimeType() : databaseContract.getMultipleMimeType();
+        return getDatabaseRouteForMatch(match).getMimeType();
     }
 
     @Override
@@ -83,21 +87,16 @@ abstract public class ContractContentProviderBase extends ContentProviderBase {
     protected void createUriMatcher() {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         int i = 0;
-        for (DatabaseContract databaseContract : databaseContracts) {
-            URI_MATCHER.addURI(getProviderName(), databaseContract.getName(), i++);
-            URI_MATCHER.addURI(getProviderName(), databaseContract.getName() + "/*", i++);
+        for (DatabaseRoute databaseRoute : databaseRoutes) {
+            URI_MATCHER.addURI(getProviderName(), databaseRoute.getPath(), i++);
         }
     }
 
-    protected DatabaseContract getDatabaseContractForMatch(final int match) {
+    protected DatabaseRoute getDatabaseRouteForMatch(final int match) {
         if (match == -1) {
             throw new IllegalArgumentException("Unknown URI");
         }
-        return databaseContracts.get(match / 2);
-    }
-
-    private boolean isIdUri(final int match) {
-        return match % 2 != 0;
+        return databaseRoutes.get(match);
     }
 
     abstract protected String getProviderName();

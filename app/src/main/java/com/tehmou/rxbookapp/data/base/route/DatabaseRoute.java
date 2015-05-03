@@ -1,4 +1,4 @@
-package com.tehmou.rxbookapp.data.base.contract;
+package com.tehmou.rxbookapp.data.base.route;
 
 import android.net.Uri;
 

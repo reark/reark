@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
-import com.tehmou.rxbookapp.data.base.contract.DatabaseRoute;
+import com.tehmou.rxbookapp.data.base.route.DatabaseRoute;
 
 import java.util.ArrayList;
 import java.util.List;

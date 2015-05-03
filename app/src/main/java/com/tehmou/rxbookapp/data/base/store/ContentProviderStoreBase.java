@@ -1,8 +1,4 @@
-package com.tehmou.rxbookapp.data;
-
-import com.google.gson.Gson;
-
-import com.tehmou.rxbookapp.data.provider.SerializedJsonContract;
+package com.tehmou.rxbookapp.data.base.store;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -12,7 +8,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import java.lang.reflect.Type;
+import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,19 +18,19 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 /**
- * Created by ttuo on 11/01/15.
+ * Created by ttuo on 26/04/15.
  */
 abstract public class ContentProviderStoreBase<T, U> {
     private static final String TAG = ContentProviderStoreBase.class.getSimpleName();
 
     final protected ContentResolver contentResolver;
-    final private Type type;
     final private Map<Uri, Subject<T, T>> subjectMap = new HashMap<>();
+    final private DatabaseContract<T> databaseContract;
 
     public ContentProviderStoreBase(ContentResolver contentResolver,
-                                    Type type) {
+                                    DatabaseContract<T> databaseContract) {
         this.contentResolver = contentResolver;
-        this.type = type;
+        this.databaseContract = databaseContract;
         this.contentResolver.registerContentObserver(
                 getContentUri(), true, contentObserver);
     }
@@ -69,16 +66,14 @@ abstract public class ContentProviderStoreBase<T, U> {
         Uri uri = getUriForId(id);
         if (!subjectMap.containsKey(uri)) {
             Log.v(TAG, "Creating subject for id=" + id);
-            subjectMap.put(uri, PublishSubject.create());
+            subjectMap.put(uri, PublishSubject.<T>create());
         }
         return subjectMap.get(uri);
     }
 
-    protected void insertOrUpdate(T item) {
+    public void insertOrUpdate(T item) {
         Uri uri = getUriForId(getIdFor(item));
-        ContentValues values = new ContentValues();
-        values.put(SerializedJsonContract.ID, getIdFor(item).toString());
-        values.put(SerializedJsonContract.JSON, new Gson().toJson(item));
+        ContentValues values = getContentValuesForItem(item);
         if (contentResolver.update(uri, values, null, null) == 0) {
             final Uri resultUri = contentResolver.insert(uri, values);
             Log.v(TAG, "Inserted at " + resultUri);
@@ -92,22 +87,25 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     protected T query(Uri uri) {
-        Cursor cursor = contentResolver.query(uri, SerializedJsonContract.PROJECTION, null, null, null);
+        Cursor cursor = contentResolver.query(uri,
+                databaseContract.getProjection(), null, null, null);
         T value = null;
         if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                final String json = cursor.getString(cursor.getColumnIndex(SerializedJsonContract.JSON));
-                value = new Gson().fromJson(json, type);
-            } else {
-                Log.e(TAG, "Could not find with id: " + uri);
-            }
+            value = databaseContract.read(cursor);
             cursor.close();
+        }
+        if (value == null) {
+            Log.v(TAG, "Could not find with id: " + uri);
         }
         Log.d(TAG, "" + value);
         return value;
     }
 
-    private Uri getUriForId(U id) {
+    protected ContentValues getContentValuesForItem(T item) {
+        return databaseContract.getContentValuesForItem(item);
+    }
+
+    protected Uri getUriForId(U id) {
         return Uri.withAppendedPath(getContentUri(), id.toString());
     }
 

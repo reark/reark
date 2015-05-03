@@ -1,17 +1,19 @@
 package com.tehmou.rxbookapp.data.provider;
 
+import com.tehmou.rxbookapp.data.base.provider.ContractContentProviderBase;
+
 /**
  * Created by ttuo on 22/03/15.
  */
 public class GithubContentProvider extends ContractContentProviderBase {
     public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.provider.GithubContentProvider";
     private static final String DATABASE_NAME = "database";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     public GithubContentProvider() {
-        databaseContracts.add(new GitHubRepositoryContract());
-        databaseContracts.add(new GitHubRepositorySearchContract());
-        databaseContracts.add(new UserSettingsContract());
+        addDatabaseContract(new GitHubRepositoryContract());
+        addDatabaseContract(new GitHubRepositorySearchContract());
+        addDatabaseContract(new UserSettingsContract());
     }
 
     @Override

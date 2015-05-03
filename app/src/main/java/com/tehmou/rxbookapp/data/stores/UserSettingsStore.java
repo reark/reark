@@ -1,12 +1,10 @@
-package com.tehmou.rxbookapp.data;
+package com.tehmou.rxbookapp.data.stores;
 
 import android.content.ContentResolver;
 import android.net.Uri;
 
-import com.google.gson.reflect.TypeToken;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
+import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 /**
@@ -15,11 +13,10 @@ import com.tehmou.rxbookapp.pojo.UserSettings;
 public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
-    public static final int DEFAULT_USER_ID = 0;
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
     public UserSettingsStore(ContentResolver contentResolver) {
-        super(contentResolver, new TypeToken<UserSettings>() {}.getType());
+        super(contentResolver, new UserSettingsContract());
         if (!hasUserSettings()) {
             insertOrUpdate(new UserSettings(DEFAULT_REPOSITORY_ID));
         }
@@ -27,15 +24,15 @@ public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, In
 
     @Override
     protected Integer getIdFor(UserSettings item) {
-        return DEFAULT_USER_ID;
+        return UserSettingsContract.DEFAULT_USER_ID;
     }
 
     @Override
-    protected Uri getContentUri() {
+    public Uri getContentUri() {
         return UserSettingsContract.CONTENT_URI;
     }
 
     private boolean hasUserSettings() {
-        return query(DEFAULT_USER_ID) != null;
+        return query(UserSettingsContract.DEFAULT_USER_ID) != null;
     }
 }

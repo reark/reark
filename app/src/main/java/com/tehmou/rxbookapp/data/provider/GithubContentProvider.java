@@ -9,7 +9,7 @@ import com.tehmou.rxbookapp.data.base.provider.ContractContentProviderBase;
 public class GithubContentProvider extends ContractContentProviderBase {
     public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.provider.GithubContentProvider";
     private static final String DATABASE_NAME = "database";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     public GithubContentProvider() {
         DatabaseContract gitHubRepositoryContract = new GitHubRepositoryContract();
@@ -26,6 +26,11 @@ public class GithubContentProvider extends ContractContentProviderBase {
         addDatabaseContract(userSettingsContract);
         addDatabaseRoute(
                 new UserSettingsSingleRoute(userSettingsContract.getTableName()));
+
+        DatabaseContract networkRequestStatusContract = new NetworkRequestStatusContract();
+        addDatabaseContract(networkRequestStatusContract);
+        addDatabaseRoute(
+                new NetworkRequestStatusSingleRoute(networkRequestStatusContract.getTableName()));
     }
 
     @Override

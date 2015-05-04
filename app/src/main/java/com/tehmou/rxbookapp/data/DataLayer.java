@@ -8,6 +8,7 @@ import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.ContentResolver;

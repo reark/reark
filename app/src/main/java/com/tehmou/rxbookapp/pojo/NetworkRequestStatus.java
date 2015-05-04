@@ -4,23 +4,20 @@ package com.tehmou.rxbookapp.pojo;
  * Created by ttuo on 26/04/15.
  */
 public class NetworkRequestStatus {
-    private final String NETWORK_STATUS_ONGOING = "networkStatusOngoing";
-    private final String NETWORK_STATUS_ERROR = "networkStatusError";
-    private final String NETWORK_STATUS_COMPLETED = "networkStatusCompleted";
+    public static final String NETWORK_STATUS_ONGOING = "networkStatusOngoing";
+    public static final String NETWORK_STATUS_ERROR = "networkStatusError";
+    public static final String NETWORK_STATUS_COMPLETED = "networkStatusCompleted";
 
     private final String uri;
     private final String owner;
     private final String status;
-    private final String url;
 
     public NetworkRequestStatus(String uri,
                                 String owner,
-                                String status,
-                                String url) {
+                                String status) {
         this.uri = uri;
         this.owner = owner;
         this.status = status;
-        this.url = url;
     }
 
     public String getUri() {
@@ -35,13 +32,17 @@ public class NetworkRequestStatus {
         return status;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public static class Key {
         private final String uri;
         private final String owner;
+
+        public Key() {
+            this(null, null);
+        }
+
+        public Key(String uri) {
+            this(uri, null);
+        }
 
         public Key(String uri, String owner) {
             this.uri = uri;

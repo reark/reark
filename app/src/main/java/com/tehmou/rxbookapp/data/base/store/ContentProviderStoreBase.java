@@ -63,7 +63,7 @@ abstract public class ContentProviderStoreBase<T, U> {
 
     private Observable<T> lazyGetSubject(U id) {
         Log.v(TAG, "lazyGetSubject(" + id + ")");
-        Uri uri = getUriForId(id);
+        Uri uri = getUriForKey(id);
         if (!subjectMap.containsKey(uri)) {
             Log.v(TAG, "Creating subject for id=" + id);
             subjectMap.put(uri, PublishSubject.<T>create());
@@ -72,8 +72,10 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     public void insertOrUpdate(T item) {
-        Uri uri = getUriForId(getIdFor(item));
+        Uri uri = getUriForKey(getIdFor(item));
+        Log.v(TAG, "insertOrUpdate to " + uri);
         ContentValues values = getContentValuesForItem(item);
+        Log.v(TAG, "values(" + values + ")");
         if (contentResolver.update(uri, values, null, null) == 0) {
             final Uri resultUri = contentResolver.insert(uri, values);
             Log.v(TAG, "Inserted at " + resultUri);
@@ -83,7 +85,7 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     protected T query(U id) {
-        return query(getUriForId(id));
+        return query(getUriForKey(id));
     }
 
     protected T query(Uri uri) {
@@ -105,7 +107,7 @@ abstract public class ContentProviderStoreBase<T, U> {
         return databaseContract.getContentValuesForItem(item);
     }
 
-    protected Uri getUriForId(U id) {
+    public Uri getUriForKey(U id) {
         return Uri.withAppendedPath(getContentUri(), id.toString());
     }
 

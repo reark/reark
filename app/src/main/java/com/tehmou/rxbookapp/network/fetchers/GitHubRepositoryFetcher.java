@@ -7,12 +7,11 @@ import android.util.Log;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -23,9 +22,11 @@ public class GitHubRepositoryFetcher extends FetcherBase {
 
     private final GitHubRepositoryStore gitHubRepositoryStore;
 
-    public GitHubRepositoryFetcher(NetworkApi networkApi,
+    public GitHubRepositoryFetcher(String owner,
+                                   NetworkApi networkApi,
+                                   Action1<NetworkRequestStatus> updateNetworkRequestStatus,
                                    GitHubRepositoryStore gitHubRepositoryStore) {
-        super(networkApi);
+        super(owner, networkApi, updateNetworkRequestStatus);
         this.gitHubRepositoryStore = gitHubRepositoryStore;
     }
 
@@ -46,11 +47,15 @@ public class GitHubRepositoryFetcher extends FetcherBase {
             Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
             return;
         }
+        final String uri = gitHubRepositoryStore.getUriForKey(repositoryId).toString();
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
+                .doOnError(error -> errorRequest(uri, error))
+                .doOnCompleted(() -> completeRequest(uri))
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
         requestMap.put(repositoryId, subscription);
+        startRequest(uri);
     }
 
     private Observable<GitHubRepository> createNetworkObservable(int repositoryId) {

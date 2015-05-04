@@ -2,6 +2,7 @@ package com.tehmou.rxbookapp.data.stores;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
@@ -14,9 +15,10 @@ import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
  * Created by ttuo on 26/04/15.
  */
 public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkRequestStatus, NetworkRequestStatus.Key> {
+    private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
+
     public NetworkRequestStatusStore(ContentResolver contentResolver) {
-        super(contentResolver,
-                new NetworkRequestStatusContract());
+        super(contentResolver, new NetworkRequestStatusContract());
     }
 
     @Override
@@ -26,7 +28,7 @@ public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkR
 
     @Override
     public Uri getContentUri() {
-        return GitHubRepositoryContract.CONTENT_URI;
+        return NetworkRequestStatusContract.CONTENT_URI;
     }
 
     @Override
@@ -35,10 +37,20 @@ public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkR
     }
 
     @Override
-    protected Uri getUriForId(NetworkRequestStatus.Key id) {
+    public Uri getUriForKey(NetworkRequestStatus.Key id) {
         Uri uri = getContentUri();
-        uri = Uri.withAppendedPath(uri, id.getOwner());
-        uri = Uri.withAppendedPath(uri, "" + id.getUri().hashCode());
+        if (id.getOwner() == null) {
+            uri = Uri.withAppendedPath(uri, "uri_hash/" + id.getUri().hashCode());
+        } else {
+            uri = Uri.withAppendedPath(uri, "owner/" + id.getOwner());
+            uri = Uri.withAppendedPath(uri, "uri_hash/" + id.getUri().hashCode());
+        }
         return uri;
+    }
+
+    @Override
+    public void insertOrUpdate(NetworkRequestStatus item) {
+        Log.v(TAG, "insertOrUpdate(" + item.getStatus() + ", " + item.getOwner() + ", " + item.getUri() + ")");
+        super.insertOrUpdate(item);
     }
 }

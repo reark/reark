@@ -99,7 +99,6 @@ abstract public class ContentProviderStoreBase<T, U> {
         if (value == null) {
             Log.v(TAG, "Could not find with id: " + uri);
         }
-        Log.d(TAG, "" + value);
         return value;
     }
 

@@ -2,7 +2,10 @@ package com.tehmou.rxbookapp.viewmodels;
 
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.data.provider.GitHubRepositorySearchContract;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
 import android.util.Log;
 
@@ -13,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -28,6 +32,9 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
     @Inject
+    DataLayer.GetNetworkRequestStatus getGitHubRepositorySearchStatus;
+
+    @Inject
     DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
 
     @Inject
@@ -38,6 +45,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private final BehaviorSubject<List<GitHubRepository>> repositories
             = BehaviorSubject.create();
+    private final BehaviorSubject<String> networkRequestStatusText = BehaviorSubject.create();
 
     public RepositoriesViewModel() {
         RxBookApp.getInstance().getGraph().inject(this);
@@ -48,12 +56,29 @@ public class RepositoriesViewModel extends AbstractViewModel {
     protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
+        ConnectableObservable<String> repositorySearchSource =
+                Observable.switchOnNext(searchString)
+                        .filter((string) -> string.length() > 2)
+                        .throttleLast(500, TimeUnit.MILLISECONDS)
+                .publish();
+
+        compositeSubscription.add(repositorySearchSource.connect());
         compositeSubscription.add(
-                Observable.switchOnNext(
-                        Observable.switchOnNext(searchString)
-                                .filter((string) -> string.length() > 2)
-                                .throttleLast(500, TimeUnit.MILLISECONDS)
-                                .map(getGitHubRepositorySearch::call))
+                repositorySearchSource
+                        .switchMap(getGitHubRepositorySearchStatus::call)
+                        .subscribe(status -> {
+                            Log.d(TAG, status.toString());
+                            if (status.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ONGOING)) {
+                                networkRequestStatusText.onNext("Loading..");
+                            } else if (status.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ERROR)) {
+                                networkRequestStatusText.onNext("Error occured");
+                            } else {
+                                networkRequestStatusText.onNext("");
+                            }
+                        }));
+        compositeSubscription.add(
+                repositorySearchSource
+                        .switchMap(getGitHubRepositorySearch::call)
                         .flatMap((repositorySearch) -> {
                             Log.d(TAG, "Found " + repositorySearch.getItems().size() +
                                     " repositories with search " + repositorySearch.getSearch());
@@ -89,6 +114,10 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     public Observable<List<GitHubRepository>> getRepositories() {
         return repositories;
+    }
+
+    public Observable<String> getNetworkRequestStatusText() {
+        return networkRequestStatusText;
     }
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {

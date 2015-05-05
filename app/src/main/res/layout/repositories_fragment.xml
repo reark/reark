@@ -18,10 +18,15 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:height="50dp"/>
+        <TextView
+            android:id="@+id/repositories_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"/>
         <ListView
             android:id="@+id/repositories_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp"/>
+            android:layout_marginTop="66dp"/>
     </com.tehmou.rxbookapp.view.RepositoriesView>
 </LinearLayout>

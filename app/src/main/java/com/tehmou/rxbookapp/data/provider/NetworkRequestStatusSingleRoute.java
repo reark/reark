@@ -2,6 +2,7 @@ package com.tehmou.rxbookapp.data.provider;
 
 import android.net.Uri;
 
+import com.tehmou.rxbookapp.data.base.contract.SerializedJsonContract;
 import com.tehmou.rxbookapp.data.base.route.DatabaseRouteBase;
 
 import java.util.List;
@@ -28,9 +29,8 @@ public class NetworkRequestStatusSingleRoute extends DatabaseRouteBase {
         return NetworkRequestStatusContract.ID + " = " + uriHash;
     }
 
-    @Override
     public String getDefaultSortOrder() {
-        return "DESC";
+        return SerializedJsonContract.ID + " ASC";
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
+import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import java.util.List;
 

@@ -14,6 +14,7 @@ import com.tehmou.rxbookapp.pojo.UserSettings;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -50,6 +51,15 @@ public class DataLayer extends DataLayerBase {
         intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
         intent.putExtra("searchString", searchString);
         context.startService(intent);
+    }
+
+    public Observable<NetworkRequestStatus> getNetworkRequestStatus(final String searchString) {
+        Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
+        return networkRequestStatusStore.getStream(uri.toString().hashCode());
+    }
+
+    public static interface GetNetworkRequestStatus {
+        Observable<NetworkRequestStatus> call(String searchString);
     }
 
     public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {

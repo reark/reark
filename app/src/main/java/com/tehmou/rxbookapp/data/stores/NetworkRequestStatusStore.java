@@ -14,7 +14,7 @@ import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 /**
  * Created by ttuo on 26/04/15.
  */
-public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkRequestStatus, NetworkRequestStatus.Key> {
+public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
     public NetworkRequestStatusStore(ContentResolver contentResolver) {
@@ -22,8 +22,8 @@ public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkR
     }
 
     @Override
-    protected NetworkRequestStatus.Key getIdFor(NetworkRequestStatus item) {
-        return new NetworkRequestStatus.Key(item.getUri(), item.getOwner());
+    protected Integer getIdFor(NetworkRequestStatus item) {
+        return item.getUri().hashCode();
     }
 
     @Override
@@ -37,20 +37,8 @@ public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkR
     }
 
     @Override
-    public Uri getUriForKey(NetworkRequestStatus.Key id) {
-        Uri uri = getContentUri();
-        if (id.getOwner() == null) {
-            uri = Uri.withAppendedPath(uri, "uri_hash/" + id.getUri().hashCode());
-        } else {
-            uri = Uri.withAppendedPath(uri, "owner/" + id.getOwner());
-            uri = Uri.withAppendedPath(uri, "uri_hash/" + id.getUri().hashCode());
-        }
-        return uri;
-    }
-
-    @Override
     public void insertOrUpdate(NetworkRequestStatus item) {
-        Log.v(TAG, "insertOrUpdate(" + item.getStatus() + ", " + item.getOwner() + ", " + item.getUri() + ")");
+        Log.v(TAG, "insertOrUpdate(" + item.getStatus() + ", " + item.getUri() + ")");
         super.insertOrUpdate(item);
     }
 }

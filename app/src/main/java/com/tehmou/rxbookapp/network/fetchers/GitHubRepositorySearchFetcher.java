@@ -30,12 +30,11 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
 
-    public GitHubRepositorySearchFetcher(String owner,
-                                         NetworkApi networkApi,
+    public GitHubRepositorySearchFetcher(NetworkApi networkApi,
                                          Action1<NetworkRequestStatus> updateNetworkRequestStatus,
                                          GitHubRepositoryStore gitHubRepositoryStore,
                                          GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        super(owner, networkApi, updateNetworkRequestStatus);
+        super(networkApi, updateNetworkRequestStatus);
         this.gitHubRepositoryStore = gitHubRepositoryStore;
         this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
     }

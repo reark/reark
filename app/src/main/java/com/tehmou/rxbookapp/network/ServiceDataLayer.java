@@ -24,10 +24,10 @@ public class ServiceDataLayer extends DataLayerBase {
         super(contentResolver);
         NetworkApi networkApi = new NetworkApi();
         final Fetcher gitHubRepositoryFetcher = new GitHubRepositoryFetcher(
-                TAG, networkApi, networkRequestStatusStore::insertOrUpdate,
+                networkApi, networkRequestStatusStore::insertOrUpdate,
                 gitHubRepositoryStore);
         final Fetcher gitHubRepositorySearchFetcher = new GitHubRepositorySearchFetcher(
-                TAG, networkApi, networkRequestStatusStore::insertOrUpdate,
+                networkApi, networkRequestStatusStore::insertOrUpdate,
                 gitHubRepositoryStore, gitHubRepositorySearchStore);
         fetchers = Arrays.asList(
                 gitHubRepositoryFetcher,

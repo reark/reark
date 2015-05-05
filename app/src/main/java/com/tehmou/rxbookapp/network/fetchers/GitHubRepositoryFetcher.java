@@ -22,11 +22,10 @@ public class GitHubRepositoryFetcher extends FetcherBase {
 
     private final GitHubRepositoryStore gitHubRepositoryStore;
 
-    public GitHubRepositoryFetcher(String owner,
-                                   NetworkApi networkApi,
+    public GitHubRepositoryFetcher(NetworkApi networkApi,
                                    Action1<NetworkRequestStatus> updateNetworkRequestStatus,
                                    GitHubRepositoryStore gitHubRepositoryStore) {
-        super(owner, networkApi, updateNetworkRequestStatus);
+        super(networkApi, updateNetworkRequestStatus);
         this.gitHubRepositoryStore = gitHubRepositoryStore;
     }
 

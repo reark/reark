@@ -18,34 +18,31 @@ import rx.functions.Action1;
 abstract public class FetcherBase implements Fetcher {
     private static final String TAG = FetcherBase.class.getSimpleName();
 
-    protected final String owner;
     protected final NetworkApi networkApi;
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
-    public FetcherBase(String owner,
-                       NetworkApi networkApi,
+    public FetcherBase(NetworkApi networkApi,
                        Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
-        this.owner = owner;
         this.networkApi = networkApi;
         this.updateNetworkRequestStatus = updateNetworkRequestStatus;
     }
 
     protected void startRequest(String uri) {
-        Log.v(TAG, "startRequest(" + uri + ", " + owner + ")");
+        Log.v(TAG, "startRequest(" + uri + ")");
         updateNetworkRequestStatus.call(new NetworkRequestStatus(
-                        uri, owner, NetworkRequestStatus.NETWORK_STATUS_ONGOING));
+                        uri, NetworkRequestStatus.NETWORK_STATUS_ONGOING));
     }
 
     protected void errorRequest(String uri, Throwable error) {
-        Log.v(TAG, "errorRequest(" + uri + ", " + owner + ", " + error + ")");
+        Log.v(TAG, "errorRequest(" + uri + ", " + error + ")");
         updateNetworkRequestStatus.call(new NetworkRequestStatus(
-                        uri, owner, NetworkRequestStatus.NETWORK_STATUS_ERROR));
+                        uri, NetworkRequestStatus.NETWORK_STATUS_ERROR));
     }
 
     protected void completeRequest(String uri) {
-        Log.v(TAG, "completeRequest(" + uri + ", " + owner + ")");
+        Log.v(TAG, "completeRequest(" + uri + ")");
         updateNetworkRequestStatus.call(new NetworkRequestStatus(
-                        uri, owner, NetworkRequestStatus.NETWORK_STATUS_COMPLETED));
+                        uri, NetworkRequestStatus.NETWORK_STATUS_COMPLETED));
     }
 }

@@ -35,6 +35,6 @@ public class NetworkRequestStatusSingleRoute extends DatabaseRouteBase {
 
     @Override
     public String getPath() {
-        return tableName + "/#";
+        return tableName + "/*";
     }
 }

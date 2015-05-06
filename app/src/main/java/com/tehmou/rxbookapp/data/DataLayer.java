@@ -49,14 +49,13 @@ public class DataLayer extends DataLayerBase {
         final Observable<DataStreamNotification<GitHubRepositorySearch>> networkStatusStream =
                 networkRequestStatusObservable
                         .filter(networkRequestStatus ->
-                                !networkRequestStatus.getStatus().equals(
-                                        NetworkRequestStatus.NETWORK_STATUS_COMPLETED))
+                                !networkRequestStatus.isCompleted())
                         .map(new Func1<NetworkRequestStatus, DataStreamNotification<GitHubRepositorySearch>>() {
                             @Override
                             public DataStreamNotification<GitHubRepositorySearch> call(NetworkRequestStatus networkRequestStatus) {
-                                if (networkRequestStatus.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ERROR)) {
+                                if (networkRequestStatus.isError()) {
                                     return DataStreamNotification.fetchingError();
-                                } else if (networkRequestStatus.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ONGOING)) {
+                                } else if (networkRequestStatus.isOngoing()) {
                                     return DataStreamNotification.fetchingStart();
                                 } else {
                                     return null;

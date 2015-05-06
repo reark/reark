@@ -30,19 +30,16 @@ abstract public class FetcherBase implements Fetcher {
 
     protected void startRequest(String uri) {
         Log.v(TAG, "startRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(new NetworkRequestStatus(
-                        uri, NetworkRequestStatus.NETWORK_STATUS_ONGOING));
+        updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
     protected void errorRequest(String uri, Throwable error) {
         Log.v(TAG, "errorRequest(" + uri + ", " + error + ")");
-        updateNetworkRequestStatus.call(new NetworkRequestStatus(
-                        uri, NetworkRequestStatus.NETWORK_STATUS_ERROR));
+        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri));
     }
 
     protected void completeRequest(String uri) {
         Log.v(TAG, "completeRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(new NetworkRequestStatus(
-                        uri, NetworkRequestStatus.NETWORK_STATUS_COMPLETED));
+        updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
     }
 }

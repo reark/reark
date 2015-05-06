@@ -10,11 +10,17 @@ public class NetworkRequestStatus {
 
     private final String uri;
     private final String status;
+    private final int errorCode;
+    private final String errorMessage;
 
     private NetworkRequestStatus(String uri,
-                                 String status) {
+                                 String status,
+                                 int errorCode,
+                                 String errorMessage) {
         this.uri = uri;
         this.status = status;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
     }
 
     public String getUri() {
@@ -25,21 +31,29 @@ public class NetworkRequestStatus {
         return status;
     }
 
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     @Override
     public String toString() {
         return "NetworkRequestStatus(" + uri + ", " + status + ")";
     }
 
     public static NetworkRequestStatus ongoing(String uri) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_ONGOING);
+        return new NetworkRequestStatus(uri, NETWORK_STATUS_ONGOING, 0, null);
     }
 
-    public static NetworkRequestStatus error(String uri) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_ERROR);
+    public static NetworkRequestStatus error(String uri, int errorCode, String errorMessage) {
+        return new NetworkRequestStatus(uri, NETWORK_STATUS_ERROR, 0, errorMessage);
     }
 
     public static NetworkRequestStatus completed(String uri) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_COMPLETED);
+        return new NetworkRequestStatus(uri, NETWORK_STATUS_COMPLETED, 0, null);
     }
 
     public boolean isOngoing() {

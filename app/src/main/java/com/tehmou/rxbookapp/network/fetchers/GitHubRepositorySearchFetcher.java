@@ -68,7 +68,7 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
                     return new GitHubRepositorySearch(searchString, repositoryIds);
                 })
                 .doOnCompleted(() -> completeRequest(uri))
-                .doOnError(error -> errorRequest(uri, error))
+                .doOnError(doOnError(uri))
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
         requestMap.put(searchString.hashCode(), subscription);

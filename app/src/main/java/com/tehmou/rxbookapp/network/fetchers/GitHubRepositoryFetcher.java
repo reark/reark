@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.utils.DataLayerUtils;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
+import retrofit.RetrofitError;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -49,7 +52,7 @@ public class GitHubRepositoryFetcher extends FetcherBase {
         final String uri = gitHubRepositoryStore.getUriForKey(repositoryId).toString();
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
-                .doOnError(error -> errorRequest(uri, error))
+                .doOnError(doOnError(uri))
                 .doOnCompleted(() -> completeRequest(uri))
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));

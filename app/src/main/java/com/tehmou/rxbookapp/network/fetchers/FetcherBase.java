@@ -9,6 +9,7 @@ import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import retrofit.RetrofitError;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -17,6 +18,8 @@ import rx.functions.Action1;
  */
 abstract public class FetcherBase implements Fetcher {
     private static final String TAG = FetcherBase.class.getSimpleName();
+
+    public static final int NO_ERROR_CODE = -1;
 
     protected final NetworkApi networkApi;
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
@@ -33,13 +36,27 @@ abstract public class FetcherBase implements Fetcher {
         updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
-    protected void errorRequest(String uri, Throwable error) {
-        Log.v(TAG, "errorRequest(" + uri + ", " + error + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri));
+    protected void errorRequest(String uri, int errorCode, String errorMessage) {
+        Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
+        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
     }
 
     protected void completeRequest(String uri) {
         Log.v(TAG, "completeRequest(" + uri + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
+    }
+
+    public Action1<Throwable> doOnError(final String uri) {
+        return throwable -> {
+            if (throwable instanceof RetrofitError) {
+                RetrofitError retrofitError = (RetrofitError) throwable;
+                int statusCode = retrofitError.getResponse() != null ?
+                        retrofitError.getResponse().getStatus() : NO_ERROR_CODE;
+                errorRequest(uri, statusCode, retrofitError.getMessage());
+            } else {
+                Log.e(TAG, "The error was not a RetroFitError");
+                errorRequest(uri, NO_ERROR_CODE, null);
+            }
+        };
     }
 }

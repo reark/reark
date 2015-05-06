@@ -4,6 +4,7 @@ import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
+import com.tehmou.rxbookapp.data.utils.DataLayerUtils;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
@@ -42,36 +43,21 @@ public class DataLayer extends DataLayerBase {
         userSettingsStore = new UserSettingsStore(contentResolver);
     }
 
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(final String searchString) {
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(final String searchString) {
+        final Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
-                networkRequestStatusStore.getStream(
-                        gitHubRepositorySearchStore.getUriForKey(searchString).toString().hashCode());
-        final Observable<DataStreamNotification<GitHubRepositorySearch>> networkStatusStream =
-                networkRequestStatusObservable
-                        .filter(networkRequestStatus ->
-                                !networkRequestStatus.isCompleted())
-                        .map(new Func1<NetworkRequestStatus, DataStreamNotification<GitHubRepositorySearch>>() {
-                            @Override
-                            public DataStreamNotification<GitHubRepositorySearch> call(NetworkRequestStatus networkRequestStatus) {
-                                if (networkRequestStatus.isError()) {
-                                    return DataStreamNotification.fetchingError();
-                                } else if (networkRequestStatus.isOngoing()) {
-                                    return DataStreamNotification.fetchingStart();
-                                } else {
-                                    return null;
-                                }
-                            }
-                        })
-                        .filter(dataStreamNotification -> dataStreamNotification != null);
-
+                networkRequestStatusStore.getStream(uri.toString().hashCode());
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
                 gitHubRepositorySearchStore.getStream(searchString);
-        final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositorySearchStream =
-                gitHubRepositorySearchObservable.map(DataStreamNotification::onNext);
+        return DataLayerUtils.createDataStreamNotificationObservable(
+                        networkRequestStatusObservable, gitHubRepositorySearchObservable);
+    }
 
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(final String searchString) {
+        final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositoryStream =
+                getGitHubRepositorySearch(searchString);
         fetchGitHubRepositorySearch(searchString);
-
-        return Observable.merge(networkStatusStream, gitHubRepositorySearchStream);
+        return gitHubRepositoryStream;
     }
 
     private void fetchGitHubRepositorySearch(final String searchString) {
@@ -79,11 +65,6 @@ public class DataLayer extends DataLayerBase {
         intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
         intent.putExtra("searchString", searchString);
         context.startService(intent);
-    }
-
-    public Observable<NetworkRequestStatus> getNetworkRequestStatus(final String searchString) {
-        Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
-        return networkRequestStatusStore.getStream(uri.toString().hashCode());
     }
 
     public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {

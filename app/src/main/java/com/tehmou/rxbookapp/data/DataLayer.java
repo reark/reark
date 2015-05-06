@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 
@@ -41,9 +42,37 @@ public class DataLayer extends DataLayerBase {
         userSettingsStore = new UserSettingsStore(contentResolver);
     }
 
-    public Observable<GitHubRepositorySearch> fetchAndGetGitHubRepositorySearch(final String searchString) {
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(final String searchString) {
+        final Observable<NetworkRequestStatus> networkRequestStatusObservable =
+                networkRequestStatusStore.getStream(
+                        gitHubRepositorySearchStore.getUriForKey(searchString).toString().hashCode());
+        final Observable<DataStreamNotification<GitHubRepositorySearch>> networkStatusStream =
+                networkRequestStatusObservable
+                        .filter(networkRequestStatus ->
+                                !networkRequestStatus.getStatus().equals(
+                                        NetworkRequestStatus.NETWORK_STATUS_COMPLETED))
+                        .map(new Func1<NetworkRequestStatus, DataStreamNotification<GitHubRepositorySearch>>() {
+                            @Override
+                            public DataStreamNotification<GitHubRepositorySearch> call(NetworkRequestStatus networkRequestStatus) {
+                                if (networkRequestStatus.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ERROR)) {
+                                    return DataStreamNotification.fetchingError();
+                                } else if (networkRequestStatus.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ONGOING)) {
+                                    return DataStreamNotification.fetchingStart();
+                                } else {
+                                    return null;
+                                }
+                            }
+                        })
+                        .filter(dataStreamNotification -> dataStreamNotification != null);
+
+        final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
+                gitHubRepositorySearchStore.getStream(searchString);
+        final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositorySearchStream =
+                gitHubRepositorySearchObservable.map(DataStreamNotification::onNext);
+
         fetchGitHubRepositorySearch(searchString);
-        return gitHubRepositorySearchStore.getStream(searchString);
+
+        return Observable.merge(networkStatusStream, gitHubRepositorySearchStream);
     }
 
     private void fetchGitHubRepositorySearch(final String searchString) {
@@ -56,10 +85,6 @@ public class DataLayer extends DataLayerBase {
     public Observable<NetworkRequestStatus> getNetworkRequestStatus(final String searchString) {
         Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
         return networkRequestStatusStore.getStream(uri.toString().hashCode());
-    }
-
-    public static interface GetNetworkRequestStatus {
-        Observable<NetworkRequestStatus> call(String searchString);
     }
 
     public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {
@@ -103,6 +128,6 @@ public class DataLayer extends DataLayerBase {
     }
 
     public static interface GetGitHubRepositorySearch {
-        Observable<GitHubRepositorySearch> call(String search);
+        Observable<DataStreamNotification<GitHubRepositorySearch>> call(String search);
     }
 }

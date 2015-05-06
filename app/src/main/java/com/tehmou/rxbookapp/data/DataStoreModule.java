@@ -17,11 +17,6 @@ import dagger.Provides;
 public final class DataStoreModule {
 
     @Provides
-    public DataLayer.GetNetworkRequestStatus provideGetNetworkRequestStatus(DataLayer dataLayer) {
-        return dataLayer::getNetworkRequestStatus;
-    }
-
-    @Provides
     public DataLayer.GetUserSettings provideGetUserSettings(DataLayer dataLayer) {
         return dataLayer::getUserSettings;
     }

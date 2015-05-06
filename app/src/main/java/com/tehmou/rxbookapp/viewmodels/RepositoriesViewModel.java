@@ -2,9 +2,11 @@ package com.tehmou.rxbookapp.viewmodels;
 
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.data.DataStreamNotification;
 import com.tehmou.rxbookapp.data.provider.GitHubRepositorySearchContract;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
 import android.util.Log;
@@ -32,9 +34,6 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
     @Inject
-    DataLayer.GetNetworkRequestStatus getGitHubRepositorySearchStatus;
-
-    @Inject
     DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
 
     @Inject
@@ -56,21 +55,21 @@ public class RepositoriesViewModel extends AbstractViewModel {
     protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
-        ConnectableObservable<String> repositorySearchSource =
+        ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
                 Observable.switchOnNext(searchString)
                         .filter((string) -> string.length() > 2)
                         .throttleLast(500, TimeUnit.MILLISECONDS)
-                .publish();
+                        .switchMap(getGitHubRepositorySearch::call)
+                        .publish();
 
         compositeSubscription.add(repositorySearchSource.connect());
+
         compositeSubscription.add(
                 repositorySearchSource
-                        .switchMap(getGitHubRepositorySearchStatus::call)
-                        .subscribe(status -> {
-                            Log.d(TAG, status.toString());
-                            if (status.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ONGOING)) {
+                        .subscribe(notification -> {
+                            if (notification.isFetchingStart()) {
                                 networkRequestStatusText.onNext("Loading..");
-                            } else if (status.getStatus().equals(NetworkRequestStatus.NETWORK_STATUS_ERROR)) {
+                            } else if (notification.isFetchingError()) {
                                 networkRequestStatusText.onNext("Error occured");
                             } else {
                                 networkRequestStatusText.onNext("");
@@ -78,7 +77,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
                         }));
         compositeSubscription.add(
                 repositorySearchSource
-                        .switchMap(getGitHubRepositorySearch::call)
+                        .filter(DataStreamNotification::isOnNext)
+                        .map(DataStreamNotification::getValue)
                         .flatMap((repositorySearch) -> {
                             Log.d(TAG, "Found " + repositorySearch.getItems().size() +
                                     " repositories with search " + repositorySearch.getSearch());

@@ -62,8 +62,6 @@ public class RepositoriesViewModel extends AbstractViewModel {
                         .switchMap(getGitHubRepositorySearch::call)
                         .publish();
 
-        compositeSubscription.add(repositorySearchSource.connect());
-
         compositeSubscription.add(
                 repositorySearchSource
                         .subscribe(notification -> {
@@ -110,6 +108,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
                             Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
                             RepositoriesViewModel.this.repositories.onNext(repositories);
                         }));
+
+        compositeSubscription.add(repositorySearchSource.connect());
     }
 
     public Observable<List<GitHubRepository>> getRepositories() {

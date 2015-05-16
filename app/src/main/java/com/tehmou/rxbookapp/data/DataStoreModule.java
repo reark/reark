@@ -5,11 +5,11 @@ import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
 import com.tehmou.rxbookapp.injections.ForApplication;
+import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.network.ServiceDataLayer;
 
 import android.content.Context;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -58,10 +58,11 @@ public final class DataStoreModule {
 
     @Provides
     @Singleton
-    public ServiceDataLayer provideServiceDataLayer(NetworkRequestStatusStore networkRequestStatusStore,
+    public ServiceDataLayer provideServiceDataLayer(NetworkApi networkApi,
+                                                    NetworkRequestStatusStore networkRequestStatusStore,
                                                     GitHubRepositoryStore gitHubRepositoryStore,
                                                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        return new ServiceDataLayer(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
+        return new ServiceDataLayer(networkApi, networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
     }
 
 }

@@ -7,21 +7,27 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.view.RepositoryView;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
+
+import javax.inject.Inject;
 
 /**
  * Created by ttuo on 06/04/15.
  */
 public class RepositoryFragment extends Fragment {
-    private RepositoryViewModel viewModel;
     private RepositoryView repositoryView;
+
+    @Inject
+    RepositoryViewModel viewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new RepositoryViewModel();
+
+        RxBookApp.getInstance().getGraph().inject(this);
     }
 
     @Override

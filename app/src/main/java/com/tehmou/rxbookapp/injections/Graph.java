@@ -2,8 +2,11 @@ package com.tehmou.rxbookapp.injections;
 
 import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.data.DataStoreModule;
+import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
+import com.tehmou.rxbookapp.fragments.RepositoryFragment;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
+import com.tehmou.rxbookapp.viewmodels.ViewModelModule;
 import com.tehmou.rxbookapp.widget.WidgetService;
 
 import android.app.Application;
@@ -16,13 +19,15 @@ import dagger.Component;
  * Created by pt2121 on 2/20/15.
  */
 @Singleton
-@Component(modules = {ApplicationModule.class, DataStoreModule.class})
+@Component(modules = {ApplicationModule.class, DataStoreModule.class, ViewModelModule.class})
 public interface Graph {
 
     void inject(RepositoriesViewModel repositoriesViewModel);
     void inject(RepositoryViewModel widgetService);
     void inject(WidgetService widgetService);
     void inject(MainActivity mainActivity);
+    void inject(RepositoriesFragment repositoriesFragment);
+    void inject(RepositoryFragment repositoryFragment);
 
     public final static class Initializer {
 

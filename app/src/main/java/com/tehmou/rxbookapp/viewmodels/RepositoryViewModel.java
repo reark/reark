@@ -19,16 +19,15 @@ import rx.subscriptions.CompositeSubscription;
 public class RepositoryViewModel extends AbstractViewModel {
     private static final String TAG = RepositoryViewModel.class.getSimpleName();
 
-    @Inject
-    DataLayer.GetUserSettings getUserSettings;
-
-    @Inject
-    DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
+    private final DataLayer.GetUserSettings getUserSettings;
+    private final DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
     final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
-    public RepositoryViewModel() {
-        RxBookApp.getInstance().getGraph().inject(this);
+    public RepositoryViewModel(DataLayer.GetUserSettings getUserSettings,
+                               DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
+        this.getUserSettings = getUserSettings;
+        this.fetchAndGetGitHubRepository = fetchAndGetGitHubRepository;
         Log.v(TAG, "RepositoryViewModel");
     }
 

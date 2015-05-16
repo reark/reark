@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class RepositoriesView extends FrameLayout {
     private final RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
 
     private ArrayAdapter<GitHubRepository> listAdapter;
+    private TextView statusText;
     private ListView listView;
     private EditText editText;
     private Observable<String> searchStringObservable;
@@ -53,9 +55,11 @@ public class RepositoriesView extends FrameLayout {
         });
         listView.setAdapter(listAdapter);
 
-        this.editText = (EditText) findViewById(R.id.repositories_search);
+        editText = (EditText) findViewById(R.id.repositories_search);
         searchStringObservable = WidgetObservable.text(editText)
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString());
+
+        statusText = (TextView) findViewById(R.id.repositories_status_text);
     }
 
     public void setViewModel(RepositoriesViewModel viewModel) {
@@ -63,6 +67,8 @@ public class RepositoriesView extends FrameLayout {
         rxBinderUtil.clear();
         if (viewModel != null) {
             rxBinderUtil.bindProperty(viewModel.getRepositories(), this::setRepositories);
+            rxBinderUtil.bindProperty(
+                    viewModel.getNetworkRequestStatusText(), this::setNetworkRequestStatusText);
             viewModel.setSearchStringObservable(searchStringObservable);
         }
     }
@@ -70,5 +76,9 @@ public class RepositoriesView extends FrameLayout {
     private void setRepositories(List<GitHubRepository> repositories) {
         listAdapter.clear();
         listAdapter.addAll(repositories);
+    }
+
+    private void setNetworkRequestStatusText(String networkRequestStatusText) {
+        statusText.setText(networkRequestStatusText);
     }
 }

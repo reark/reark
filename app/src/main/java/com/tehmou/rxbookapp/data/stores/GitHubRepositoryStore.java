@@ -1,7 +1,6 @@
-package com.tehmou.rxbookapp.data;
+package com.tehmou.rxbookapp.data.stores;
 
-import com.google.gson.reflect.TypeToken;
-
+import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
@@ -15,7 +14,7 @@ public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubReposi
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(ContentResolver contentResolver) {
-        super(contentResolver, new TypeToken<GitHubRepository>() {}.getType());
+        super(contentResolver, new GitHubRepositoryContract());
     }
 
     @Override
@@ -24,7 +23,7 @@ public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubReposi
     }
 
     @Override
-    protected Uri getContentUri() {
+    public Uri getContentUri() {
         return GitHubRepositoryContract.CONTENT_URI;
     }
 }

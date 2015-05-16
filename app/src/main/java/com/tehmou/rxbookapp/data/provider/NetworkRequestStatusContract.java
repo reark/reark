@@ -1,22 +1,23 @@
 package com.tehmou.rxbookapp.data.provider;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tehmou.rxbookapp.data.base.contract.SerializedJsonContract;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
 import java.lang.reflect.Type;
 
 /**
- * Created by ttuo on 11/01/15.
+ * Created by ttuo on 26/04/15.
  */
-public class GitHubRepositoryContract extends SerializedJsonContract<GitHubRepository> {
-    private static final String TABLE_NAME = "repositories";
+public class NetworkRequestStatusContract extends SerializedJsonContract<NetworkRequestStatus> {
+    private static final String TABLE_NAME = "network_request_statuses";
     public static final Uri CONTENT_URI = Uri.parse("content://" + GithubContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
-    private static final Type TYPE = new TypeToken<GitHubRepository>() {}.getType();
+    private static final Type TYPE = new TypeToken<NetworkRequestStatus>() {}.getType();
 
     @Override
     public String getTableName() {
@@ -25,13 +26,13 @@ public class GitHubRepositoryContract extends SerializedJsonContract<GitHubRepos
 
     @Override
     protected String getCreateIdColumn() {
-        return ID + " INTEGER PRIMARY KEY AUTOINCREMENT";
+        return ID + " INTEGER PRIMARY KEY";
     }
 
     @Override
-    public ContentValues getContentValuesForItem(GitHubRepository item) {
+    public ContentValues getContentValuesForItem(NetworkRequestStatus item) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ID, item.getId());
+        contentValues.put(ID, item.getUri().hashCode());
         contentValues.put(JSON, new Gson().toJson(item));
         return contentValues;
     }

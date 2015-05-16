@@ -23,12 +23,12 @@ public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
     final private Collection<Fetcher> fetchers;
 
-    public ServiceDataLayer(NetworkRequestStatusStore networkRequestStatusStore,
+    public ServiceDataLayer(NetworkApi networkApi,
+                            NetworkRequestStatusStore networkRequestStatusStore,
                             GitHubRepositoryStore gitHubRepositoryStore,
                             GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore,
               gitHubRepositorySearchStore);
-        NetworkApi networkApi = new NetworkApi();
         final Fetcher gitHubRepositoryFetcher = new GitHubRepositoryFetcher(
                 networkApi, networkRequestStatusStore::insertOrUpdate,
                 gitHubRepositoryStore);

@@ -1,10 +1,15 @@
 package com.tehmou.rxbookapp.data;
 
+import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
+import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
 import com.tehmou.rxbookapp.injections.ForApplication;
+import com.tehmou.rxbookapp.network.ServiceDataLayer;
 
-import android.content.ContentResolver;
 import android.content.Context;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -43,9 +48,20 @@ public final class DataStoreModule {
 
     @Provides
     @Singleton
-    public DataLayer provideDataStoreModule(ContentResolver contentResolver,
-                                            @ForApplication Context context) {
-        return new DataLayer(contentResolver, context);
+    public DataLayer provideApplicationDataLayer(@ForApplication Context context,
+                                                 UserSettingsStore userSettingsStore,
+                                                 NetworkRequestStatusStore networkRequestStatusStore,
+                                                 GitHubRepositoryStore gitHubRepositoryStore,
+                                                 GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+        return new DataLayer(context, userSettingsStore, networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
+    }
+
+    @Provides
+    @Singleton
+    public ServiceDataLayer provideServiceDataLayer(NetworkRequestStatusStore networkRequestStatusStore,
+                                                    GitHubRepositoryStore gitHubRepositoryStore,
+                                                    GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+        return new ServiceDataLayer(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
     }
 
 }

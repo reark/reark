@@ -22,8 +22,7 @@ import dagger.Component;
  * Created by pt2121 on 2/20/15.
  */
 @Singleton
-@Component(modules = {ApplicationModule.class, DataStoreModule.class, ViewModelModule.class,
-                      StoreModule.class, NetworkModule.class})
+@Component(modules = {ApplicationModule.class, DataStoreModule.class, ViewModelModule.class})
 public interface Graph {
 
     void inject(RepositoriesViewModel repositoriesViewModel);

@@ -1,17 +1,14 @@
 package com.tehmou.rxbookapp.network;
 
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
-
 import com.tehmou.rxbookapp.data.DataLayerBase;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 import com.tehmou.rxbookapp.network.fetchers.Fetcher;
-import com.tehmou.rxbookapp.network.fetchers.GitHubRepositoryFetcher;
-import com.tehmou.rxbookapp.network.fetchers.GitHubRepositorySearchFetcher;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,18 +20,12 @@ public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
     final private Collection<Fetcher> fetchers;
 
-    public ServiceDataLayer(NetworkApi networkApi,
+    public ServiceDataLayer(Fetcher gitHubRepositoryFetcher,
+                            Fetcher gitHubRepositorySearchFetcher,
                             NetworkRequestStatusStore networkRequestStatusStore,
                             GitHubRepositoryStore gitHubRepositoryStore,
                             GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        super(networkRequestStatusStore, gitHubRepositoryStore,
-              gitHubRepositorySearchStore);
-        final Fetcher gitHubRepositoryFetcher = new GitHubRepositoryFetcher(
-                networkApi, networkRequestStatusStore::insertOrUpdate,
-                gitHubRepositoryStore);
-        final Fetcher gitHubRepositorySearchFetcher = new GitHubRepositorySearchFetcher(
-                networkApi, networkRequestStatusStore::insertOrUpdate,
-                gitHubRepositoryStore, gitHubRepositorySearchStore);
+        super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
         fetchers = Arrays.asList(
                 gitHubRepositoryFetcher,
                 gitHubRepositorySearchFetcher

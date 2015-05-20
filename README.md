@@ -14,7 +14,7 @@ Reference Architecture for Android using RxJava
 
 This is an ambitious reference project of what can be done with RxJava to create an app based on streams of data.
 
-![High-level architecture](http://tehmou.github.io/rx-android-architecture/images/architecture.png "High-level architecture")
+![High-level architecture](http://tehmou.github.io/rx-android-architecture/images/architecture2.png "High-level architecture")
 
 In the repository you will find several library-like solutions that might or might not be reusable. Parts of the architecture are, however, already used in real applications, and as the parts mature they are likely to be extracted into separate libraries. If you follow the general guidelines illustrated here, your application should be in a position to have portions of it easily replaced as more or less official solutions emerge. The architecture is designed to support large-scale applications with remote processes, such as those used in widgets.
 

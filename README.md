@@ -6,6 +6,7 @@ Latest Updates
 * NetworkRequestStatusStore added for monitoring the state of the requests
 * ContentProvider and Store layer heavily refactored and almost ready to be chipped into a proper library
 * DataStreamNotification added to support a non-completing stream of data with events for fetchStart and fetchError
+* The network layer roughly follows [Dobjanschi's REST architecture](https://www.youtube.com/watch?v=xHXn3Kg2IQE)
 
 
 Reference Architecture for Android using RxJava

@@ -3,9 +3,9 @@ package com.tehmou.rxbookapp.data;
 import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
 import com.tehmou.rxbookapp.data.utils.DataLayerUtils;
-import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
@@ -16,16 +16,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 
 /**
@@ -36,11 +28,14 @@ public class DataLayer extends DataLayerBase {
     private final Context context;
     protected final UserSettingsStore userSettingsStore;
 
-    public DataLayer(ContentResolver contentResolver,
-                     Context context) {
-        super(contentResolver);
+    public DataLayer(Context context,
+                     UserSettingsStore userSettingsStore,
+                     NetworkRequestStatusStore networkRequestStatusStore,
+                     GitHubRepositoryStore gitHubRepositoryStore,
+                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+        super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
         this.context = context;
-        userSettingsStore = new UserSettingsStore(contentResolver);
+        this.userSettingsStore = userSettingsStore;
     }
 
     public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(final String searchString) {

@@ -36,6 +36,10 @@
         </receiver>
 
         <service android:name=".widget.WidgetService" />
+
+        <service android:name=".network.NetworkService"
+            android:process=":networkservice" />
+
     </application>
 
 </manifest>

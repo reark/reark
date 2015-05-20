@@ -1,7 +1,18 @@
+Latest Updates
+==============
+
+* All network requests moved into NetworkService that runs in a remote process
+* Fetchers added for keeping track of duplicate requests
+* NetworkRequestStatusStore added for monitoring the state of the requests
+* ContentProvider and Store layer heavily refactored and almost ready to be chipped into a proper library
+* DataStreamNotification added to support a non-completing stream of data with events for fetchStart and fetchError
+* The network layer roughly follows [Dobjanschi's REST architecture](https://www.youtube.com/watch?v=xHXn3Kg2IQE)
+
+
 Reference Architecture for Android using RxJava
 ===============================================
 
-This is an ambitious example project of what can be done with RxJava to create an app based on streams of data.
+This is an ambitious reference project of what can be done with RxJava to create an app based on streams of data.
 
 ![High-level architecture](http://tehmou.github.io/rx-android-architecture/images/architecture.png "High-level architecture")
 
@@ -13,18 +24,22 @@ The project uses the open GitHub repositories API. You might hit a rate limit if
 Application Structure
 =====================
 
-To use the app start writing a search in the text box of at least 3 characters. This will trigger a request, the five first results of which will be shown as a list. The input also throttled in a way that makes it trigger when the user stops typing. This is a very good basic example of Rx streams.
+To use the app start writing a search in the text box of at least 3 characters. This will trigger a network request and the five first results of which will be shown as a list. The input also throttled in a way that makes it trigger when the user stops typing. This is a very good basic example of Rx streams.
 
 `.filter((string) -> string.length() > 2)
 .throttleLast(500, TimeUnit.MILLISECONDS)`
 
-The input is turned into a series of strings in the View layer, which the View Model then processes.
 
-A network request to the search API is triggered based on the search string, which happens in the Data Layer. The results of the request are written in two stores, the GitHubRepositorySearchStore and GitHubRepositoryStore. The search store contains only the ids of the results of the query, while the actual repository POJOs are written in the repository store. A repository POJO can thus be contained in multiple searches, which can often be the case if the first match stays the same, for instance.
+The Basic Data Flow
+===================
 
-In this example the data from the backend is likely to stay the same, but this structure nevertheless enables us to keep the data consistent across the application&mdash;even if the same data object is updated from multiple APIs.
+As seen above, the user input is turned into a series of strings in the View layer, which the View Model then processes.
 
-switchOnNext is used instead of flatMap to make sure we discard the results of the previous request as soon as a new one is made.
+When we are ready to execute the actual search, an Intent is broadcast and the NetworkService handles it, starting a network request in its own remote process. Once the network request is finished, NetworkService inserts the fetched data into the ContentProviders of GitHubRepositorySearchStore and GitHubRepositoryStore. All of the interested processes are notified through the onChange mechanism of ContentProviders.
+
+The search store contains only the ids of the results of the query, while the actual repository POJOs are written in the repository store. A repository POJO can thus be contained in multiple searches, which can often be the case if the first match stays the same, for instance.
+
+This structure nevertheless enables us to keep the data consistent across the application&mdash;even if the same data object is updated from multiple APIs.
 
 
 Tests
@@ -102,23 +117,18 @@ While it is possible to use TestSchedulers, I believe it is best to keep the VMs
 The safest way to ensure the main thread is to use .observeOn(AndroidSchdulers.mainThread()) when the fragment subscribes to the VM properties. This makes the subscription to always trigger asynchronously, but usually it is more of a benefit than a disadvantage.
 
 
-Bridging Platform Components
-----------------------------
-
-Most of Android components are quite hideous and of poor quality, so for an experienced developer finding the excuse to write them from scratch is not difficult. However, there are cases where it is necessary.
-
-With a ListView the easiest way to use a view model is have a fragment pass the list values to the list adapter when ever new ones appear. The entire adapter is thus considered to be part of the view layer. Usually this approach is enough - if your need is more complex you may need to expose the entire view model to a custom adapter and add values as necessary.
-
-ViewPager with fragments is a little trickier, and I would not recommend using a VM to orchestrate it. It is not easy to keep track of the selected page, let alone to change it through a VM. In my ideal world even all of the state and logic regarding the page change dragging would be in the VM and the component itself would only send the touch events to the VM. However, because of the defensive style in which the platform components are written, this is virtually impossible to do. I would love to see a completely custom ViewPager with a proper VM, but until this happens keep it simple.
-
-Tabs with fragments are not even officially supported by the SDK component, and I have had good experiences writing custom ones—as long as you remember that the “replace” method in FragmentTransaction does not call all of the fragment life cycle methods you might assume it to call.
-
-
-
 Data Layer
 ==========
 
-The application specific Data Layer is responsible for fetching and storing data. A fetch operation updates the centrally stored values and everyone who is interested will get the update.
+The application specific Data Layer is responsible for fetching and storing data. A fetch operation updates the centrally stored values in ContentProviders and everyone who is interested will get the update.
+
+For a stream of data we use the DataStreamNotification, which differs slightly from the typical RxJava Notification.
+
+* The observable never completes: there could always be new data
+* Errors in fetching the data do not break the subscription: once the problem is resolved the data starts to flow again
+* FetchStart event is sent when a network operation is start and it can be used to display loading state in the UI
+
+Currently only the GitHubRepositorySearch supports DataStreamNotifications, though it is not difficult to add to any data type.
 
 
 Consuming Data in the View
@@ -126,35 +136,31 @@ Consuming Data in the View
 
 When data comes in we render it in the view, simple as that. It does not actually matter what triggered the update of the data—it could be a background sync, user pressing a button or a change in another part of the UI. The data can arrive at any given time and **any number of times**.
 
-In RxJava we can use a continuous subscription to establish the stream of data. This means the subscription for incoming data is not disconnected until the view is hidden and it never errors or completes.
-
-Errors in fetching the data are handled through other mechanisms, as explained in the fetch section.
-
 
 Store
 -----
 
-Store is a container that allows subscribing to data of a particular type. Whenever data of the requested type becomes available, a new immutable value is pushed as onNext to all applicable subscribers.
+Store is a container that allows subscribing to data of a particular type and identification. Whenever data requested becomes available, a new immutable value is pushed as onNext to all subscribers. The Store does not concern itself with where the data comes from.
 
-The concrete backing of a Store can be a static in-memory hash, plain SQLite or a content provider. In case the same data is to be used from multiple <i>processes</i> there needs to be a mechanism that detects changes in the persisted data and propagates them to all subscribers. Android content providers, of course, do this automatically, making them the perfect candidates.
+Conceptually the concrete backing of a Store can be a static in-memory hash, plain SQLite or a ContentProvider. In case the same data is to be used from multiple <i>processes</i> there needs to be a mechanism that detects changes in the persisted data and propagates them to all subscribers. Android ContentProviders, of course, do this automatically, making them the perfect candidates.
 
-For caching purposes it is usually good to include timestamps into the structure of the Store. Determining when to update the data is not conceptually a concern of the Store, though, it simply holds the data.
+In this example project the Stores are backed by SQLite ContentProviders, which serializes the values as JSON strings with an id column for queries. This could be optimized by adding columns for all fields of the POJO, but on the other hand it adds boilerplate code that has to be maintained. In case of performance problems the implementation can be changed without affecting the rest of the application.
 
-In this example project the Stores are backed by SQLite ContentProviders, which serialize the values as JSON strings with an id column for queries. This could be optimized by adding columns for all fields of the POJO, but on the other hand it adds boilerplate code that has to be maintained. In case of performance problems the implementation can be changed without affecting the rest of the application.
+For caching purposes it is usually good to include timestamps into the structure of the Store. Determining when to update the data is not conceptually not a concern of the Store, though, it simply holds the data. Cache-expiry of the data is still on the list of things-to-do in this reference project.
 
 
-Fetcher (in progress)
----------------------
 
-_The example architecture does not yet implement a proper fetcher._
+Fetcher
+-------
 
-Fetching data has a few separate considerations. We need to keep track of requests which are already ongoing and attach to them whenever a duplicate request is initiated. The Fetcher thus needs to contain the state of all fetch operations.
+The responsibilities of the Fetcher are:
 
-It is advisable not to expose any data directly from the fetcher, but instead associate the fetcher with a data store into which it inserts any results. The fetch operation returns an observable that simply completes or errors but never gives the data directly to the caller.
+* Send and process the network requests
+* Populate Stores with the received values
+* Update the NetworkRequestState of fetch operations
+* Filter duplicate ongoing requests
 
-For global error handling the Fetcher can additionally have a way to subscribing to all errors.
-
-An interesting aspect of this design is that the Fetcher can run in a separate service/process, as long as the Store uses a backing that is shared across all subscribers. This enables integrating seamlessly to the Android platform.
+The Fetchers run exclusively in the NetworkService, making them hidden from the rest of the application. NetworkService has its own ServiceDataLayer that allows it to trigger fetch operations.
 
 
 License

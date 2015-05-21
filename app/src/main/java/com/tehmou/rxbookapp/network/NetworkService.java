@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -23,12 +26,14 @@ import rx.schedulers.Schedulers;
 public class NetworkService extends Service {
     private static final String TAG = NetworkService.class.getSimpleName();
 
-    private ServiceDataLayer serviceDataLayer;
+    @Inject
+    ServiceDataLayer serviceDataLayer;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        serviceDataLayer = new ServiceDataLayer(getContentResolver());
+
+        RxBookApp.getInstance().getGraph().inject(this);
     }
 
     @Override

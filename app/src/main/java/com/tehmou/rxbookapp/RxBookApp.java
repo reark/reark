@@ -1,5 +1,7 @@
 package com.tehmou.rxbookapp;
 
+import com.tehmou.rxbookapp.injections.Graph;
+
 import android.app.Application;
 
 /**
@@ -15,7 +17,7 @@ public class RxBookApp extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        mGraph = Graph.Initializer.init();
+        mGraph = Graph.Initializer.init(this);
     }
 
     public static RxBookApp getInstance() {
@@ -25,4 +27,5 @@ public class RxBookApp extends Application {
     public Graph getGraph() {
         return mGraph;
     }
+
 }

@@ -1,13 +1,9 @@
 package com.tehmou.rxbookapp.viewmodels;
 
-import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.DataStreamNotification;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositorySearchContract;
-import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
 import android.util.Log;
 
@@ -15,13 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 
 
@@ -33,11 +26,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
-    @Inject
-    DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
-
-    @Inject
-    DataLayer.GetGitHubRepository getGitHubRepository;
+    private final DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
+    private final DataLayer.GetGitHubRepository getGitHubRepository;
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
@@ -46,8 +36,10 @@ public class RepositoriesViewModel extends AbstractViewModel {
             = BehaviorSubject.create();
     private final BehaviorSubject<String> networkRequestStatusText = BehaviorSubject.create();
 
-    public RepositoriesViewModel() {
-        RxBookApp.getInstance().getGraph().inject(this);
+    public RepositoriesViewModel(DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
+                                 DataLayer.GetGitHubRepository getGitHubRepository) {
+        this.getGitHubRepositorySearch = getGitHubRepositorySearch;
+        this.getGitHubRepository = getGitHubRepository;
         Log.v(TAG, "RepositoriesViewModel");
     }
 

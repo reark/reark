@@ -3,9 +3,6 @@ buildscript {
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
-    }
 }
 
 repositories {
@@ -26,6 +23,10 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
+    }
+    dexOptions {
+        preDexLibraries false
+        incremental true
     }
     buildTypes {
         release {
@@ -56,7 +57,9 @@ dependencies {
     apt 'com.google.dagger:dagger-compiler:2.0'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'com.squareup.retrofit:retrofit:1.6.1'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    compile ('com.squareup.okhttp:okhttp-urlconnection:2.0.0') {
+        exclude group: 'com.squareup.okhttp', module: 'okhttp'
+    }
     compile 'com.squareup.okhttp:okhttp:2.0.0'
 
     // Unit test build

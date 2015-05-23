@@ -1,6 +1,7 @@
 package com.tehmou.rxbookapp.fragments;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.ChooseRepositoryActivity;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
@@ -11,18 +12,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import javax.inject.Inject;
+
 /**
  * Created by ttuo on 19/03/14.
  */
 public class RepositoriesFragment extends Fragment {
 
-    private RepositoriesViewModel repositoriesViewModel;
     private RepositoriesView repositoriesView;
+
+    @Inject
+    RepositoriesViewModel repositoriesViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        repositoriesViewModel = new RepositoriesViewModel();
+        RxBookApp.getInstance().getGraph().inject(this);
+
         repositoriesViewModel.getSelectRepository()
                 .subscribe(repository ->
                         ((ChooseRepositoryActivity) getActivity())

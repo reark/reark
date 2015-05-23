@@ -1,8 +1,9 @@
 package com.tehmou.rxbookapp.viewmodels;
 
-import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.data.DataStreamNotification;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
 import android.util.Log;
 
@@ -10,12 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import rx.Observable;
+import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 
 
@@ -27,20 +26,20 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
-    @Inject
-    DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
-
-    @Inject
-    DataLayer.GetGitHubRepository getGitHubRepository;
+    private final DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
+    private final DataLayer.GetGitHubRepository getGitHubRepository;
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
     private final BehaviorSubject<List<GitHubRepository>> repositories
             = BehaviorSubject.create();
+    private final BehaviorSubject<String> networkRequestStatusText = BehaviorSubject.create();
 
-    public RepositoriesViewModel() {
-        RxBookApp.getInstance().getGraph().inject(this);
+    public RepositoriesViewModel(DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
+                                 DataLayer.GetGitHubRepository getGitHubRepository) {
+        this.getGitHubRepositorySearch = getGitHubRepositorySearch;
+        this.getGitHubRepository = getGitHubRepository;
         Log.v(TAG, "RepositoriesViewModel");
     }
 
@@ -48,12 +47,28 @@ public class RepositoriesViewModel extends AbstractViewModel {
     protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
+        ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
+                Observable.switchOnNext(searchString)
+                        .filter((string) -> string.length() > 2)
+                        .throttleLast(500, TimeUnit.MILLISECONDS)
+                        .switchMap(getGitHubRepositorySearch::call)
+                        .publish();
+
         compositeSubscription.add(
-                Observable.switchOnNext(
-                        Observable.switchOnNext(searchString)
-                                .filter((string) -> string.length() > 2)
-                                .throttleLast(500, TimeUnit.MILLISECONDS)
-                                .map(getGitHubRepositorySearch::call))
+                repositorySearchSource
+                        .subscribe(notification -> {
+                            if (notification.isFetchingStart()) {
+                                networkRequestStatusText.onNext("Loading..");
+                            } else if (notification.isFetchingError()) {
+                                networkRequestStatusText.onNext("Error occured");
+                            } else {
+                                networkRequestStatusText.onNext("");
+                            }
+                        }));
+        compositeSubscription.add(
+                repositorySearchSource
+                        .filter(DataStreamNotification::isOnNext)
+                        .map(DataStreamNotification::getValue)
                         .flatMap((repositorySearch) -> {
                             Log.d(TAG, "Found " + repositorySearch.getItems().size() +
                                     " repositories with search " + repositorySearch.getSearch());
@@ -85,10 +100,16 @@ public class RepositoriesViewModel extends AbstractViewModel {
                             Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
                             RepositoriesViewModel.this.repositories.onNext(repositories);
                         }));
+
+        compositeSubscription.add(repositorySearchSource.connect());
     }
 
     public Observable<List<GitHubRepository>> getRepositories() {
         return repositories;
+    }
+
+    public Observable<String> getNetworkRequestStatusText() {
+        return networkRequestStatusText;
     }
 
     public void setSearchStringObservable(Observable<String> searchStringObservable) {

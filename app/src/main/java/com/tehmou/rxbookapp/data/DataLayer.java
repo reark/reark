@@ -1,60 +1,65 @@
 package com.tehmou.rxbookapp.data;
 
-import com.tehmou.rxbookapp.network.NetworkApi;
+import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
+import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
+import com.tehmou.rxbookapp.data.utils.DataLayerUtils;
+import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
+import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import android.content.ContentResolver;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 
 /**
  * Created by ttuo on 19/03/14.
  */
-public class DataLayer {
-    private final NetworkApi networkApi;
-    private final GitHubRepositoryStore gitHubRepositoryStore;
-    private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
-    private final UserSettingsStore userSettingsStore;
+public class DataLayer extends DataLayerBase {
+    private static final String TAG = DataLayer.class.getSimpleName();
+    private final Context context;
+    protected final UserSettingsStore userSettingsStore;
 
-    public DataLayer(ContentResolver contentResolver) {
-        networkApi = new NetworkApi();
-        gitHubRepositoryStore = new GitHubRepositoryStore(contentResolver);
-        gitHubRepositorySearchStore = new GitHubRepositorySearchStore(contentResolver);
-        userSettingsStore = new UserSettingsStore(contentResolver);
+    public DataLayer(Context context,
+                     UserSettingsStore userSettingsStore,
+                     NetworkRequestStatusStore networkRequestStatusStore,
+                     GitHubRepositoryStore gitHubRepositoryStore,
+                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+        super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
+        this.context = context;
+        this.userSettingsStore = userSettingsStore;
     }
 
-    public Observable<GitHubRepositorySearch> getGitHubRepositorySearch(final String search) {
-        Observable.<List<GitHubRepository>>create((subscriber) -> {
-                    try {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("q", search);
-                        List<GitHubRepository> results = networkApi.search(params);
-                        subscriber.onNext(results);
-                        subscriber.onCompleted();
-                    } catch (Exception e) {
-                        subscriber.onError(e);
-                    }
-                })
-                .subscribeOn(Schedulers.computation())
-                .map((repositories) -> {
-                    final List<Integer> repositoryIds = new ArrayList<>();
-                    for (GitHubRepository repository : repositories) {
-                        gitHubRepositoryStore.put(repository);
-                        repositoryIds.add(repository.getId());
-                    }
-                    return new GitHubRepositorySearch(search, repositoryIds);
-                })
-                .subscribe(gitHubRepositorySearchStore::put);
-        return gitHubRepositorySearchStore.getStream(search);
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(final String searchString) {
+        final Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
+        final Observable<NetworkRequestStatus> networkRequestStatusObservable =
+                networkRequestStatusStore.getStream(uri.toString().hashCode());
+        final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
+                gitHubRepositorySearchStore.getStream(searchString);
+        return DataLayerUtils.createDataStreamNotificationObservable(
+                        networkRequestStatusObservable, gitHubRepositorySearchObservable);
+    }
+
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(final String searchString) {
+        final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositoryStream =
+                getGitHubRepositorySearch(searchString);
+        fetchGitHubRepositorySearch(searchString);
+        return gitHubRepositoryStream;
+    }
+
+    private void fetchGitHubRepositorySearch(final String searchString) {
+        Intent intent = new Intent(context, NetworkService.class);
+        intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
+        intent.putExtra("searchString", searchString);
+        context.startService(intent);
     }
 
     public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {
@@ -67,21 +72,14 @@ public class DataLayer {
     }
 
     private void fetchGitHubRepository(Integer repositoryId) {
-        Observable.<GitHubRepository>create(subscriber -> {
-                    try {
-                        GitHubRepository repository = networkApi.getRepository(repositoryId);
-                        subscriber.onNext(repository);
-                        subscriber.onCompleted();
-                    } catch (Exception e) {
-                        subscriber.onError(e);
-                    }
-                })
-                .subscribeOn(Schedulers.computation())
-                .subscribe(gitHubRepositoryStore::put);
+        Intent intent = new Intent(context, NetworkService.class);
+        intent.putExtra("contentUriString", gitHubRepositoryStore.getContentUri().toString());
+        intent.putExtra("id", repositoryId);
+        context.startService(intent);
     }
 
     public Observable<UserSettings> getUserSettings() {
-        return userSettingsStore.getStream(UserSettingsStore.DEFAULT_USER_ID);
+        return userSettingsStore.getStream(UserSettingsContract.DEFAULT_USER_ID);
     }
 
     public void setUserSettings(UserSettings userSettings) {
@@ -105,6 +103,6 @@ public class DataLayer {
     }
 
     public static interface GetGitHubRepositorySearch {
-        Observable<GitHubRepositorySearch> call(String search);
+        Observable<DataStreamNotification<GitHubRepositorySearch>> call(String search);
     }
 }

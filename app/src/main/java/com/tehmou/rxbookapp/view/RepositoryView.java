@@ -48,7 +48,7 @@ public class RepositoryView extends FrameLayout {
 
     private void setRepository(GitHubRepository repository) {
         titleTextView.setText(repository.getName());
-        stargazersTextView.setText("watching: " + repository.getStargazersCount());
+        stargazersTextView.setText("stars: " + repository.getStargazersCount());
         forksTextView.setText("forks: " + repository.getForksCount());
     }
 }

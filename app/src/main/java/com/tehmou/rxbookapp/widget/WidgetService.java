@@ -66,7 +66,7 @@ public class WidgetService extends Service {
                             remoteViews.setTextViewText(R.id.widget_layout_stargazers,
                                     "stars: " + repository.getStargazersCount());
                             remoteViews.setTextViewText(R.id.widget_layout_forks,
-                                    "watching: " + repository.getForksCount());
+                                    "forks: " + repository.getForksCount());
                             appWidgetManager.updateAppWidget(widgetId, remoteViews);
                         })
         );

@@ -1,3 +1,10 @@
+Latest Updates
+==============
+
+* The [develop](https://github.com/tehmou/rx-android-architecture/tree/develop) branch is getting stable
+* All networking in develop is moved to a separate Service
+
+
 Reference Architecture for Android using RxJava
 ===============================================
 

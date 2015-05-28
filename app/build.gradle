@@ -42,6 +42,12 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+
+    lintOptions {
+        // For Okio
+        // https://github.com/square/okio/issues/58
+        warning 'InvalidPackage'
+    }
 }
 
 retrolambda {

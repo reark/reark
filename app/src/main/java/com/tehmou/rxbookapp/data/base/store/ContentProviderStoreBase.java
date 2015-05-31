@@ -15,6 +15,8 @@ import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -27,7 +29,7 @@ abstract public class ContentProviderStoreBase<T, U> {
     private static final String TAG = ContentProviderStoreBase.class.getSimpleName();
 
     final protected ContentResolver contentResolver;
-    final private Map<Uri, Subject<T, T>> subjectMap = new HashMap<>();
+    final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
     final private DatabaseContract<T> databaseContract;
     final private ContentObserver contentObserver = getContentObserver();
 
@@ -78,11 +80,8 @@ abstract public class ContentProviderStoreBase<T, U> {
 
     private Observable<T> lazyGetSubject(U id) {
         Log.v(TAG, "lazyGetSubject(" + id + ")");
-        Uri uri = getUriForKey(id);
-        if (!subjectMap.containsKey(uri)) {
-            Log.v(TAG, "Creating subject for id=" + id);
-            subjectMap.put(uri, PublishSubject.<T>create());
-        }
+        final Uri uri = getUriForKey(id);
+        subjectMap.putIfAbsent(uri, PublishSubject.<T>create());
         return subjectMap.get(uri);
     }
 

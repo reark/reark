@@ -99,6 +99,12 @@ abstract public class ContractContentProviderBase extends ContentProviderBase {
         return databaseRoutes.get(match);
     }
 
+    @Override
+    protected void notifyChange(int match, Uri uri) {
+        getDatabaseRouteForMatch(match).notifyChange(uri,
+                (value) -> getContext().getContentResolver().notifyChange(value, null));
+    }
+
     abstract protected String getProviderName();
     abstract protected String getDatabaseName();
     abstract protected int getDatabaseVersion();

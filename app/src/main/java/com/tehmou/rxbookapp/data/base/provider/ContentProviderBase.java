@@ -40,7 +40,7 @@ abstract public class ContentProviderBase extends ContentProvider {
         String where = getWhere(match, uri);
         int count = db.delete(tableName, where, selectionArgs);
         if (count > 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            notifyChange(match, uri);
         }
         return count;
     }
@@ -52,7 +52,7 @@ abstract public class ContentProviderBase extends ContentProvider {
         String tableName = getTableName(match);
         db.insertWithOnConflict(tableName,
                 null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        getContext().getContentResolver().notifyChange(uri, null);
+        notifyChange(match, uri);
         return uri;
     }
 
@@ -101,7 +101,7 @@ abstract public class ContentProviderBase extends ContentProvider {
 
         int count = db.update(tableName, values, where, selectionArgs);
         if (count > 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            notifyChange(match, uri);
         }
         return count;
     }
@@ -111,4 +111,5 @@ abstract public class ContentProviderBase extends ContentProvider {
     abstract protected String getDefaultSortOrder(final int match);
     abstract protected SQLiteOpenHelper createDatabaseHelper(final Context context);
     abstract protected void createUriMatcher();
+    abstract protected void notifyChange(final int match, Uri uri);
 }

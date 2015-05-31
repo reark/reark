@@ -5,6 +5,7 @@ import com.tehmou.rxbookapp.data.DataStreamNotification;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
@@ -24,6 +26,10 @@ import rx.subscriptions.CompositeSubscription;
 public class RepositoriesViewModel extends AbstractViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
 
+    public enum ProgressStatus {
+        LOADING, ERROR, IDLE
+    }
+
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
     private final DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
@@ -34,7 +40,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private final BehaviorSubject<List<GitHubRepository>> repositories
             = BehaviorSubject.create();
-    private final BehaviorSubject<String> networkRequestStatusText = BehaviorSubject.create();
+    private final BehaviorSubject<ProgressStatus> networkRequestStatusText = BehaviorSubject.create();
 
     public RepositoriesViewModel(DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
                                  DataLayer.GetGitHubRepository getGitHubRepository) {
@@ -49,36 +55,28 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
                 Observable.switchOnNext(searchString)
-                        .filter((string) -> string.length() > 2)
-                        .throttleLast(500, TimeUnit.MILLISECONDS)
-                        .switchMap(getGitHubRepositorySearch::call)
-                        .publish();
+                          .filter((string) -> string.length() > 2)
+                          .throttleLast(500, TimeUnit.MILLISECONDS)
+                          .switchMap(getGitHubRepositorySearch::call)
+                          .publish();
 
-        compositeSubscription.add(
-                repositorySearchSource
-                        .subscribe(notification -> {
-                            if (notification.isFetchingStart()) {
-                                networkRequestStatusText.onNext("Loading..");
-                            } else if (notification.isFetchingError()) {
-                                networkRequestStatusText.onNext("Error occured");
-                            } else {
-                                networkRequestStatusText.onNext("");
-                            }
-                        }));
+        compositeSubscription.add(repositorySearchSource
+                                          .map(toProgressStatus())
+                                          .subscribe(this::setNetworkStatusText));
         compositeSubscription.add(
                 repositorySearchSource
                         .filter(DataStreamNotification::isOnNext)
                         .map(DataStreamNotification::getValue)
                         .flatMap((repositorySearch) -> {
                             Log.d(TAG, "Found " + repositorySearch.getItems().size() +
-                                    " repositories with search " + repositorySearch.getSearch());
+                                       " repositories with search " + repositorySearch.getSearch());
                             final List<Observable<GitHubRepository>> observables = new ArrayList<>();
                             for (int repositoryId : repositorySearch.getItems()) {
                                 Log.v(TAG, "Process repositoryId: " + repositoryId);
                                 final Observable<GitHubRepository> observable =
                                         getGitHubRepository.call(repositoryId)
-                                                .doOnNext((repository) ->
-                                                        Log.v(TAG, "Received repository " + repository.getId()));
+                                                           .doOnNext((repository) ->
+                                                                             Log.v(TAG, "Received repository " + repository.getId()));
                                 observables.add(observable);
                                 if (observables.size() >= MAX_REPOSITORIES_DISPLAYED) {
                                     break;
@@ -94,7 +92,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
                                         }
                                         return list;
                                     }
-                            );
+                                                           );
                         })
                         .subscribe((repositories) -> {
                             Log.d(TAG, "Publishing " + repositories.size() + " repositories from the ViewModel");
@@ -104,11 +102,28 @@ public class RepositoriesViewModel extends AbstractViewModel {
         compositeSubscription.add(repositorySearchSource.connect());
     }
 
+    @NonNull
+    static Func1<DataStreamNotification<GitHubRepositorySearch>, ProgressStatus> toProgressStatus() {
+        return notification -> {
+            if (notification.isFetchingStart()) {
+                return ProgressStatus.LOADING;
+            } else if (notification.isFetchingError()) {
+                return ProgressStatus.ERROR;
+            } else {
+                return ProgressStatus.IDLE;
+            }
+        };
+    }
+
+    private void setNetworkStatusText(ProgressStatus status) {
+        networkRequestStatusText.onNext(status);
+    }
+
     public Observable<List<GitHubRepository>> getRepositories() {
         return repositories;
     }
 
-    public Observable<String> getNetworkRequestStatusText() {
+    public Observable<ProgressStatus> getNetworkRequestStatusText() {
         return networkRequestStatusText;
     }
 

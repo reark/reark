@@ -4,6 +4,7 @@ import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.utils.RxBinderUtil;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
+import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -68,7 +69,7 @@ public class RepositoriesView extends FrameLayout {
         if (viewModel != null) {
             rxBinderUtil.bindProperty(viewModel.getRepositories(), this::setRepositories);
             rxBinderUtil.bindProperty(
-                    viewModel.getNetworkRequestStatusText(), this::setNetworkRequestStatusText);
+                    viewModel.getNetworkRequestStatusText(), this::setNetworkRequestStatus);
             viewModel.setSearchStringObservable(searchStringObservable);
         }
     }
@@ -76,6 +77,23 @@ public class RepositoriesView extends FrameLayout {
     private void setRepositories(List<GitHubRepository> repositories) {
         listAdapter.clear();
         listAdapter.addAll(repositories);
+    }
+
+    private void setNetworkRequestStatus(ProgressStatus networkRequestStatus) {
+        String networkStatusText = "";
+        switch (networkRequestStatus) {
+
+            case LOADING:
+                networkStatusText = "Loading..";
+                break;
+            case ERROR:
+                networkStatusText = "Error occurred";
+                break;
+            case IDLE:
+                networkStatusText = "";
+                break;
+        }
+        setNetworkRequestStatusText(networkStatusText);
     }
 
     private void setNetworkRequestStatusText(String networkRequestStatusText) {

@@ -6,12 +6,17 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -24,8 +29,9 @@ abstract public class ContentProviderStoreBase<T, U> {
     private static final String TAG = ContentProviderStoreBase.class.getSimpleName();
 
     final protected ContentResolver contentResolver;
-    final private Map<Uri, Subject<T, T>> subjectMap = new HashMap<>();
+    final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
     final private DatabaseContract<T> databaseContract;
+    final private ContentObserver contentObserver = getContentObserver();
 
     public ContentProviderStoreBase(ContentResolver contentResolver,
                                     DatabaseContract<T> databaseContract) {
@@ -35,16 +41,27 @@ abstract public class ContentProviderStoreBase<T, U> {
                 getContentUri(), true, contentObserver);
     }
 
-    final private ContentObserver contentObserver = new ContentObserver(new Handler()) {
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            super.onChange(selfChange, uri);
-            Log.v(TAG, "onChange(" + uri + ")");
-            if (subjectMap.containsKey(uri)) {
-                subjectMap.get(uri).onNext(query(uri));
+    @NonNull
+    private ContentObserver getContentObserver() {
+        return new ContentObserver(createHandler(this.getClass().getSimpleName())) {
+            @Override
+            public void onChange(boolean selfChange, Uri uri) {
+                super.onChange(selfChange, uri);
+                Log.v(TAG, "onChange(" + uri + ")");
+
+                if (subjectMap.containsKey(uri)) {
+                    subjectMap.get(uri).onNext(query(uri));
+                }
             }
-        }
-    };
+        };
+    }
+
+    @NonNull
+    private static Handler createHandler(String name) {
+        HandlerThread handlerThread = new HandlerThread(name);
+        handlerThread.start();
+        return new Handler(handlerThread.getLooper());
+    }
 
     public void put(T item) {
         insertOrUpdate(item);
@@ -63,11 +80,8 @@ abstract public class ContentProviderStoreBase<T, U> {
 
     private Observable<T> lazyGetSubject(U id) {
         Log.v(TAG, "lazyGetSubject(" + id + ")");
-        Uri uri = getUriForKey(id);
-        if (!subjectMap.containsKey(uri)) {
-            Log.v(TAG, "Creating subject for id=" + id);
-            subjectMap.put(uri, PublishSubject.<T>create());
-        }
+        final Uri uri = getUriForKey(id);
+        subjectMap.putIfAbsent(uri, PublishSubject.<T>create());
         return subjectMap.get(uri);
     }
 

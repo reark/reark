@@ -1,0 +1,33 @@
+jdk:
+  - oraclejdk8
+language: android
+notifications:
+  flowdock:
+    secure: bhwxUkpOJB0lVS19SgFLo5fKl7CbceJWFrZ6BnrcIZ0K1C4NBZsOT0j6FNNrFxTD4mUtLRzDyzTN8Kt2B1isVI9gt14rNM8N4V6WWBDBL5hqKO0S/521bRqpZhGc6bNbAjSxRv4IZ1P0g0Dd0KRTCmg25oRJwhDNdJ/i2q3ZjcUxEHp4ppqQ7VP6pKwPtbcBbp3J9BUTar7+o2QOQxCCLy/Otn2Wytxgz9N0hOL8ue1K4PqwLVTnjC+hiHaYCVoq0OzltCjm7TqzhjvGsNjqosI0mg+jRNEuLbUNl1rOOiNlqEDXUmeUq9V3elN2fedoG9ltGl+qMdQXBAdCiVhpC4RlVXk+a82fGrEojw/IJ80Try1QbFj6WNgd8GURBQJFsKJwhdz0YO3pmTFhRbV1bCz4mejVPb7mRj7fGtSh1Vz3HQTpNIIePJZKGV5N7pCEGHonoB4i+ofE1XOslQBxhHweUJeGWbvvCkmnS+nWULqi7Qfx7x/TZFVuh0+8gnPgccQza2HJeXkE4f7RWqcQZV7Np5CO6lyqJxCvkp9mc1pc0CLR9IHHmXzIlrvtKU4thHkcl2Uuc7y6o4i53af1NeqvBUHj9CeIjrg9cA/NXioj8fZaiw740uSawSD5vWvq7EFRwSbpRZ7HndHy1Bml0+4aklrtZOggmR3uBempuBI=
+android:
+  components:
+    # Uncomment the lines below if you want to
+    # use the latest revision of Android SDK Tools
+    # - platform-tools
+    # - tools
+
+    # The BuildTools version used by your project
+    - build-tools-22.0.1
+
+    # The SDK version used to compile your project
+    - android-22
+
+    # Emulator for UI testing
+    # version 21 is already provided by travis.
+    - sys-img-armeabi-v7a-android-21
+
+    - extra
+
+before_script:
+    - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
+    - emulator -avd test -no-skin -no-audio -no-window &
+    - android-wait-for-emulator
+    - adb shell input keyevent 82 &
+
+script:
+    - ./gradlew build connectedAndroidTest

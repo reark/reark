@@ -51,7 +51,7 @@ android {
 }
 
 retrolambda {
-    javaVersion JavaVersion.VERSION_1_6
+    jvmArgs '-noverify'
 }
 
 dependencies {

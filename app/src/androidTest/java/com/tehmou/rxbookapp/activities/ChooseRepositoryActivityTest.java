@@ -1,11 +1,17 @@
 package com.tehmou.rxbookapp.activities;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.activities.utils.SystemAnimations;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -26,6 +32,11 @@ public class ChooseRepositoryActivityTest {
     @Rule
     public ActivityTestRule<ChooseRepositoryActivity> activityRule = new ActivityTestRule<>(ChooseRepositoryActivity.class);
 
+    @BeforeClass
+    public static void setUp() {
+        SystemAnimations.disableAll(InstrumentationRegistry.getContext());
+    }
+
     @Test
     public void testInitialActivityState() {
         onView(withId(R.id.repositories_list_view)).check(matches(isDisplayed()));
@@ -37,5 +48,10 @@ public class ChooseRepositoryActivityTest {
     @Test
     public void testCanPerformInsertingSearchText() {
         onView(withId(R.id.repositories_search)).perform(typeText("rx-android-architecture"));
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        SystemAnimations.enableAll(InstrumentationRegistry.getContext());
     }
 }

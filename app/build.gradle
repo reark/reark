@@ -97,6 +97,7 @@ def packageName = 'com.tehmou.rxbookapp'
 def command = "$adb shell pm grant $packageName android.permission.SET_ANIMATION_SCALE".split(' ')
 
 task grantAnimationPermission(type: Exec, dependsOn: 'installDebug') {
+    println ""
     println '================================================='
     println 'Granting permission to disable animations'
     commandLine command

@@ -23,11 +23,14 @@ android:
 
     - extra
 
-before_script:
+before_install:
     - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
-    - emulator -avd test -no-skin -no-audio -no-window &
+    - emulator -avd test -skin QVGA -no-audio -no-window &
+
+before_script:
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
 
 script:
-    - ./gradlew build connectedAndroidTest
+    - ./gradlew test
+    - ./gradlew connectedAndroidTest

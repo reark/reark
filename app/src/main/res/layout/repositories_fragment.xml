@@ -16,7 +16,7 @@
             android:id="@+id/repositories_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:inputType="textNoSuggestions"
             android:height="50dp"/>
         <TextView
             android:id="@+id/repositories_status_text"

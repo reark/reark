@@ -74,6 +74,10 @@ dependencies {
     }
     compile 'com.squareup.okhttp:okhttp:2.0.0'
 
+    // Leak tracing
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
+
     // Unit test build
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.5'

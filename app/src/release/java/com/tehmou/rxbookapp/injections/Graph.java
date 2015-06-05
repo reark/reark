@@ -1,11 +1,10 @@
 package com.tehmou.rxbookapp.injections;
 
+import com.tehmou.rxbookapp.injections.DaggerGraph;
 import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.data.DataStoreModule;
-import com.tehmou.rxbookapp.data.stores.StoreModule;
 import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
 import com.tehmou.rxbookapp.fragments.RepositoryFragment;
-import com.tehmou.rxbookapp.network.NetworkModule;
 import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
@@ -22,7 +21,8 @@ import dagger.Component;
  * Created by pt2121 on 2/20/15.
  */
 @Singleton
-@Component(modules = {ApplicationModule.class, DataStoreModule.class, ViewModelModule.class})
+@Component(modules = {ApplicationModule.class, DataStoreModule.class, ViewModelModule.class,
+                      InstrumentationModule.class})
 public interface Graph {
 
     void inject(RepositoriesViewModel repositoriesViewModel);
@@ -37,8 +37,8 @@ public interface Graph {
 
         public static Graph init(Application application) {
             return DaggerGraph.builder()
-                    .applicationModule(new ApplicationModule(application))
-                    .build();
+                              .applicationModule(new ApplicationModule(application))
+                              .build();
         }
     }
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.MainActivity;
+import com.tehmou.rxbookapp.utils.Instrumentation;
 import com.tehmou.rxbookapp.view.RepositoryView;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 
@@ -22,6 +23,9 @@ public class RepositoryFragment extends Fragment {
 
     @Inject
     RepositoryViewModel viewModel;
+
+    @Inject
+    Instrumentation instrumentation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,5 +73,6 @@ public class RepositoryFragment extends Fragment {
         super.onDestroy();
         viewModel.dispose();
         viewModel = null;
+        instrumentation.getLeakTracing().traceLeakage(this);
     }
 }

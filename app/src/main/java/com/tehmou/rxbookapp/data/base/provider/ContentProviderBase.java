@@ -27,10 +27,7 @@ abstract public class ContentProviderBase extends ContentProvider {
         Context context = getContext();
         databaseHelper = createDatabaseHelper(context);
         db = databaseHelper.getWritableDatabase();
-        if (db != null) {
-            return true;
-        }
-        return false;
+        return db != null;
     }
 
     @Override

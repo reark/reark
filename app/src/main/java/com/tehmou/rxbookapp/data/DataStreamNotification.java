@@ -1,5 +1,7 @@
 package com.tehmou.rxbookapp.data;
 
+import android.support.annotation.Nullable;
+
 /**
  * Created by ttuo on 06/05/15.
  */
@@ -19,6 +21,7 @@ public class DataStreamNotification<T> {
         this.error = error;
     }
 
+    @Nullable
     public T getValue() {
         return value;
     }
@@ -47,6 +50,7 @@ public class DataStreamNotification<T> {
         return type.equals(Type.FETCHING_ERROR);
     }
 
+    @Nullable
     public Throwable getError() {
         return error;
     }

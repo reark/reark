@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp.injections;
 
+import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.injections.DaggerGraph;
 import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.data.DataStoreModule;
@@ -32,8 +33,9 @@ public interface Graph {
     void inject(RepositoriesFragment repositoriesFragment);
     void inject(RepositoryFragment repositoryFragment);
     void inject(NetworkService networkService);
+    void inject(RxBookApp rxBookApp);
 
-    public final static class Initializer {
+    final class Initializer {
 
         public static Graph init(Application application) {
             return DaggerGraph.builder()

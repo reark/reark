@@ -3,13 +3,9 @@ package com.tehmou.rxbookapp.injections;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.data.DataStoreModule;
-import com.tehmou.rxbookapp.data.stores.StoreModule;
 import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
 import com.tehmou.rxbookapp.fragments.RepositoryFragment;
-import com.tehmou.rxbookapp.network.NetworkModule;
 import com.tehmou.rxbookapp.network.NetworkService;
-import com.tehmou.rxbookapp.utils.DebugInstrumentation;
-import com.tehmou.rxbookapp.utils.Instrumentation;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 import com.tehmou.rxbookapp.viewmodels.ViewModelModule;
@@ -38,12 +34,13 @@ public interface Graph {
     void inject(NetworkService networkService);
     void inject(RxBookApp rxBookApp);
 
-    public final static class Initializer {
+    final class Initializer {
 
         public static Graph init(Application application) {
             return DaggerGraph.builder()
                     .applicationModule(new ApplicationModule(application))
                     .build();
         }
+
     }
 }

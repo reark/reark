@@ -86,23 +86,23 @@ public class DataLayer extends DataLayerBase {
         userSettingsStore.insertOrUpdate(userSettings);
     }
 
-    public static interface GetUserSettings {
+    public interface GetUserSettings {
         Observable<UserSettings> call();
     }
 
-    public static interface SetUserSettings {
+    public interface SetUserSettings {
         void call(UserSettings userSettings);
     }
 
-    public static interface GetGitHubRepository {
+    public interface GetGitHubRepository {
         Observable<GitHubRepository> call(int repositoryId);
     }
 
-    public static interface FetchAndGetGitHubRepository extends GetGitHubRepository {
+    public interface FetchAndGetGitHubRepository extends GetGitHubRepository {
 
     }
 
-    public static interface GetGitHubRepositorySearch {
+    public interface GetGitHubRepositorySearch {
         Observable<DataStreamNotification<GitHubRepositorySearch>> call(String search);
     }
 }

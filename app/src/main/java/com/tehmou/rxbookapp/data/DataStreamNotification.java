@@ -4,6 +4,7 @@ package com.tehmou.rxbookapp.data;
  * Created by ttuo on 06/05/15.
  */
 public class DataStreamNotification<T> {
+
     private enum Type {
         FETCHING_START, FETCHING_ERROR, ON_NEXT
     }
@@ -44,5 +45,9 @@ public class DataStreamNotification<T> {
 
     public boolean isFetchingError() {
         return type.equals(Type.FETCHING_ERROR);
+    }
+
+    public Throwable getError() {
+        return error;
     }
 }

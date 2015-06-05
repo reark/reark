@@ -31,14 +31,12 @@ abstract public class ContentProviderStoreBase<T, U> {
     final protected ContentResolver contentResolver;
     final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
     final private DatabaseContract<T> databaseContract;
-    final private ContentObserver contentObserver = getContentObserver();
 
     public ContentProviderStoreBase(ContentResolver contentResolver,
                                     DatabaseContract<T> databaseContract) {
         this.contentResolver = contentResolver;
         this.databaseContract = databaseContract;
-        this.contentResolver.registerContentObserver(
-                getContentUri(), true, contentObserver);
+        this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
     }
 
     @NonNull

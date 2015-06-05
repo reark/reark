@@ -1,16 +1,12 @@
 package com.tehmou.rxbookapp.viewmodels;
 
-import android.util.Log;
-
-import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
-import javax.inject.Inject;
+import android.util.Log;
 
 import rx.subjects.BehaviorSubject;
-import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 
 /**

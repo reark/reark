@@ -12,7 +12,6 @@ import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;

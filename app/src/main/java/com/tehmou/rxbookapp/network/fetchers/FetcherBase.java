@@ -1,10 +1,9 @@
 package com.tehmou.rxbookapp.network.fetchers;
 
-import android.util.Log;
-
-import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
+
+import android.util.Log;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

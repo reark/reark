@@ -1,17 +1,14 @@
 package com.tehmou.rxbookapp.network.fetchers;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
-
-import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
-import com.tehmou.rxbookapp.data.utils.DataLayerUtils;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
-import retrofit.RetrofitError;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;

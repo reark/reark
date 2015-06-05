@@ -1,11 +1,9 @@
 package com.tehmou.rxbookapp.data.provider;
 
-import android.net.Uri;
-
 import com.tehmou.rxbookapp.data.base.contract.SerializedJsonContract;
 import com.tehmou.rxbookapp.data.base.route.DatabaseRouteBase;
 
-import java.util.List;
+import android.net.Uri;
 
 /**
  * Created by ttuo on 04/05/15.

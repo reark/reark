@@ -1,24 +1,13 @@
 package com.tehmou.rxbookapp.network;
 
+import com.tehmou.rxbookapp.RxBookApp;
+
 import android.app.Service;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.tehmou.rxbookapp.RxBookApp;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
-
-import rx.Observable;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by ttuo on 16/04/15.

@@ -23,13 +23,12 @@ import rx.android.widget.WidgetObservable;
  * Created by ttuo on 06/01/15.
  */
 public class RepositoriesView extends FrameLayout {
-    private static final String TAG = RepositoriesView.class.getSimpleName();
+
     private final RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
 
     private ArrayAdapter<GitHubRepository> listAdapter;
     private TextView statusText;
-    private ListView listView;
-    private EditText editText;
+
     private Observable<String> searchStringObservable;
 
     private RepositoriesViewModel viewModel;
@@ -46,7 +45,7 @@ public class RepositoriesView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        listView = (ListView) findViewById(R.id.repositories_list_view);
+        ListView listView = (ListView) findViewById(R.id.repositories_list_view);
         listAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1);
         listView.setOnItemClickListener((parent, view, position, id) -> {
             if (viewModel != null) {
@@ -56,7 +55,7 @@ public class RepositoriesView extends FrameLayout {
         });
         listView.setAdapter(listAdapter);
 
-        editText = (EditText) findViewById(R.id.repositories_search);
+        EditText editText = (EditText) findViewById(R.id.repositories_search);
         searchStringObservable = WidgetObservable.text(editText)
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString());
 

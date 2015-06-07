@@ -30,6 +30,12 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
+    Application providesApplication() {
+        return application;
+    }
+
+    @Provides
+    @Singleton
     public ContentResolver contentResolver(@ForApplication Context context) {
         return context.getContentResolver();
     }

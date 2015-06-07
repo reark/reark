@@ -17,6 +17,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -47,7 +48,7 @@ public class ChooseRepositoryActivityTest {
 
     @Test
     public void testCanPerformInsertingSearchText() {
-        onView(withId(R.id.repositories_search)).perform(typeText("rx-android-architecture"));
+        onView(withId(R.id.repositories_search)).perform(closeSoftKeyboard(), typeText("rx-android-architecture"));
     }
 
     @AfterClass

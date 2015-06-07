@@ -1,7 +1,6 @@
 package com.tehmou.rxbookapp.data.utils;
 
 import com.tehmou.rxbookapp.data.DataStreamNotification;
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
 import rx.Observable;

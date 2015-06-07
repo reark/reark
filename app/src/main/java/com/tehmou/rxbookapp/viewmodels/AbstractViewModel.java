@@ -2,10 +2,6 @@ package com.tehmou.rxbookapp.viewmodels;
 
 import android.util.Log;
 
-import com.tehmou.rxbookapp.data.DataLayer;
-
-import javax.inject.Inject;
-
 import rx.subscriptions.CompositeSubscription;
 
 /**

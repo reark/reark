@@ -1,17 +1,14 @@
 package com.tehmou.rxbookapp.view;
 
+import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.utils.RxBinderUtil;
+import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import com.tehmou.rxbookapp.R;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.utils.RxBinderUtil;
-import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
-import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
-
-import java.util.List;
 
 /**
  * Created by ttuo on 06/04/15.

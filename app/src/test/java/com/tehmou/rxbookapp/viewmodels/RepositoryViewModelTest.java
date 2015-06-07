@@ -3,7 +3,6 @@ package com.tehmou.rxbookapp.viewmodels;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import rx.Observable;

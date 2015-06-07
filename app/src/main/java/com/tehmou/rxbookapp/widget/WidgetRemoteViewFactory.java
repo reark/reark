@@ -41,9 +41,7 @@ public class WidgetRemoteViewFactory implements RemoteViewsService.RemoteViewsFa
     @Override
     public RemoteViews getViewAt(int position) {
         Log.d(TAG, "getViewAt(" + position + ")");
-        RemoteViews rv = new RemoteViews(context.getPackageName(),
-                R.layout.widget_layout);
-        return rv;
+        return new RemoteViews(context.getPackageName(), R.layout.widget_layout);
     }
 
     @Override

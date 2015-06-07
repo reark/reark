@@ -13,10 +13,10 @@ import retrofit.http.QueryMap;
  */
 public interface GitHubService {
     @GET("/search/repositories")
-    public GitHubRepositorySearchResults search(
+    GitHubRepositorySearchResults search(
             @QueryMap Map<String, String> search
     );
 
     @GET("/repositories/{id}")
-    public GitHubRepository getRepository(@Path("id") Integer id);
+    GitHubRepository getRepository(@Path("id") Integer id);
 }

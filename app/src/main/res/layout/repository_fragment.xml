@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.tehmou.rxbookapp.view.RepositoryView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/repository_view"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="#ff0000">
+                                          android:id="@+id/repository_view"
+                                          android:layout_width="match_parent"
+                                          android:layout_height="match_parent">
     <include layout="@layout/widget_layout" />
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="@string/repository_fragment_intro" />
-        <Button
-            android:id="@+id/repository_fragment_choose_repository_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:text="@string/repository_fragment_change"/>
+            android:orientation="vertical">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/repository_fragment_intro" />
+        <Button
+                android:id="@+id/repository_fragment_choose_repository_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/repository_fragment_change"/>
     </LinearLayout>
 </com.tehmou.rxbookapp.view.RepositoryView>

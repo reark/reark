@@ -1,5 +1,7 @@
 package com.tehmou.rxbookapp.data.base.store;
 
+import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.ContentObserver;
@@ -7,14 +9,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -31,14 +28,12 @@ abstract public class ContentProviderStoreBase<T, U> {
     final protected ContentResolver contentResolver;
     final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
     final private DatabaseContract<T> databaseContract;
-    final private ContentObserver contentObserver = getContentObserver();
 
     public ContentProviderStoreBase(ContentResolver contentResolver,
                                     DatabaseContract<T> databaseContract) {
         this.contentResolver = contentResolver;
         this.databaseContract = databaseContract;
-        this.contentResolver.registerContentObserver(
-                getContentUri(), true, contentObserver);
+        this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
     }
 
     @NonNull

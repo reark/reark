@@ -17,6 +17,7 @@ public class RxUtilsTest {
 
     @Test(expected = NullPointerException.class)
     public void testToListThrowsExceptionWhenNoItemsAreProvided(){
+        //noinspection NullArgumentToVariableArgMethod,ConstantConditions
         RxUtils.toList(null);
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.android.internal.Preconditions;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
@@ -42,8 +43,13 @@ public class RepositoriesViewModel extends AbstractViewModel {
             = BehaviorSubject.create();
     private final BehaviorSubject<ProgressStatus> networkRequestStatusText = BehaviorSubject.create();
 
-    public RepositoriesViewModel(DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
-                                 DataLayer.GetGitHubRepository getGitHubRepository) {
+    public RepositoriesViewModel(@NonNull DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
+                                 @NonNull DataLayer.GetGitHubRepository getGitHubRepository) {
+        Preconditions.checkNotNull(getGitHubRepositorySearch,
+                                   "GetGitHubRepositorySearch cannot be null.");
+        Preconditions.checkNotNull(getGitHubRepository,
+                                   "GetGitHubRepository cannot be null.");
+
         this.getGitHubRepositorySearch = getGitHubRepositorySearch;
         this.getGitHubRepository = getGitHubRepository;
         Log.v(TAG, "RepositoriesViewModel");
@@ -86,7 +92,9 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @NonNull
-    private Observable<GitHubRepository> getGitHubRepositoryObservable(Integer repositoryId) {
+    Observable<GitHubRepository> getGitHubRepositoryObservable(@NonNull Integer repositoryId) {
+        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+
         return getGitHubRepository.call(repositoryId)
                                   .doOnNext((repository) -> Log.v(TAG, "Received repository "
                                                                        + repository.getId()));
@@ -105,27 +113,36 @@ public class RepositoriesViewModel extends AbstractViewModel {
         };
     }
 
-    private void setNetworkStatusText(ProgressStatus status) {
+    void setNetworkStatusText(@NonNull ProgressStatus status) {
+        Preconditions.checkNotNull(status, "ProgressStatus cannot be null.");
+
         networkRequestStatusText.onNext(status);
     }
 
+    @NonNull
     public Observable<List<GitHubRepository>> getRepositories() {
-        return repositories;
+        return repositories.asObservable();
     }
 
+    @NonNull
     public Observable<ProgressStatus> getNetworkRequestStatusText() {
-        return networkRequestStatusText;
+        return networkRequestStatusText.asObservable();
     }
 
-    public void setSearchStringObservable(Observable<String> searchStringObservable) {
+    public void setSearchStringObservable(@NonNull Observable<String> searchStringObservable) {
+        Preconditions.checkNotNull(searchStringObservable, "Search Observable cannot be null.");
+
         this.searchString.onNext(searchStringObservable);
     }
 
-    public void selectRepository(GitHubRepository repository) {
+    public void selectRepository(@NonNull GitHubRepository repository) {
+        Preconditions.checkNotNull(repository, "Selected repository cannot be null.");
+
         this.selectRepository.onNext(repository);
     }
 
+    @NonNull
     public Observable<GitHubRepository> getSelectRepository() {
-        return selectRepository;
+        return selectRepository.asObservable();
     }
 }

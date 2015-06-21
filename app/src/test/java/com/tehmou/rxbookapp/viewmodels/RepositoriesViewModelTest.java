@@ -6,9 +6,7 @@ import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +28,6 @@ import static org.mockito.Mockito.mock;
  * Created by Pawel Polanski on 5/31/15.
  */
 public class RepositoriesViewModelTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     private RepositoriesViewModel viewModel;
 
@@ -88,56 +83,38 @@ public class RepositoriesViewModelTest {
                      observer.getOnNextEvents().get(0).size());
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionWhenRepositoryIdIsNull() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("Repository Id cannot be null.");
-
         //noinspection ConstantConditions
         viewModel.getGitHubRepositoryObservable(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionWhenNetworkStatusIsNull() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("ProgressStatus cannot be null.");
-
         //noinspection ConstantConditions
         viewModel.setNetworkStatusText(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionWhenSearchStringIsNull() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("Search Observable cannot be null.");
-
         //noinspection ConstantConditions,ConstantConditions
         viewModel.setSearchStringObservable(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionWhenSelectedRepositoryIsNull() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("Selected repository cannot be null.");
-
         //noinspection ConstantConditions
         viewModel.selectRepository(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionConstructedWithNullRepositorySearch() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("GetGitHubRepositorySearch cannot be null.");
-
         //noinspection ConstantConditions
         new RepositoriesViewModel(null, mock(DataLayer.GetGitHubRepository.class));
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionConstructedWithNullRepository() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("GetGitHubRepository cannot be null.");
-
         //noinspection ConstantConditions
         new RepositoriesViewModel(mock(GetGitHubRepositorySearch.class), null);
     }

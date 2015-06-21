@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp.viewmodels;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import rx.subscriptions.CompositeSubscription;
@@ -29,7 +30,7 @@ abstract public class AbstractViewModel {
         }
     }
 
-    abstract void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription);
+    abstract void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription);
 
     public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");

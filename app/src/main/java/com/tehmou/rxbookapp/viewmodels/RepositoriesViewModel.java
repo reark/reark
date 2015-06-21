@@ -33,14 +33,16 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
 
+    @NonNull
     private final DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
+
+    @NonNull
     private final DataLayer.GetGitHubRepository getGitHubRepository;
 
     private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
-    private final BehaviorSubject<List<GitHubRepository>> repositories
-            = BehaviorSubject.create();
+    private final BehaviorSubject<List<GitHubRepository>> repositories = BehaviorSubject.create();
     private final BehaviorSubject<ProgressStatus> networkRequestStatusText = BehaviorSubject.create();
 
     public RepositoriesViewModel(@NonNull DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
@@ -55,8 +57,48 @@ public class RepositoriesViewModel extends AbstractViewModel {
         Log.v(TAG, "RepositoriesViewModel");
     }
 
+    @NonNull
+    public Observable<GitHubRepository> getSelectRepository() {
+        return selectRepository.asObservable();
+    }
+
+    @NonNull
+    public Observable<List<GitHubRepository>> getRepositories() {
+        return repositories.asObservable();
+    }
+
+    @NonNull
+    public Observable<ProgressStatus> getNetworkRequestStatusText() {
+        return networkRequestStatusText.asObservable();
+    }
+
+    public void setSearchStringObservable(@NonNull Observable<String> searchStringObservable) {
+        Preconditions.checkNotNull(searchStringObservable, "Search Observable cannot be null.");
+
+        this.searchString.onNext(searchStringObservable);
+    }
+
+    public void selectRepository(@NonNull GitHubRepository repository) {
+        Preconditions.checkNotNull(repository, "Repository cannot be null.");
+
+        this.selectRepository.onNext(repository);
+    }
+
+    @NonNull
+    static Func1<DataStreamNotification<GitHubRepositorySearch>, ProgressStatus> toProgressStatus() {
+        return notification -> {
+            if (notification.isFetchingStart()) {
+                return ProgressStatus.LOADING;
+            } else if (notification.isFetchingError()) {
+                return ProgressStatus.ERROR;
+            } else {
+                return ProgressStatus.IDLE;
+            }
+        };
+    }
+
     @Override
-    protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
+    protected void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
@@ -100,49 +142,10 @@ public class RepositoriesViewModel extends AbstractViewModel {
                                                                        + repository.getId()));
     }
 
-    @NonNull
-    static Func1<DataStreamNotification<GitHubRepositorySearch>, ProgressStatus> toProgressStatus() {
-        return notification -> {
-            if (notification.isFetchingStart()) {
-                return ProgressStatus.LOADING;
-            } else if (notification.isFetchingError()) {
-                return ProgressStatus.ERROR;
-            } else {
-                return ProgressStatus.IDLE;
-            }
-        };
-    }
-
     void setNetworkStatusText(@NonNull ProgressStatus status) {
         Preconditions.checkNotNull(status, "ProgressStatus cannot be null.");
 
         networkRequestStatusText.onNext(status);
     }
 
-    @NonNull
-    public Observable<List<GitHubRepository>> getRepositories() {
-        return repositories.asObservable();
-    }
-
-    @NonNull
-    public Observable<ProgressStatus> getNetworkRequestStatusText() {
-        return networkRequestStatusText.asObservable();
-    }
-
-    public void setSearchStringObservable(@NonNull Observable<String> searchStringObservable) {
-        Preconditions.checkNotNull(searchStringObservable, "Search Observable cannot be null.");
-
-        this.searchString.onNext(searchStringObservable);
-    }
-
-    public void selectRepository(@NonNull GitHubRepository repository) {
-        Preconditions.checkNotNull(repository, "Selected repository cannot be null.");
-
-        this.selectRepository.onNext(repository);
-    }
-
-    @NonNull
-    public Observable<GitHubRepository> getSelectRepository() {
-        return selectRepository.asObservable();
-    }
 }

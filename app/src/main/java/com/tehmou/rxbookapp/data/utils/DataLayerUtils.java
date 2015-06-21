@@ -3,6 +3,8 @@ package com.tehmou.rxbookapp.data.utils;
 import com.tehmou.rxbookapp.data.DataStreamNotification;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
+import android.support.annotation.NonNull;
+
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -14,9 +16,10 @@ public class DataLayerUtils {
 
     }
 
+    @NonNull
     public static<T> Observable<DataStreamNotification<T>> createDataStreamNotificationObservable(
-            Observable<NetworkRequestStatus> networkRequestStatusObservable,
-            Observable<T> valueObservable) {
+            @NonNull Observable<NetworkRequestStatus> networkRequestStatusObservable,
+            @NonNull Observable<T> valueObservable) {
         final Observable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable
                         .filter(networkRequestStatus ->

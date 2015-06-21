@@ -1,11 +1,13 @@
 package com.tehmou.rxbookapp.utils;
 
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.internal.Preconditions;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
 
@@ -13,14 +15,16 @@ import rx.subjects.Subject;
  * Created by ttuo on 27/01/15.
  */
 public class TextWatcherObservable {
-    static public Observable<String> create(EditText editText) {
+    static public Observable<String> create(@NonNull EditText editText) {
+        Preconditions.checkNotNull(editText, "Edit Text cannot be null.");
+
         return Observable.create(new OnSubscribe(editText));
     }
 
     static class OnSubscribe implements TextWatcher, Observable.OnSubscribe<String> {
         final private Subject<String, String> subject = BehaviorSubject.create();
 
-        private OnSubscribe(EditText editText) {
+        private OnSubscribe(@NonNull EditText editText) {
             editText.addTextChangedListener(this);
         }
 

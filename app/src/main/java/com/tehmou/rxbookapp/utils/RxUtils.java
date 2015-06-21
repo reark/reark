@@ -18,7 +18,9 @@ public final class RxUtils {
     }
 
     @NonNull
-    public static <T> Observable<List<T>> toObservableList(List<Observable<T>> observables) {
+    public static <T> Observable<List<T>> toObservableList(@NonNull List<Observable<T>> observables) {
+        Preconditions.checkNotNull(observables, "Observable List cannot be null.");
+
         return Observable.combineLatest(observables, RxUtils::toList);
     }
 

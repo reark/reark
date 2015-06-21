@@ -4,6 +4,7 @@ import com.tehmou.rxbookapp.injections.Graph;
 import com.tehmou.rxbookapp.utils.Instrumentation;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -29,10 +30,12 @@ public class RxBookApp extends Application {
         instrumentation.init();
     }
 
+    @NonNull
     public static RxBookApp getInstance() {
         return instance;
     }
 
+    @NonNull
     public Graph getGraph() {
         return mGraph;
     }

@@ -3,6 +3,7 @@ package com.tehmou.rxbookapp.network.fetchers;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import retrofit.RetrofitError;
 import rx.Subscription;
+import rx.android.internal.Preconditions;
 import rx.functions.Action1;
 
 /**
@@ -24,28 +26,40 @@ abstract public class FetcherBase implements Fetcher {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
-    public FetcherBase(NetworkApi networkApi,
-                       Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    public FetcherBase(@NonNull NetworkApi networkApi,
+                       @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+        Preconditions.checkNotNull(networkApi, "Network Api cannot be null.");
+        Preconditions.checkNotNull(updateNetworkRequestStatus, "Update Network Status cannot be null.");
+
         this.networkApi = networkApi;
         this.updateNetworkRequestStatus = updateNetworkRequestStatus;
     }
 
-    protected void startRequest(String uri) {
+    protected void startRequest(@NonNull String uri) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+
         Log.v(TAG, "startRequest(" + uri + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
-    protected void errorRequest(String uri, int errorCode, String errorMessage) {
+    protected void errorRequest(@NonNull String uri, int errorCode, String errorMessage) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+
         Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
     }
 
-    protected void completeRequest(String uri) {
+    protected void completeRequest(@NonNull String uri) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+
         Log.v(TAG, "completeRequest(" + uri + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
     }
 
-    public Action1<Throwable> doOnError(final String uri) {
+    @NonNull
+    public Action1<Throwable> doOnError(@NonNull final String uri) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+
         return throwable -> {
             if (throwable instanceof RetrofitError) {
                 RetrofitError retrofitError = (RetrofitError) throwable;

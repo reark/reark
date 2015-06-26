@@ -16,17 +16,18 @@ import static org.junit.Assert.assertEquals;
 public class RxUtilsTest {
 
     @Test(expected = NullPointerException.class)
-    public void testToListThrowsExceptionWhenNoItemsAreProvided(){
+    public void testToListThrowsExceptionWhenNoItemsAreProvided() {
+        //noinspection NullArgumentToVariableArgMethod,ConstantConditions
         RxUtils.toList(null);
     }
 
     @Test
-    public void testToListReturnsCombinedListOfItems(){
-        assertEquals(3, RxUtils.toList(new Object[] { "1", "2", "3" }).size());
+    public void testToListReturnsCombinedListOfItems() {
+        assertEquals(3, RxUtils.toList(new Object[]{"1", "2", "3"}).size());
     }
 
     @Test
-    public void testToListReturnsCombinedListOfItems1(){
+    public void testToListReturnsCombinedListOfItems1() {
         List<Observable<String>> list = Arrays.asList(Observable.just("1"),
                                                       Observable.just("2"),
                                                       Observable.just("1"),
@@ -34,7 +35,7 @@ public class RxUtilsTest {
         TestSubscriber<List<String>> observer = new TestSubscriber<>();
 
         RxUtils.toObservableList(list)
-                .subscribe(observer);
+               .subscribe(observer);
 
         observer.awaitTerminalEvent();
         assertEquals("Invalid number of repositories",

@@ -15,8 +15,9 @@ public class RepositoryViewModelTest {
     @Test(timeout = 1000)
     public void testRepositoryViewModelFetchesValidGitHubRepository() throws Exception {
         GitHubRepository gitHubRepository = new GitHubRepository(2, "repo", 3, 4);
-        RepositoryViewModel repositoryViewModel = new RepositoryViewModel(() -> Observable.just(new UserSettings(1)),
-                                                                          repositoryId -> Observable.just(gitHubRepository));
+        RepositoryViewModel repositoryViewModel = new RepositoryViewModel(
+                () -> Observable.just(new UserSettings(1)),
+                repositoryId -> Observable.just(gitHubRepository));
         TestSubscriber<GitHubRepository> observer = new TestSubscriber<>();
         repositoryViewModel.getRepository().subscribe(observer);
 

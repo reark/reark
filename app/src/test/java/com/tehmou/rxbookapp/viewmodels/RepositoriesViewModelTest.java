@@ -1,9 +1,11 @@
 package com.tehmou.rxbookapp.viewmodels;
 
+import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.DataLayer.GetGitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -27,6 +29,15 @@ import static org.mockito.Mockito.mock;
  */
 public class RepositoriesViewModelTest {
 
+    private RepositoriesViewModel viewModel;
+
+    @Before
+    public void setUp() {
+        viewModel = new RepositoriesViewModel(
+                mock(GetGitHubRepositorySearch.class),
+                repositoryId -> Observable.just(mock(GitHubRepository.class)));
+    }
+
     @Test
     public void testStartFetchingReportedAsLoading() {
         assertEquals(LOADING, toProgressStatus().call(fetchingStart()));
@@ -46,14 +57,11 @@ public class RepositoriesViewModelTest {
 
     @Test
     public void testTooManyRepositoriesAreCappedToFive() {
-        RepositoriesViewModel repositoriesViewModel = new RepositoriesViewModel(
-                mock(GetGitHubRepositorySearch.class),
-                repositoryId -> Observable.just(mock(GitHubRepository.class)));
         TestSubscriber<List<GitHubRepository>> observer = new TestSubscriber<>();
 
-        repositoriesViewModel.toGitHubRepositoryList()
-                             .call(Arrays.asList(1, 2, 3, 4, 5, 6))
-                             .subscribe(observer);
+        viewModel.toGitHubRepositoryList()
+                 .call(Arrays.asList(1, 2, 3, 4, 5, 6))
+                 .subscribe(observer);
 
         observer.awaitTerminalEvent();
         assertEquals("Invalid number of repositories",
@@ -63,19 +71,52 @@ public class RepositoriesViewModelTest {
 
     @Test
     public void testTooLittleRepositoriesReturnThoseRepositories() {
-        RepositoriesViewModel repositoriesViewModel = new RepositoriesViewModel(
-                mock(GetGitHubRepositorySearch.class),
-                repositoryId -> Observable.just(mock(GitHubRepository.class)));
         TestSubscriber<List<GitHubRepository>> observer = new TestSubscriber<>();
 
-        repositoriesViewModel.toGitHubRepositoryList()
-                             .call(Arrays.asList(1, 2, 3))
-                             .subscribe(observer);
+        viewModel.toGitHubRepositoryList()
+                 .call(Arrays.asList(1, 2, 3))
+                 .subscribe(observer);
 
         observer.awaitTerminalEvent();
         assertEquals("Invalid number of repositories",
                      3,
                      observer.getOnNextEvents().get(0).size());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testThrowsNullPointerExceptionWhenRepositoryIdIsNull() {
+        //noinspection ConstantConditions
+        viewModel.getGitHubRepositoryObservable(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testThrowsNullPointerExceptionWhenNetworkStatusIsNull() {
+        //noinspection ConstantConditions
+        viewModel.setNetworkStatusText(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testThrowsNullPointerExceptionWhenSearchStringIsNull() {
+        //noinspection ConstantConditions,ConstantConditions
+        viewModel.setSearchStringObservable(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testThrowsNullPointerExceptionWhenSelectedRepositoryIsNull() {
+        //noinspection ConstantConditions
+        viewModel.selectRepository(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testThrowsNullPointerExceptionConstructedWithNullRepositorySearch() {
+        //noinspection ConstantConditions
+        new RepositoriesViewModel(null, mock(DataLayer.GetGitHubRepository.class));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testThrowsNullPointerExceptionConstructedWithNullRepository() {
+        //noinspection ConstantConditions
+        new RepositoriesViewModel(mock(GetGitHubRepositorySearch.class), null);
     }
 
 }

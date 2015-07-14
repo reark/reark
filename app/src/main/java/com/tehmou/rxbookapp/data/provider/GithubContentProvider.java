@@ -3,6 +3,8 @@ package com.tehmou.rxbookapp.data.provider;
 import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
 import com.tehmou.rxbookapp.data.base.provider.ContractContentProviderBase;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by ttuo on 22/03/15.
  */
@@ -33,11 +35,13 @@ public class GithubContentProvider extends ContractContentProviderBase {
                 new NetworkRequestStatusSingleRoute(networkRequestStatusContract.getTableName()));
     }
 
+    @NonNull
     @Override
     protected String getProviderName() {
         return PROVIDER_NAME;
     }
 
+    @NonNull
     @Override
     protected String getDatabaseName() {
         return DATABASE_NAME;

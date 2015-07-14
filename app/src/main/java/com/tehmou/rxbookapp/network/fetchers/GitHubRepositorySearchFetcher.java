@@ -2,6 +2,7 @@ package com.tehmou.rxbookapp.network.fetchers;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.android.internal.Preconditions;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -30,17 +32,22 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
 
-    public GitHubRepositorySearchFetcher(NetworkApi networkApi,
-                                         Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                         GitHubRepositoryStore gitHubRepositoryStore,
-                                         GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public GitHubRepositorySearchFetcher(@NonNull NetworkApi networkApi,
+                                         @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
+                                         @NonNull GitHubRepositoryStore gitHubRepositoryStore,
+                                         @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkApi, updateNetworkRequestStatus);
+
+        Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");
+        Preconditions.checkNotNull(gitHubRepositorySearchStore, ""
+                                                                + "GitHub Repository Search Store cannot be null.");
+
         this.gitHubRepositoryStore = gitHubRepositoryStore;
         this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
     }
 
     @Override
-    public void fetch(Intent intent) {
+    public void fetch(@NonNull Intent intent) {
         final String searchString = intent.getStringExtra("searchString");
         if (searchString != null) {
             fetchGitHubSearch(searchString);
@@ -49,7 +56,9 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
         }
     }
 
-    private void fetchGitHubSearch(final String searchString) {
+    private void fetchGitHubSearch(@NonNull final String searchString) {
+        Preconditions.checkNotNull(searchString, "Search String cannot be null.");
+
         Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
         if (requestMap.containsKey(searchString.hashCode()) &&
                 !requestMap.get(searchString.hashCode()).isUnsubscribed()) {
@@ -75,7 +84,10 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
         startRequest(uri);
     }
 
-    private Observable<List<GitHubRepository>> createNetworkObservable(final String searchString) {
+    @NonNull
+    private Observable<List<GitHubRepository>> createNetworkObservable(@NonNull final String searchString) {
+        Preconditions.checkNotNull(searchString, "Search String cannot be null.");
+
         return Observable.<List<GitHubRepository>>create((subscriber) -> {
             try {
                 Map<String, String> params = new HashMap<>();
@@ -89,6 +101,7 @@ public class GitHubRepositorySearchFetcher extends FetcherBase {
         });
     }
 
+    @NonNull
     @Override
     public Uri getContentUri() {
         return gitHubRepositorySearchStore.getContentUri();

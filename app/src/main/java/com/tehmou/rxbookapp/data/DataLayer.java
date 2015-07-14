@@ -15,8 +15,10 @@ import com.tehmou.rxbookapp.pojo.UserSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import rx.Observable;
+import rx.android.internal.Preconditions;
 
 
 /**
@@ -27,17 +29,24 @@ public class DataLayer extends DataLayerBase {
     private final Context context;
     protected final UserSettingsStore userSettingsStore;
 
-    public DataLayer(Context context,
-                     UserSettingsStore userSettingsStore,
-                     NetworkRequestStatusStore networkRequestStatusStore,
-                     GitHubRepositoryStore gitHubRepositoryStore,
-                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public DataLayer(@NonNull Context context,
+                     @NonNull UserSettingsStore userSettingsStore,
+                     @NonNull NetworkRequestStatusStore networkRequestStatusStore,
+                     @NonNull GitHubRepositoryStore gitHubRepositoryStore,
+                     @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
+
+        Preconditions.checkNotNull(context, "Context cannot be null.");
+        Preconditions.checkNotNull(userSettingsStore, "User Settings Store cannot be null.");
+
         this.context = context;
         this.userSettingsStore = userSettingsStore;
     }
 
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(final String searchString) {
+    @NonNull
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
+        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
+
         final Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
                 networkRequestStatusStore.getStream(uri.toString().hashCode());
@@ -47,53 +56,69 @@ public class DataLayer extends DataLayerBase {
                         networkRequestStatusObservable, gitHubRepositorySearchObservable);
     }
 
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(final String searchString) {
+    @NonNull
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(@NonNull final String searchString) {
+        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
+
         final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositoryStream =
                 getGitHubRepositorySearch(searchString);
         fetchGitHubRepositorySearch(searchString);
         return gitHubRepositoryStream;
     }
 
-    private void fetchGitHubRepositorySearch(final String searchString) {
+    private void fetchGitHubRepositorySearch(@NonNull final String searchString) {
+        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
+
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
         intent.putExtra("searchString", searchString);
         context.startService(intent);
     }
 
-    public Observable<GitHubRepository> getGitHubRepository(Integer repositoryId) {
+    @NonNull
+    public Observable<GitHubRepository> getGitHubRepository(@NonNull Integer repositoryId) {
+        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+
         return gitHubRepositoryStore.getStream(repositoryId);
     }
 
-    public Observable<GitHubRepository> fetchAndGetGitHubRepository(Integer repositoryId) {
+    @NonNull
+    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull Integer repositoryId) {
+        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+
         fetchGitHubRepository(repositoryId);
         return getGitHubRepository(repositoryId);
     }
 
-    private void fetchGitHubRepository(Integer repositoryId) {
+    private void fetchGitHubRepository(@NonNull Integer repositoryId) {
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("contentUriString", gitHubRepositoryStore.getContentUri().toString());
         intent.putExtra("id", repositoryId);
         context.startService(intent);
     }
 
+    @NonNull
     public Observable<UserSettings> getUserSettings() {
         return userSettingsStore.getStream(UserSettingsContract.DEFAULT_USER_ID);
     }
 
-    public void setUserSettings(UserSettings userSettings) {
+    public void setUserSettings(@NonNull UserSettings userSettings) {
+        Preconditions.checkNotNull(userSettings, "User Settings cannot be null.");
+
         userSettingsStore.insertOrUpdate(userSettings);
     }
 
     public interface GetUserSettings {
+        @NonNull
         Observable<UserSettings> call();
     }
 
     public interface SetUserSettings {
-        void call(UserSettings userSettings);
+        void call(@NonNull UserSettings userSettings);
     }
 
     public interface GetGitHubRepository {
+        @NonNull
         Observable<GitHubRepository> call(int repositoryId);
     }
 
@@ -102,6 +127,7 @@ public class DataLayer extends DataLayerBase {
     }
 
     public interface GetGitHubRepositorySearch {
-        Observable<DataStreamNotification<GitHubRepositorySearch>> call(String search);
+        @NonNull
+        Observable<DataStreamNotification<GitHubRepositorySearch>> call(@NonNull String search);
     }
 }

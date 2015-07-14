@@ -9,8 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
+import rx.android.internal.Preconditions;
 
 /**
  * Created by ttuo on 11/01/15.
@@ -31,7 +35,12 @@ abstract public class ContentProviderBase extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri,
+                      @Nullable String selection,
+                      @NonNull String[] selectionArgs) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+        Preconditions.checkNotNull(selectionArgs, "Selection arguments cannot be null.");
+
         final int match = URI_MATCHER.match(uri);
         String tableName = getTableName(match);
         String where = getWhere(match, uri);
@@ -54,9 +63,13 @@ abstract public class ContentProviderBase extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection,
-                        String selection, String[] selectionArgs,
-                        String sortOrder) {
+    public Cursor query(@NonNull Uri uri,
+                        @Nullable String[] projection,
+                        @Nullable String selection,
+                        @Nullable String[] selectionArgs,
+                        @Nullable String sortOrder) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         final int match = URI_MATCHER.match(uri);
@@ -84,8 +97,13 @@ abstract public class ContentProviderBase extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values,
-                      String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri,
+                      @NonNull ContentValues values,
+                      @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
+
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+        Preconditions.checkNotNull(values, "Content Values cannot be null.");
 
         if (selection != null) {
             Log.e(TAG, "selection not supported");
@@ -103,10 +121,19 @@ abstract public class ContentProviderBase extends ContentProvider {
         return count;
     }
 
+    @Nullable
     abstract protected String getWhere(final int match, Uri uri);
+
+    @NonNull
     abstract protected String getTableName(final int match);
+
+    @NonNull
     abstract protected String getDefaultSortOrder(final int match);
-    abstract protected SQLiteOpenHelper createDatabaseHelper(final Context context);
+
+    @NonNull
+    abstract protected SQLiteOpenHelper createDatabaseHelper(@NonNull final Context context);
+
     abstract protected void createUriMatcher();
-    abstract protected void notifyChange(final int match, Uri uri);
+
+    abstract protected void notifyChange(final int match, @NonNull Uri uri);
 }

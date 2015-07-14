@@ -8,31 +8,45 @@ import com.tehmou.rxbookapp.network.fetchers.Fetcher;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.Arrays;
 import java.util.Collection;
+
+import rx.android.internal.Preconditions;
 
 /**
  * Created by ttuo on 16/04/15.
  */
 public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
+
+    @NonNull
     final private Collection<Fetcher> fetchers;
 
-    public ServiceDataLayer(Fetcher gitHubRepositoryFetcher,
-                            Fetcher gitHubRepositorySearchFetcher,
-                            NetworkRequestStatusStore networkRequestStatusStore,
-                            GitHubRepositoryStore gitHubRepositoryStore,
-                            GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public ServiceDataLayer(@NonNull Fetcher gitHubRepositoryFetcher,
+                            @NonNull Fetcher gitHubRepositorySearchFetcher,
+                            @NonNull NetworkRequestStatusStore networkRequestStatusStore,
+                            @NonNull GitHubRepositoryStore gitHubRepositoryStore,
+                            @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
+
+        Preconditions.checkNotNull(gitHubRepositoryFetcher,
+                                   "GitHub Repository Fetcher cannot be null.");
+        Preconditions.checkNotNull(gitHubRepositorySearchFetcher,
+                                   "GitHub Repository Search Fetcher cannot be null.");
+
         fetchers = Arrays.asList(
                 gitHubRepositoryFetcher,
                 gitHubRepositorySearchFetcher
         );
     }
 
-    public void processIntent(Intent intent) {
+    public void processIntent(@NonNull Intent intent) {
+        Preconditions.checkNotNull(intent, "Intent cannot be null.");
+
         final String contentUriString = intent.getStringExtra("contentUriString");
         if (contentUriString != null) {
             final Uri contentUri = Uri.parse(contentUriString);
@@ -48,7 +62,10 @@ public class ServiceDataLayer extends DataLayerBase {
         }
     }
 
-    private Fetcher findFetcher(Uri contentUri) {
+    @Nullable
+    private Fetcher findFetcher(@NonNull Uri contentUri) {
+        Preconditions.checkNotNull(contentUri, "Content URL cannot be null.");
+
         for (Fetcher fetcher : fetchers) {
             if (fetcher.getContentUri().equals(contentUri)) {
                 return fetcher;

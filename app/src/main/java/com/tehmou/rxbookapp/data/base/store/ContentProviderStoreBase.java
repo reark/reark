@@ -10,12 +10,14 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import rx.Observable;
+import rx.android.internal.Preconditions;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -25,12 +27,19 @@ import rx.subjects.Subject;
 abstract public class ContentProviderStoreBase<T, U> {
     private static final String TAG = ContentProviderStoreBase.class.getSimpleName();
 
-    final protected ContentResolver contentResolver;
     final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
+
+    @NonNull
+    final protected ContentResolver contentResolver;
+
+    @NonNull
     final private DatabaseContract<T> databaseContract;
 
-    public ContentProviderStoreBase(ContentResolver contentResolver,
-                                    DatabaseContract<T> databaseContract) {
+    public ContentProviderStoreBase(@NonNull ContentResolver contentResolver,
+                                    @NonNull DatabaseContract<T> databaseContract) {
+        Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
+        Preconditions.checkNotNull(databaseContract, "Database Contract cannot be null.");
+
         this.contentResolver = contentResolver;
         this.databaseContract = databaseContract;
         this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
@@ -52,7 +61,9 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     @NonNull
-    private static Handler createHandler(String name) {
+    private static Handler createHandler(@NonNull String name) {
+        Preconditions.checkNotNull(name, "Handler Name cannot be null.");
+
         HandlerThread handlerThread = new HandlerThread(name);
         handlerThread.start();
         return new Handler(handlerThread.getLooper());
@@ -62,6 +73,7 @@ abstract public class ContentProviderStoreBase<T, U> {
         insertOrUpdate(item);
     }
 
+    @NonNull
     public Observable<T> getStream(U id) {
         Log.v(TAG, "getStream(" + id + ")");
         final T item = query(id);
@@ -73,6 +85,7 @@ abstract public class ContentProviderStoreBase<T, U> {
         return observable;
     }
 
+    @NonNull
     private Observable<T> lazyGetSubject(U id) {
         Log.v(TAG, "lazyGetSubject(" + id + ")");
         final Uri uri = getUriForKey(id);
@@ -80,7 +93,9 @@ abstract public class ContentProviderStoreBase<T, U> {
         return subjectMap.get(uri);
     }
 
-    public void insertOrUpdate(T item) {
+    public void insertOrUpdate(@NonNull T item) {
+        Preconditions.checkNotNull(item, "Item cannot be null.");
+
         Uri uri = getUriForKey(getIdFor(item));
         Log.v(TAG, "insertOrUpdate to " + uri);
         ContentValues values = getContentValuesForItem(item);
@@ -93,11 +108,17 @@ abstract public class ContentProviderStoreBase<T, U> {
         }
     }
 
-    protected T query(U id) {
+    @Nullable
+    protected T query(@NonNull U id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
         return query(getUriForKey(id));
     }
 
-    protected T query(Uri uri) {
+    @Nullable
+    protected T query(@NonNull Uri uri) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
+
         Cursor cursor = contentResolver.query(uri,
                 databaseContract.getProjection(), null, null, null);
         T value = null;
@@ -115,10 +136,16 @@ abstract public class ContentProviderStoreBase<T, U> {
         return databaseContract.getContentValuesForItem(item);
     }
 
-    public Uri getUriForKey(U id) {
+    @NonNull
+    public Uri getUriForKey(@NonNull U id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
         return Uri.withAppendedPath(getContentUri(), id.toString());
     }
 
-    abstract protected U getIdFor(T item);
+    @NonNull
+    abstract protected U getIdFor(@NonNull T item);
+
+    @NonNull
     abstract protected Uri getContentUri();
 }

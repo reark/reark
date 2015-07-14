@@ -7,6 +7,8 @@ import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import rx.Observable;
+import rx.android.internal.Preconditions;
 import rx.android.widget.WidgetObservable;
 
 /**
@@ -62,7 +65,7 @@ public class RepositoriesView extends FrameLayout {
         statusText = (TextView) findViewById(R.id.repositories_status_text);
     }
 
-    public void setViewModel(RepositoriesViewModel viewModel) {
+    public void setViewModel(@Nullable RepositoriesViewModel viewModel) {
         this.viewModel = viewModel;
         rxBinderUtil.clear();
         if (viewModel != null) {
@@ -73,12 +76,17 @@ public class RepositoriesView extends FrameLayout {
         }
     }
 
-    private void setRepositories(List<GitHubRepository> repositories) {
+    private void setRepositories(@NonNull List<GitHubRepository> repositories) {
+        Preconditions.checkNotNull(repositories, "Repository List Text cannot be null.");
+        Preconditions.checkState(listAdapter != null, "List Adapter should not be null.");
+
         listAdapter.clear();
         listAdapter.addAll(repositories);
     }
 
-    private void setNetworkRequestStatus(ProgressStatus networkRequestStatus) {
+    private void setNetworkRequestStatus(@NonNull ProgressStatus networkRequestStatus) {
+        Preconditions.checkNotNull(networkRequestStatus, "Network Request Status cannot be null.");
+
         String networkStatusText = "";
         switch (networkRequestStatus) {
 
@@ -95,7 +103,10 @@ public class RepositoriesView extends FrameLayout {
         setNetworkRequestStatusText(networkStatusText);
     }
 
-    private void setNetworkRequestStatusText(String networkRequestStatusText) {
+    private void setNetworkRequestStatusText(@NonNull String networkRequestStatusText) {
+        Preconditions.checkNotNull(networkRequestStatusText, "Network Status Text cannot be null.");
+        Preconditions.checkState(statusText != null, "Status Text View should not be null.");
+
         statusText.setText(networkRequestStatusText);
     }
 }

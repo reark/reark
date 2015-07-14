@@ -1,6 +1,5 @@
 package com.tehmou.rxbookapp.data;
 
-import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
@@ -28,6 +27,7 @@ public class DataLayer extends DataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
     private final Context context;
     protected final UserSettingsStore userSettingsStore;
+    public static final int DEFAULT_USER_ID = 0;
 
     public DataLayer(@NonNull Context context,
                      @NonNull UserSettingsStore userSettingsStore,
@@ -99,7 +99,7 @@ public class DataLayer extends DataLayerBase {
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {
-        return userSettingsStore.getStream(UserSettingsContract.DEFAULT_USER_ID);
+        return userSettingsStore.getStream(DEFAULT_USER_ID);
     }
 
     public void setUserSettings(@NonNull UserSettings userSettings) {

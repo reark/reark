@@ -1,11 +1,17 @@
 package com.tehmou.rxbookapp.data.stores;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
-import com.tehmou.rxbookapp.data.provider.UserSettingsContract;
+import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
+import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
+import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 /**
@@ -17,7 +23,7 @@ public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, In
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
     public UserSettingsStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver, new UserSettingsContract());
+        super(contentResolver);
         if (!hasUserSettings()) {
             insertOrUpdate(new UserSettings(DEFAULT_REPOSITORY_ID));
         }
@@ -26,16 +32,39 @@ public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, In
     @NonNull
     @Override
     protected Integer getIdFor(@NonNull UserSettings item) {
-        return UserSettingsContract.DEFAULT_USER_ID;
+        return DataLayer.DEFAULT_USER_ID;
     }
 
     @NonNull
     @Override
     public Uri getContentUri() {
-        return UserSettingsContract.CONTENT_URI;
+        return GitHubProvider.UserSettings.USER_SETTINGS;
     }
 
     private boolean hasUserSettings() {
-        return query(UserSettingsContract.DEFAULT_USER_ID) != null;
+        return query(DataLayer.DEFAULT_USER_ID) != null;
+    }
+
+    @NonNull
+    @Override
+    protected String[] getProjection() {
+        return new String[] { UserSettingsColumns.ID, UserSettingsColumns.JSON };
+    }
+
+    @NonNull
+    @Override
+    protected ContentValues getContentValuesForItem(UserSettings item) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JsonIdColumns.ID, DataLayer.DEFAULT_USER_ID);
+        contentValues.put(JsonIdColumns.JSON, new Gson().toJson(item));
+        return contentValues;
+    }
+
+    @NonNull
+    @Override
+    protected UserSettings read(Cursor cursor) {
+        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
+        final UserSettings value = new Gson().fromJson(json, UserSettings.class);
+        return value;
     }
 }

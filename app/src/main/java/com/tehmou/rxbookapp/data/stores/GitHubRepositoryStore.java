@@ -1,12 +1,17 @@
 package com.tehmou.rxbookapp.data.stores;
 
-import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositoryContract;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-
 import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+
+import com.google.gson.Gson;
+import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
+import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
+import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
+import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import rx.android.internal.Preconditions;
 
@@ -17,7 +22,7 @@ public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubReposi
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver, new GitHubRepositoryContract());
+        super(contentResolver);
     }
 
     @NonNull
@@ -31,6 +36,30 @@ public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubReposi
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubRepositoryContract.CONTENT_URI;
+        return GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
+    }
+
+
+    @NonNull
+    @Override
+    protected String[] getProjection() {
+        return new String[] { UserSettingsColumns.ID, UserSettingsColumns.JSON };
+    }
+
+    @NonNull
+    @Override
+    protected ContentValues getContentValuesForItem(GitHubRepository item) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JsonIdColumns.ID, item.getId());
+        contentValues.put(JsonIdColumns.JSON, new Gson().toJson(item));
+        return contentValues;
+    }
+
+    @NonNull
+    @Override
+    protected GitHubRepository read(Cursor cursor) {
+        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
+        final GitHubRepository value = new Gson().fromJson(json, GitHubRepository.class);
+        return value;
     }
 }

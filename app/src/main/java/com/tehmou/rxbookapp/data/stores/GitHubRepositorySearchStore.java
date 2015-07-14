@@ -1,12 +1,16 @@
 package com.tehmou.rxbookapp.data.stores;
 
-import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
-import com.tehmou.rxbookapp.data.provider.GitHubRepositorySearchContract;
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-
 import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+
+import com.google.gson.Gson;
+import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
+import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
+import com.tehmou.rxbookapp.data.schematicProvider.GitHubRepositorySearchColumns;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
 import rx.android.internal.Preconditions;
 
@@ -17,7 +21,7 @@ public class GitHubRepositorySearchStore extends ContentProviderStoreBase<GitHub
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
     public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver, new GitHubRepositorySearchContract());
+        super(contentResolver);
     }
 
     @NonNull
@@ -31,6 +35,29 @@ public class GitHubRepositorySearchStore extends ContentProviderStoreBase<GitHub
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubRepositorySearchContract.CONTENT_URI;
+        return GitHubProvider.GitHubRepositorySearches.GITHUB_REPOSITORY_SEARCHES;
+    }
+
+    @NonNull
+    @Override
+    protected String[] getProjection() {
+        return new String[] { GitHubRepositorySearchColumns.SEARCH, GitHubRepositorySearchColumns.JSON };
+    }
+
+    @NonNull
+    @Override
+    protected ContentValues getContentValuesForItem(GitHubRepositorySearch item) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
+        contentValues.put(GitHubRepositorySearchColumns.JSON, new Gson().toJson(item));
+        return contentValues;
+    }
+
+    @NonNull
+    @Override
+    protected GitHubRepositorySearch read(Cursor cursor) {
+        final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
+        final GitHubRepositorySearch value = new Gson().fromJson(json, GitHubRepositorySearch.class);
+        return value;
     }
 }

@@ -55,8 +55,8 @@ public class GitHubProvider {
                 type = "vnd.android.cursor.item/vnd.tehmou.android.rxbookapp.repositorysearch",
                 whereColumn = GitHubRepositorySearchColumns.SEARCH,
                 pathSegment = 1)
-        public static Uri withId(long id) {
-            return buildUri(GitHubDatabase.GITHUB_REPOSITORY_SEARCHES, String.valueOf(id));
+        public static Uri withSearch(String search) {
+            return buildUri(GitHubDatabase.GITHUB_REPOSITORY_SEARCHES, search);
         }
     }
 

@@ -125,11 +125,7 @@ abstract public class ContentProviderStoreBase<T, U> {
     }
 
     @NonNull
-    public Uri getUriForKey(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
-
-        return Uri.withAppendedPath(getContentUri(), id.toString());
-    }
+    abstract public Uri getUriForKey(@NonNull U id);
 
     @NonNull
     abstract protected U getIdFor(@NonNull T item);

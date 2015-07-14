@@ -62,4 +62,12 @@ public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubReposi
         final GitHubRepository value = new Gson().fromJson(json, GitHubRepository.class);
         return value;
     }
+
+    @NonNull
+    @Override
+    public Uri getUriForKey(@NonNull Integer id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
+        return GitHubProvider.GitHubRepositories.withId(id);
+    }
 }

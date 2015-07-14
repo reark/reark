@@ -60,4 +60,12 @@ public class GitHubRepositorySearchStore extends ContentProviderStoreBase<GitHub
         final GitHubRepositorySearch value = new Gson().fromJson(json, GitHubRepositorySearch.class);
         return value;
     }
+
+    @NonNull
+    @Override
+    public Uri getUriForKey(@NonNull String id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
+        return GitHubProvider.GitHubRepositorySearches.withSearch(id);
+    }
 }

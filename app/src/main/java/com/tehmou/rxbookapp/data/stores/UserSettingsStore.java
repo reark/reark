@@ -14,6 +14,8 @@ import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
+import rx.android.internal.Preconditions;
+
 /**
  * Created by ttuo on 07/01/15.
  */
@@ -66,5 +68,14 @@ public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, In
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
         final UserSettings value = new Gson().fromJson(json, UserSettings.class);
         return value;
+    }
+
+
+    @NonNull
+    @Override
+    public Uri getUriForKey(@NonNull Integer id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
+        return GitHubProvider.UserSettings.withId(id);
     }
 }

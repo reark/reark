@@ -76,4 +76,12 @@ public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkR
         final NetworkRequestStatus value = new Gson().fromJson(json, NetworkRequestStatus.class);
         return value;
     }
+
+    @NonNull
+    @Override
+    public Uri getUriForKey(@NonNull Integer id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
+        return GitHubProvider.NetworkRequestStatuses.withId(id);
+    }
 }

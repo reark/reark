@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
  * Created by ttuo on 22/03/15.
  */
 public class GithubContentProvider extends ContractContentProviderBase {
-    public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.provider.GithubContentProvider";
+    public static final String PROVIDER_NAME = "com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider";
     private static final String DATABASE_NAME = "database";
     private static final int DATABASE_VERSION = 12;
 

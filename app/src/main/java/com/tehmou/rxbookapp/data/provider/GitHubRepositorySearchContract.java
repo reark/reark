@@ -17,7 +17,7 @@ import rx.android.internal.Preconditions;
  * Created by ttuo on 11/01/15.
  */
 public class GitHubRepositorySearchContract extends SerializedJsonContract<GitHubRepositorySearch> {
-    static final String TABLE_NAME = "repository_searches";
+    static final String TABLE_NAME = "repositorySearches";
     public static final Uri CONTENT_URI = Uri.parse("content://" + GithubContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
     private static final Type TYPE = new TypeToken<GitHubRepositorySearch>() {}.getType();
 

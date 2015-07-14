@@ -19,7 +19,7 @@ import rx.android.internal.Preconditions;
 public class UserSettingsContract extends SerializedJsonContract<UserSettings> {
     public static final int DEFAULT_USER_ID = 0;
 
-    private static final String TABLE_NAME = "usersettings";
+    private static final String TABLE_NAME = "userSettings";
     public static final Uri CONTENT_URI = Uri.parse("content://" + GithubContentProvider.PROVIDER_NAME + "/" + TABLE_NAME);
     public static final Type TYPE = new TypeToken<UserSettings>() {}.getType();
 

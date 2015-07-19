@@ -1,7 +1,7 @@
 package com.tehmou.rxbookapp;
 
 import com.tehmou.rxbookapp.injections.Graph;
-import com.tehmou.rxbookapp.utils.Instrumentation;
+import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 
 import android.app.Application;
 import android.support.annotation.NonNull;
@@ -18,7 +18,7 @@ public class RxBookApp extends Application {
     private Graph mGraph;
 
     @Inject
-    Instrumentation instrumentation;
+    ApplicationInstrumentation mApplicationInstrumentation;
 
     @Override
     public void onCreate() {
@@ -27,7 +27,7 @@ public class RxBookApp extends Application {
         mGraph = Graph.Initializer.init(this);
         getGraph().inject(this);
 
-        instrumentation.init();
+        mApplicationInstrumentation.init();
     }
 
     @NonNull

@@ -67,15 +67,7 @@ public class GitHubRepositoryFetcher extends FetcherBase {
 
     @NonNull
     private Observable<GitHubRepository> createNetworkObservable(int repositoryId) {
-        return Observable.<GitHubRepository>create(subscriber -> {
-            try {
-                GitHubRepository repository = networkApi.getRepository(repositoryId);
-                subscriber.onNext(repository);
-                subscriber.onCompleted();
-            } catch (Exception e) {
-                subscriber.onError(e);
-            }
-        });
+        return networkApi.getRepository(repositoryId);
     }
 
     @NonNull

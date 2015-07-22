@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit.RestAdapter;
+import rx.Observable;
 
 /**
  * Created by ttuo on 06/01/15.
  */
 public class NetworkApi {
+
     private final GitHubService gitHubService;
 
     public NetworkApi() {
@@ -21,12 +23,12 @@ public class NetworkApi {
         gitHubService = restAdapter.create(GitHubService.class);
     }
 
-    public List<GitHubRepository> search(Map<String, String> search) {
-        GitHubRepositorySearchResults results = gitHubService.search(search);
-        return results.getItems();
+    public Observable<List<GitHubRepository>> search(Map<String, String> search) {
+        return gitHubService.search(search)
+                            .map(GitHubRepositorySearchResults::getItems);
     }
 
-    public GitHubRepository getRepository(int id) {
+    public Observable<GitHubRepository> getRepository(int id) {
         return gitHubService.getRepository(id);
     }
 }

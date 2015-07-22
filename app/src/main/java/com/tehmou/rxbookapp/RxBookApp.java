@@ -18,7 +18,7 @@ public class RxBookApp extends Application {
     private Graph mGraph;
 
     @Inject
-    ApplicationInstrumentation mApplicationInstrumentation;
+    ApplicationInstrumentation instrumentation;
 
     @Override
     public void onCreate() {
@@ -27,7 +27,7 @@ public class RxBookApp extends Application {
         mGraph = Graph.Initializer.init(this);
         getGraph().inject(this);
 
-        mApplicationInstrumentation.init();
+        instrumentation.init();
     }
 
     @NonNull

@@ -1,11 +1,15 @@
 package com.tehmou.rxbookapp.data.schematicProvider;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
+import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.TableEndpoint;
+
+import rx.android.internal.Preconditions;
 
 /**
  * Created by ttuo on 14/07/15.
@@ -16,12 +20,14 @@ public class GitHubProvider {
 
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    private static Uri buildUri(String... paths) {
+    private static Uri buildUri(@NonNull String... paths) {
         Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
         for (String path : paths) {
             builder.appendPath(path);
         }
-        return builder.build();
+        Uri uri = builder.build();
+        Preconditions.checkNotNull(uri, "Uri cannot be null.");
+        return uri;
     }
 
     @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORIES) public static class GitHubRepositories {

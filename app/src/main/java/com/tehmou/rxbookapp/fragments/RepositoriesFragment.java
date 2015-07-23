@@ -3,7 +3,7 @@ package com.tehmou.rxbookapp.fragments;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.ChooseRepositoryActivity;
-import com.tehmou.rxbookapp.utils.Instrumentation;
+import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 
@@ -26,7 +26,7 @@ public class RepositoriesFragment extends Fragment {
     RepositoriesViewModel repositoriesViewModel;
 
     @Inject
-    Instrumentation instrumentation;
+    ApplicationInstrumentation mInstrumentation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,6 @@ public class RepositoriesFragment extends Fragment {
         super.onDestroy();
         repositoriesViewModel.dispose();
         repositoriesViewModel = null;
-        instrumentation.getLeakTracing().traceLeakage(this);
+        mInstrumentation.getLeakTracing().traceLeakage(this);
     }
 }

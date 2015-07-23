@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
+import com.tehmou.rxbookapp.data.base.store.SingleItemContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
@@ -17,7 +17,7 @@ import rx.android.internal.Preconditions;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class GitHubRepositorySearchStore extends ContentProviderStoreBase<GitHubRepositorySearch, String> {
+public class GitHubRepositorySearchStore extends SingleItemContentProviderStoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
     public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver) {

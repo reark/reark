@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.tehmou.rxbookapp.data.DataLayer;
-import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
+import com.tehmou.rxbookapp.data.base.store.SingleItemContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
@@ -19,7 +19,7 @@ import rx.android.internal.Preconditions;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, Integer> {
+public class UserSettingsStore extends SingleItemContentProviderStoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
@@ -27,7 +27,7 @@ public class UserSettingsStore extends ContentProviderStoreBase<UserSettings, In
     public UserSettingsStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
         if (!hasUserSettings()) {
-            insertOrUpdate(new UserSettings(DEFAULT_REPOSITORY_ID));
+            put(new UserSettings(DEFAULT_REPOSITORY_ID));
         }
     }
 

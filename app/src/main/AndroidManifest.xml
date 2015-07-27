@@ -22,8 +22,8 @@
         <activity android:name=".activities.ChooseRepositoryActivity" />
 
         <provider
-            android:name=".data.provider.GithubContentProvider"
-            android:authorities="com.tehmou.rxbookapp.data.provider.GithubContentProvider"
+            android:name=".data.schematicProvider.generated.GitHubProvider"
+            android:authorities="com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider"
             android:exported="false">
         </provider>
 

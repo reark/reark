@@ -1,7 +1,5 @@
 package com.tehmou.rxbookapp.data.base.store;
 
-import com.tehmou.rxbookapp.data.base.contract.DatabaseContract;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.ContentObserver;
@@ -32,16 +30,10 @@ abstract public class ContentProviderStoreBase<T, U> {
     @NonNull
     final protected ContentResolver contentResolver;
 
-    @NonNull
-    final private DatabaseContract<T> databaseContract;
-
-    public ContentProviderStoreBase(@NonNull ContentResolver contentResolver,
-                                    @NonNull DatabaseContract<T> databaseContract) {
+    public ContentProviderStoreBase(@NonNull ContentResolver contentResolver) {
         Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
-        Preconditions.checkNotNull(databaseContract, "Database Contract cannot be null.");
 
         this.contentResolver = contentResolver;
-        this.databaseContract = databaseContract;
         this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
     }
 
@@ -120,10 +112,10 @@ abstract public class ContentProviderStoreBase<T, U> {
         Preconditions.checkNotNull(uri, "URI cannot be null.");
 
         Cursor cursor = contentResolver.query(uri,
-                databaseContract.getProjection(), null, null, null);
+                getProjection(), null, null, null);
         T value = null;
-        if (cursor != null) {
-            value = databaseContract.read(cursor);
+        if (cursor != null && cursor.moveToFirst()) {
+            value = read(cursor);
             cursor.close();
         }
         if (value == null) {
@@ -132,20 +124,22 @@ abstract public class ContentProviderStoreBase<T, U> {
         return value;
     }
 
-    protected ContentValues getContentValuesForItem(T item) {
-        return databaseContract.getContentValuesForItem(item);
-    }
-
     @NonNull
-    public Uri getUriForKey(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
-
-        return Uri.withAppendedPath(getContentUri(), id.toString());
-    }
+    abstract public Uri getUriForKey(@NonNull U id);
 
     @NonNull
     abstract protected U getIdFor(@NonNull T item);
 
     @NonNull
     abstract protected Uri getContentUri();
+
+    @NonNull
+    abstract protected String[] getProjection();
+
+    @NonNull
+    abstract protected ContentValues getContentValuesForItem(T item);
+
+    @NonNull
+    abstract protected T read(Cursor cursor);
+
 }

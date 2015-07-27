@@ -9,13 +9,17 @@ import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
@@ -29,12 +33,15 @@ public class RepositoriesView extends FrameLayout {
 
     private final RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
 
-    private ArrayAdapter<GitHubRepository> listAdapter;
     private TextView statusText;
 
     private Observable<String> searchStringObservable;
 
     private RepositoriesViewModel viewModel;
+
+    private RecyclerView repositoriesListView;
+
+    private RepositoriesAdapter repositoriesAdapter;
 
     public RepositoriesView(Context context) {
         super(context, null);
@@ -48,21 +55,23 @@ public class RepositoriesView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        ListView listView = (ListView) findViewById(R.id.repositories_list_view);
-        listAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1);
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            if (viewModel != null) {
-                GitHubRepository repository = listAdapter.getItem(position);
-                viewModel.selectRepository(repository);
-            }
-        });
-        listView.setAdapter(listAdapter);
-
         EditText editText = (EditText) findViewById(R.id.repositories_search);
         searchStringObservable = WidgetObservable.text(editText)
                 .map(onTextChangeEvent -> onTextChangeEvent.text().toString());
 
         statusText = (TextView) findViewById(R.id.repositories_status_text);
+
+        repositoriesAdapter = new RepositoriesAdapter(Collections.emptyList());
+        repositoriesAdapter.setOnClickListener(v -> {
+            final int itemPosition = repositoriesListView.getChildAdapterPosition(v);
+            GitHubRepository repository = repositoriesAdapter.getItem(itemPosition);
+            viewModel.selectRepository(repository);
+        });
+
+        repositoriesListView = (RecyclerView) findViewById(R.id.repositories_list_view);
+        repositoriesListView.setHasFixedSize(true);
+        repositoriesListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        repositoriesListView.setAdapter(repositoriesAdapter);
     }
 
     public void setViewModel(@Nullable RepositoriesViewModel viewModel) {
@@ -78,10 +87,9 @@ public class RepositoriesView extends FrameLayout {
 
     private void setRepositories(@NonNull List<GitHubRepository> repositories) {
         Preconditions.checkNotNull(repositories, "Repository List Text cannot be null.");
-        Preconditions.checkState(listAdapter != null, "List Adapter should not be null.");
+        Preconditions.checkState(repositoriesAdapter != null, "List Adapter should not be null.");
 
-        listAdapter.clear();
-        listAdapter.addAll(repositories);
+        repositoriesAdapter.set(repositories);
     }
 
     private void setNetworkRequestStatus(@NonNull ProgressStatus networkRequestStatus) {

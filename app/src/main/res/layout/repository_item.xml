@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <ImageView android:id="@+id/avatar_image_view"
+               android:layout_width="64dp"
+               android:layout_height="64dp"
+               android:padding="8dp"
+               tools:src="@android:drawable/sym_def_app_icon"/>
+
+    <TextView android:id="@+id/repository_name"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:textColor="@android:color/black"
+              android:textSize="18sp"
+              tools:text="Repository title"/>
+
+</LinearLayout>

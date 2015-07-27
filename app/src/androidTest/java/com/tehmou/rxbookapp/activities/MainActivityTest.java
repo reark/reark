@@ -44,6 +44,7 @@ public class MainActivityTest {
     @Test
     public void testInitialActivityState() {
         onView(withText(R.string.repository_fragment_intro)).check(matches(isDisplayed()));
+        onView(withId(R.id.widget_avatar_image_view)).check(matches(isDisplayed()));
         onView(withText(R.string.repository_fragment_change)).check(matches(isDisplayed()));
     }
 

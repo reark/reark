@@ -1,5 +1,10 @@
 package com.tehmou.rxbookapp.data;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
@@ -10,11 +15,6 @@ import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.pojo.UserSettings;
-
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import rx.Observable;
 import rx.android.internal.Preconditions;
@@ -105,7 +105,7 @@ public class DataLayer extends DataLayerBase {
     public void setUserSettings(@NonNull UserSettings userSettings) {
         Preconditions.checkNotNull(userSettings, "User Settings cannot be null.");
 
-        userSettingsStore.insertOrUpdate(userSettings);
+        userSettingsStore.put(userSettings);
     }
 
     public interface GetUserSettings {

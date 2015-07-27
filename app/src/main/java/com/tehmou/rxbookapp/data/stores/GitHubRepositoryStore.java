@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
+import com.tehmou.rxbookapp.data.base.store.SingleItemContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
@@ -18,7 +18,7 @@ import rx.android.internal.Preconditions;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class GitHubRepositoryStore extends ContentProviderStoreBase<GitHubRepository, Integer> {
+public class GitHubRepositoryStore extends SingleItemContentProviderStoreBase<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(@NonNull ContentResolver contentResolver) {

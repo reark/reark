@@ -23,7 +23,7 @@ public final class FetcherModule {
                                                   NetworkRequestStatusStore networkRequestStatusStore,
                                                   GitHubRepositoryStore gitHubRepositoryStore) {
         return new GitHubRepositoryFetcher(networkApi,
-                                           networkRequestStatusStore::insertOrUpdate,
+                                           networkRequestStatusStore::put,
                                            gitHubRepositoryStore);
     }
 
@@ -34,7 +34,7 @@ public final class FetcherModule {
                                                         GitHubRepositoryStore gitHubRepositoryStore,
                                                         GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         return new GitHubRepositorySearchFetcher(networkApi,
-                                                 networkRequestStatusStore::insertOrUpdate,
+                                                 networkRequestStatusStore::put,
                                                  gitHubRepositoryStore,
                                                  gitHubRepositorySearchStore);
     }

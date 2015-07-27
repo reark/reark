@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.base.store.ContentProviderStoreBase;
+import com.tehmou.rxbookapp.data.base.store.SingleItemContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
@@ -20,7 +20,7 @@ import rx.android.internal.Preconditions;
 /**
  * Created by ttuo on 26/04/15.
  */
-public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkRequestStatus, Integer> {
+public class NetworkRequestStatusStore extends SingleItemContentProviderStoreBase<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
     public NetworkRequestStatusStore(@NonNull ContentResolver contentResolver) {
@@ -40,18 +40,12 @@ public class NetworkRequestStatusStore extends ContentProviderStoreBase<NetworkR
         return GitHubProvider.NetworkRequestStatuses.NETWORK_REQUEST_STATUSES;
     }
 
-    @Nullable
     @Override
-    protected NetworkRequestStatus query(@NonNull Uri uri) {
-        return super.query(uri);
-    }
-
-    @Override
-    public void insertOrUpdate(@NonNull NetworkRequestStatus item) {
+    public void put(@NonNull NetworkRequestStatus item) {
         Preconditions.checkNotNull(item, "Network Request Status cannot be null.");
 
         Log.v(TAG, "insertOrUpdate(" + item.getStatus() + ", " + item.getUri() + ")");
-        super.insertOrUpdate(item);
+        super.put(item);
     }
 
     @NonNull

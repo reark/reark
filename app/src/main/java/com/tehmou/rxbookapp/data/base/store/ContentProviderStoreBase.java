@@ -11,84 +11,39 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.ArrayList;
+import java.util.List;
 
-import rx.Observable;
 import rx.android.internal.Preconditions;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 
 /**
  * Created by ttuo on 26/04/15.
  */
-abstract public class ContentProviderStoreBase<T, U> {
+public abstract class ContentProviderStoreBase<T> {
     private static final String TAG = ContentProviderStoreBase.class.getSimpleName();
-
-    final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
 
     @NonNull
     final protected ContentResolver contentResolver;
 
-    public ContentProviderStoreBase(@NonNull ContentResolver contentResolver) {
-        Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
+    @NonNull
+    private final ContentObserver contentObserver = getContentObserver();
 
+    public ContentProviderStoreBase(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
-        this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
+        this.contentResolver.registerContentObserver(
+                getContentUri(), true, contentObserver);
     }
 
     @NonNull
-    private ContentObserver getContentObserver() {
-        return new ContentObserver(createHandler(this.getClass().getSimpleName())) {
-            @Override
-            public void onChange(boolean selfChange, Uri uri) {
-                super.onChange(selfChange, uri);
-                Log.v(TAG, "onChange(" + uri + ")");
-
-                if (subjectMap.containsKey(uri)) {
-                    subjectMap.get(uri).onNext(query(uri));
-                }
-            }
-        };
-    }
-
-    @NonNull
-    private static Handler createHandler(@NonNull String name) {
-        Preconditions.checkNotNull(name, "Handler Name cannot be null.");
-
+    protected static Handler createHandler(String name) {
         HandlerThread handlerThread = new HandlerThread(name);
         handlerThread.start();
         return new Handler(handlerThread.getLooper());
     }
 
-    public void put(T item) {
-        insertOrUpdate(item);
-    }
+    protected void insertOrUpdate(T item, Uri uri) {
+        Preconditions.checkNotNull(item, "Item to be inserted cannot be null");
 
-    @NonNull
-    public Observable<T> getStream(U id) {
-        Log.v(TAG, "getStream(" + id + ")");
-        final T item = query(id);
-        final Observable<T> observable = lazyGetSubject(id);
-        if (item != null) {
-            Log.v(TAG, "Found existing item for id=" + id);
-            return observable.startWith(item);
-        }
-        return observable;
-    }
-
-    @NonNull
-    private Observable<T> lazyGetSubject(U id) {
-        Log.v(TAG, "lazyGetSubject(" + id + ")");
-        final Uri uri = getUriForKey(id);
-        subjectMap.putIfAbsent(uri, PublishSubject.<T>create());
-        return subjectMap.get(uri);
-    }
-
-    public void insertOrUpdate(@NonNull T item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
-
-        Uri uri = getUriForKey(getIdFor(item));
         Log.v(TAG, "insertOrUpdate to " + uri);
         ContentValues values = getContentValuesForItem(item);
         Log.v(TAG, "values(" + values + ")");
@@ -100,46 +55,54 @@ abstract public class ContentProviderStoreBase<T, U> {
         }
     }
 
-    @Nullable
-    protected T query(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
-
-        return query(getUriForKey(id));
-    }
-
-    @Nullable
-    protected T query(@NonNull Uri uri) {
-        Preconditions.checkNotNull(uri, "URI cannot be null.");
+    @NonNull
+    protected List<T> queryList(Uri uri) {
+        Preconditions.checkNotNull(uri, "Uri cannot be null");
 
         Cursor cursor = contentResolver.query(uri,
                 getProjection(), null, null, null);
-        T value = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            value = read(cursor);
+        List<T> list = new ArrayList<>();
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                list.add(read(cursor));
+            }
+            while (cursor.moveToNext()) {
+                list.add(read(cursor));
+            }
             cursor.close();
         }
-        if (value == null) {
-            Log.v(TAG, "Could not find with id: " + uri);
+        if (list.size() == 0) {
+            Log.v(TAG, "Could not find with uri: " + uri);
         }
-        return value;
+        return list;
     }
 
-    @NonNull
-    abstract public Uri getUriForKey(@NonNull U id);
+    @Nullable
+    protected T queryOne(Uri uri) {
+        final List<T> queryResults = queryList(uri);
 
-    @NonNull
-    abstract protected U getIdFor(@NonNull T item);
+        if (queryResults.size() == 0) {
+            return null;
+        } else if (queryResults.size() > 1) {
+            Log.w(TAG, "Multiple items found in a query for a single item");
+        }
+
+        return queryResults.get(0);
+    }
 
     @NonNull
     abstract protected Uri getContentUri();
 
     @NonNull
-    abstract protected String[] getProjection();
+    protected abstract ContentObserver getContentObserver();
 
     @NonNull
-    abstract protected ContentValues getContentValuesForItem(T item);
+    protected abstract String[] getProjection();
 
     @NonNull
-    abstract protected T read(Cursor cursor);
+    protected abstract T read(Cursor cursor);
 
+    @NonNull
+    protected abstract ContentValues getContentValuesForItem(T item);
 }

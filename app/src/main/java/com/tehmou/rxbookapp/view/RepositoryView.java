@@ -2,10 +2,10 @@ package com.tehmou.rxbookapp.view;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.utils.RxBinderUtil;
+import com.tehmou.rxbookapp.utils.glide.SerialTarget;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 
 import android.content.Context;
@@ -29,8 +29,8 @@ public class RepositoryView extends FrameLayout {
     private TextView forksTextView;
     private ImageView avatarImageView;
 
-    @Nullable
-    private Target<GlideDrawable> request;
+    @NonNull
+    private final SerialTarget<GlideDrawable> request = new SerialTarget<>();
 
     public RepositoryView(Context context) {
         super(context);
@@ -62,20 +62,18 @@ public class RepositoryView extends FrameLayout {
         titleTextView.setText(repository.getName());
         stargazersTextView.setText("stars: " + repository.getStargazersCount());
         forksTextView.setText("forks: " + repository.getForksCount());
-        request = Glide.with(getContext())
-                .load(repository.getOwner().getAvatarUrl())
-                .fitCenter()
-                .crossFade()
-                .placeholder(android.R.drawable.sym_def_app_icon)
-                .into(avatarImageView);
+        request.set(Glide.with(getContext())
+                         .load(repository.getOwner().getAvatarUrl())
+                         .fitCenter()
+                         .crossFade()
+                         .placeholder(android.R.drawable.sym_def_app_icon)
+                         .into(avatarImageView));
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        if (request != null) {
-            request.onDestroy();
-        }
+        request.onDestroy();
     }
 }

@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#eee"
-              android:padding="10dp"
-              android:orientation="vertical">
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#eee"
+            android:padding="10dp"
+            android:columnCount="2">
+
     <TextView
             android:id="@+id/widget_layout_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#222" />
+            android:layout_columnSpan="1"
+            android:textColor="#222"
+            tools:text="Repo name"/>
+
     <TextView
             android:id="@+id/widget_layout_stargazers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#222"/>
+            android:layout_columnSpan="1"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:textColor="#222"
+            tools:text="Star count"/>
+
     <TextView
             android:id="@+id/widget_layout_forks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#222"/>
-</LinearLayout>
+            android:layout_columnSpan="1"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:textColor="#222"
+            tools:text="Fork count"/>
+
+    <ImageView android:id="@+id/widget_avatar_image_view"
+               android:layout_width="wrap_content"
+               android:layout_height="match_parent"
+               android:layout_row="0"
+               android:layout_rowSpan="5"
+               android:layout_column="1"
+               android:layout_columnSpan="1"
+               android:layout_gravity="center_horizontal|end"
+               tools:src="@android:drawable/sym_def_app_icon"/>
+
+</GridLayout>

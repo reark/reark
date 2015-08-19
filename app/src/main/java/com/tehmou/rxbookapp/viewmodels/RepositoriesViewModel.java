@@ -39,7 +39,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     @NonNull
     private final DataLayer.GetGitHubRepository getGitHubRepository;
 
-    private final PublishSubject<Observable<String>> searchString = PublishSubject.create();
+    private final PublishSubject<String> searchString = PublishSubject.create();
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
     private final BehaviorSubject<List<GitHubRepository>> repositories = BehaviorSubject.create();
@@ -72,10 +72,10 @@ public class RepositoriesViewModel extends AbstractViewModel {
         return networkRequestStatusText.asObservable();
     }
 
-    public void setSearchStringObservable(@NonNull Observable<String> searchStringObservable) {
-        Preconditions.checkNotNull(searchStringObservable, "Search Observable cannot be null.");
+    public void setSearchString(@NonNull String searchString) {
+        Preconditions.checkNotNull(searchString, "SearchString cannot be null.");
 
-        this.searchString.onNext(searchStringObservable);
+        this.searchString.onNext(searchString);
     }
 
     public void selectRepository(@NonNull GitHubRepository repository) {
@@ -102,7 +102,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
-                Observable.switchOnNext(searchString)
+                searchString
                           .filter((string) -> string.length() > 2)
                           .throttleLast(500, TimeUnit.MILLISECONDS)
                           .switchMap(getGitHubRepositorySearch::call)

@@ -98,7 +98,7 @@ public class RepositoriesViewModelTest {
     @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionWhenSearchStringIsNull() {
         //noinspection ConstantConditions,ConstantConditions
-        viewModel.setSearchStringObservable(null);
+        viewModel.setSearchString(null);
     }
 
     @Test(expected = NullPointerException.class)

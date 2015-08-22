@@ -1,43 +1,39 @@
 package com.tehmou.rxbookapp.view;
 
-import com.tehmou.rxbookapp.R;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.utils.RxBinderUtil;
-import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
-import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
+import  android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
+
+import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.utils.RxViewBinder;
+import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
+import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 
 import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
 import rx.android.internal.Preconditions;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.android.widget.WidgetObservable;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Created by ttuo on 06/01/15.
  */
 public class RepositoriesView extends FrameLayout {
 
-    private final RxBinderUtil rxBinderUtil = new RxBinderUtil(this);
-
     private TextView statusText;
 
     private Observable<String> searchStringObservable;
-
-    private RepositoriesViewModel viewModel;
 
     private RecyclerView repositoriesListView;
 
@@ -62,27 +58,11 @@ public class RepositoriesView extends FrameLayout {
         statusText = (TextView) findViewById(R.id.repositories_status_text);
 
         repositoriesAdapter = new RepositoriesAdapter(Collections.emptyList());
-        repositoriesAdapter.setOnClickListener(v -> {
-            final int itemPosition = repositoriesListView.getChildAdapterPosition(v);
-            GitHubRepository repository = repositoriesAdapter.getItem(itemPosition);
-            viewModel.selectRepository(repository);
-        });
 
         repositoriesListView = (RecyclerView) findViewById(R.id.repositories_list_view);
         repositoriesListView.setHasFixedSize(true);
         repositoriesListView.setLayoutManager(new LinearLayoutManager(getContext()));
         repositoriesListView.setAdapter(repositoriesAdapter);
-    }
-
-    public void setViewModel(@Nullable RepositoriesViewModel viewModel) {
-        this.viewModel = viewModel;
-        rxBinderUtil.clear();
-        if (viewModel != null) {
-            rxBinderUtil.bindProperty(viewModel.getRepositories(), this::setRepositories);
-            rxBinderUtil.bindProperty(
-                    viewModel.getNetworkRequestStatusText(), this::setNetworkRequestStatus);
-            viewModel.setSearchStringObservable(searchStringObservable);
-        }
     }
 
     private void setRepositories(@NonNull List<GitHubRepository> repositories) {
@@ -116,5 +96,48 @@ public class RepositoriesView extends FrameLayout {
         Preconditions.checkState(statusText != null, "Status Text View should not be null.");
 
         statusText.setText(networkRequestStatusText);
+    }
+
+
+    public static class ViewBinder extends RxViewBinder {
+        private RepositoriesView view;
+        private RepositoriesViewModel viewModel;
+
+        public ViewBinder(@NonNull final RepositoriesView view,
+                          @NonNull final RepositoriesViewModel viewModel) {
+            Preconditions.checkNotNull(view, "View cannot be null.");
+            Preconditions.checkNotNull(viewModel, "ViewModel cannot be null.");
+
+            this.view = view;
+            this.viewModel = viewModel;
+        }
+
+        @Override
+        protected void bindInternal(@NonNull final CompositeSubscription s) {
+            s.add(viewModel.getRepositories()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(view::setRepositories));
+            s.add(viewModel.getNetworkRequestStatusText()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(view::setNetworkRequestStatus));
+            s.add(view.searchStringObservable
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(viewModel::setSearchString));
+            s.add(Observable.create(
+                    subscriber -> {
+                        view.repositoriesAdapter.setOnClickListener(
+                                this::repositoriesAdapterOnClick);
+                        subscriber.add(Subscriptions.create(() ->
+                                view.repositoriesAdapter.setOnClickListener(null)));
+                    })
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe());
+        }
+
+        private void repositoriesAdapterOnClick(View clickedView) {
+            final int itemPosition = view.repositoriesListView.getChildAdapterPosition(clickedView);
+            GitHubRepository repository = view.repositoriesAdapter.getItem(itemPosition);
+            viewModel.selectRepository(repository);
+        }
     }
 }

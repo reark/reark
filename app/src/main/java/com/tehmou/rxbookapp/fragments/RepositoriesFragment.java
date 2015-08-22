@@ -19,8 +19,7 @@ import javax.inject.Inject;
  * Created by ttuo on 19/03/14.
  */
 public class RepositoriesFragment extends Fragment {
-
-    private RepositoriesView repositoriesView;
+    private RepositoriesView.ViewBinder repositoriesViewBinder;
 
     @Inject
     RepositoriesViewModel repositoriesViewModel;
@@ -48,20 +47,22 @@ public class RepositoriesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        repositoriesView = (RepositoriesView) view.findViewById(R.id.repositories_view);
+        repositoriesViewBinder = new RepositoriesView.ViewBinder(
+                (RepositoriesView) view.findViewById(R.id.repositories_view),
+                repositoriesViewModel);
         repositoriesViewModel.subscribeToDataStore();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        repositoriesView.setViewModel(repositoriesViewModel);
+        repositoriesViewBinder.bind();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        repositoriesView.setViewModel(null);
+        repositoriesViewBinder.unbind();
     }
 
     @Override

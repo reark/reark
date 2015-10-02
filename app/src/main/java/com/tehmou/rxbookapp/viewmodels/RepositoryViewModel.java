@@ -1,16 +1,15 @@
 package com.tehmou.rxbookapp.viewmodels;
 
-import android.util.Log;
-
-import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
-import javax.inject.Inject;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
+import rx.Observable;
+import rx.android.internal.Preconditions;
 import rx.subjects.BehaviorSubject;
-import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -19,21 +18,24 @@ import rx.subscriptions.CompositeSubscription;
 public class RepositoryViewModel extends AbstractViewModel {
     private static final String TAG = RepositoryViewModel.class.getSimpleName();
 
-    @Inject
-    DataLayer.GetUserSettings getUserSettings;
-
-    @Inject
-    DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
+    private final DataLayer.GetUserSettings getUserSettings;
+    private final DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
     final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
-    public RepositoryViewModel() {
-        RxBookApp.getInstance().getGraph().inject(this);
+    public RepositoryViewModel(@NonNull DataLayer.GetUserSettings getUserSettings,
+                               @NonNull DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
+        Preconditions.checkNotNull(getUserSettings, "Gey User Settings cannot be null.");
+        Preconditions.checkNotNull(fetchAndGetGitHubRepository,
+                                   "Fetch And Get GitHub Repository cannot be null.");
+
+        this.getUserSettings = getUserSettings;
+        this.fetchAndGetGitHubRepository = fetchAndGetGitHubRepository;
         Log.v(TAG, "RepositoryViewModel");
     }
 
     @Override
-    protected void subscribeToDataStoreInternal(CompositeSubscription compositeSubscription) {
+    protected void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
         compositeSubscription.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
@@ -42,7 +44,8 @@ public class RepositoryViewModel extends AbstractViewModel {
         );
     }
 
-    public BehaviorSubject<GitHubRepository> getRepository() {
-        return repository;
+    @NonNull
+    public Observable<GitHubRepository> getRepository() {
+        return repository.asObservable();
     }
 }

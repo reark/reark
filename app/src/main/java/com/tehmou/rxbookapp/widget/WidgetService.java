@@ -7,10 +7,14 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.AppWidgetTarget;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.UserSettings;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -61,12 +65,23 @@ public class WidgetService extends Service {
                         .map(UserSettings::getSelectedRepositoryId)
                         .switchMap(fetchAndGetGitHubRepository::call)
                         .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {
                             remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());
                             remoteViews.setTextViewText(R.id.widget_layout_stargazers,
                                     "stars: " + repository.getStargazersCount());
                             remoteViews.setTextViewText(R.id.widget_layout_forks,
-                                    "watching: " + repository.getForksCount());
+                                    "forks: " + repository.getForksCount());
+
+                            AppWidgetTarget widgetTarget = new AppWidgetTarget(WidgetService.this,
+                                                                    remoteViews,
+                                                                    R.id.widget_avatar_image_view,
+                                                                    widgetId);
+                            Glide.with(WidgetService.this)
+                                 .load(repository.getOwner().getAvatarUrl())
+                                 .asBitmap()
+                                 .fitCenter()
+                                 .into(widgetTarget);
                             appWidgetManager.updateAppWidget(widgetId, remoteViews);
                         })
         );

@@ -7,21 +7,31 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.MainActivity;
+import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 import com.tehmou.rxbookapp.view.RepositoryView;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
+
+import javax.inject.Inject;
 
 /**
  * Created by ttuo on 06/04/15.
  */
 public class RepositoryFragment extends Fragment {
-    private RepositoryViewModel viewModel;
-    private RepositoryView repositoryView;
+    private RepositoryView.ViewBinder repositoryViewBinder;
+
+    @Inject
+    RepositoryViewModel viewModel;
+
+    @Inject
+    ApplicationInstrumentation mInstrumentation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new RepositoryViewModel();
+
+        RxBookApp.getInstance().getGraph().inject(this);
     }
 
     @Override
@@ -32,7 +42,9 @@ public class RepositoryFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        repositoryView = (RepositoryView) view.findViewById(R.id.repository_view);
+        repositoryViewBinder = new RepositoryView.ViewBinder(
+                (RepositoryView) view.findViewById(R.id.repository_view),
+                viewModel);
         viewModel.subscribeToDataStore();
 
         view.findViewById(R.id.repository_fragment_choose_repository_button)
@@ -43,13 +55,13 @@ public class RepositoryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        repositoryView.setViewModel(viewModel);
+        repositoryViewBinder.bind();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        repositoryView.setViewModel(null);
+        repositoryViewBinder.unbind();
     }
 
     @Override
@@ -63,5 +75,6 @@ public class RepositoryFragment extends Fragment {
         super.onDestroy();
         viewModel.dispose();
         viewModel = null;
+        mInstrumentation.getLeakTracing().traceLeakage(this);
     }
 }

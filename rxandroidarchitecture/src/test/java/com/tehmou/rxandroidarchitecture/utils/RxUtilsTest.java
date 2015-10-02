@@ -1,4 +1,6 @@
-package com.tehmou.rxbookapp.utils;
+package com.tehmou.rxandroidarchitecture.utils;
+
+import com.tehmou.rxandroidarchitecture.utils.RxUtils;
 
 import org.junit.Test;
 

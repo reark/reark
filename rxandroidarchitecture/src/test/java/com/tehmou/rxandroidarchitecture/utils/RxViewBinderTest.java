@@ -1,4 +1,4 @@
-package com.tehmou.rxbookapp.utils;
+package com.tehmou.rxandroidarchitecture.utils;
 
 import android.support.annotation.NonNull;
 

@@ -2,7 +2,7 @@ package com.tehmou.rxbookapp.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import  android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -10,9 +10,9 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.tehmou.rxandroidarchitecture.utils.RxViewBinder;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.utils.RxViewBinder;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 

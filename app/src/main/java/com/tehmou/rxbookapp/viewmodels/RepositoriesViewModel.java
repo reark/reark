@@ -4,7 +4,7 @@ import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.data.DataStreamNotification;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-import com.tehmou.rxbookapp.utils.RxUtils;
+import com.tehmou.rxandroidarchitecture.utils.RxUtils;
 
 import android.support.annotation.NonNull;
 import android.util.Log;

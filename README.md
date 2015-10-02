@@ -1,6 +1,8 @@
 Latest Updates
 ==============
 
+* Library module that can be included in projects
+* Breaking changes to the old version: you can keep using it and start replacing core classes as the library module progresses
 * All network requests moved into NetworkService that runs in a remote process
 * Fetchers added for keeping track of duplicate requests
 * NetworkRequestStatusStore added for monitoring the state of the requests
@@ -19,6 +21,22 @@ This is an ambitious reference project of what can be done with RxJava to create
 In the repository you will find several library-like solutions that might or might not be reusable. Parts of the architecture are, however, already used in real applications, and as the parts mature they are likely to be extracted into separate libraries. If you follow the general guidelines illustrated here, your application should be in a position to have portions of it easily replaced as more or less official solutions emerge. The architecture is designed to support large-scale applications with remote processes, such as those used in widgets.
 
 The project uses the open GitHub repositories API. You might hit a rate limit if you use the API extensively.
+
+
+Including in an Android Project
+===============================
+
+We are working in moving the core classes into the library module that can be include in a project as a dependency. You can already include the library in your project, though it is quite empty until the migration is finished. Pull requests moving classes into the shared library are welcome.
+
+```
+repositories {
+    mavenCentral()
+}
+
+android {
+    compile 'com.tehmou:rxandroidarchitecture:0.1'
+}
+```
 
 
 Application Structure

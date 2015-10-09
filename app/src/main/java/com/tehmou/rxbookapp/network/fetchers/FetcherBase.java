@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import retrofit.RetrofitError;
+import retrofit.HttpException;
 import rx.Subscription;
 import rx.android.internal.Preconditions;
 import rx.functions.Action1;
@@ -61,11 +61,10 @@ abstract public class FetcherBase implements Fetcher {
         Preconditions.checkNotNull(uri, "URI cannot be null.");
 
         return throwable -> {
-            if (throwable instanceof RetrofitError) {
-                RetrofitError retrofitError = (RetrofitError) throwable;
-                int statusCode = retrofitError.getResponse() != null ?
-                        retrofitError.getResponse().getStatus() : NO_ERROR_CODE;
-                errorRequest(uri, statusCode, retrofitError.getMessage());
+            if (throwable instanceof HttpException) {
+                HttpException httpException = (HttpException) throwable;
+                int statusCode = httpException.code();
+                errorRequest(uri, statusCode, httpException.getMessage());
             } else {
                 Log.e(TAG, "The error was not a RetroFitError");
                 errorRequest(uri, NO_ERROR_CODE, null);

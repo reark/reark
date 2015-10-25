@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.base.store.SingleItemContentProviderStoreBase;
+import com.tehmou.rxandroidarchitecture.data.base.store.SingleItemContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;

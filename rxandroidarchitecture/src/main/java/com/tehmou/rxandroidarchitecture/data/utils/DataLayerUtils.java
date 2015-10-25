@@ -1,7 +1,7 @@
-package com.tehmou.rxbookapp.data.utils;
+package com.tehmou.rxandroidarchitecture.data.utils;
 
-import com.tehmou.rxbookapp.data.DataStreamNotification;
-import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.data.DataStreamNotification;
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 
 import android.support.annotation.NonNull;
 

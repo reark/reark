@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp.viewmodels;
 
+import com.tehmou.rxandroidarchitecture.viewmodels.AbstractViewModel;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
@@ -35,7 +36,7 @@ public class RepositoryViewModel extends AbstractViewModel {
     }
 
     @Override
-    protected void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
+    public void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
         compositeSubscription.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)

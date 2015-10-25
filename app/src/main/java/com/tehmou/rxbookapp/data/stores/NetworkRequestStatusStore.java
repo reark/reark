@@ -5,15 +5,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.tehmou.rxbookapp.data.base.store.SingleItemContentProviderStoreBase;
+import com.tehmou.rxandroidarchitecture.data.base.store.SingleItemContentProviderStoreBase;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
-import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 
 import rx.android.internal.Preconditions;
 

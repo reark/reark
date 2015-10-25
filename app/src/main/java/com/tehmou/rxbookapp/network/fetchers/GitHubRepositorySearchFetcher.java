@@ -5,18 +5,17 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.tehmou.rxandroidarchitecture.network.fetchers.FetcherBase;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.network.NetworkApi;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
 import rx.Subscription;
@@ -27,7 +26,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by ttuo on 16/04/15.
  */
-public class GitHubRepositorySearchFetcher extends FetcherBase {
+public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
     private final GitHubRepositoryStore gitHubRepositoryStore;

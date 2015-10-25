@@ -4,7 +4,7 @@ import com.tehmou.rxbookapp.data.DataLayerBase;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
-import com.tehmou.rxbookapp.network.fetchers.Fetcher;
+import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
 
 import android.content.Intent;
 import android.net.Uri;

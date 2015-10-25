@@ -1,4 +1,4 @@
-package com.tehmou.rxbookapp.data.base.store;
+package com.tehmou.rxandroidarchitecture.data.base.store;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;

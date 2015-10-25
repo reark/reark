@@ -14,9 +14,9 @@ import java.util.List;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static com.tehmou.rxbookapp.data.DataStreamNotification.fetchingError;
-import static com.tehmou.rxbookapp.data.DataStreamNotification.fetchingStart;
-import static com.tehmou.rxbookapp.data.DataStreamNotification.onNext;
+import static com.tehmou.rxandroidarchitecture.data.DataStreamNotification.fetchingError;
+import static com.tehmou.rxandroidarchitecture.data.DataStreamNotification.fetchingStart;
+import static com.tehmou.rxandroidarchitecture.data.DataStreamNotification.onNext;
 import static com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus.ERROR;
 import static com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
 import static com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus.LOADING;

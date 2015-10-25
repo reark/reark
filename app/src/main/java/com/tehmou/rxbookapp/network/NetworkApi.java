@@ -1,15 +1,15 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-
 import android.support.annotation.NonNull;
+
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import java.util.List;
 import java.util.Map;
 
 import retrofit.RestAdapter;
-import rx.Observable;
 import retrofit.client.Client;
+import rx.Observable;
 import rx.android.internal.Preconditions;
 
 /**

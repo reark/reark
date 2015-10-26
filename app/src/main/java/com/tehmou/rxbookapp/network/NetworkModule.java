@@ -7,8 +7,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.client.Client;
-import retrofit.client.OkClient;
 
 /**
  * Created by Pawel Polanski on 5/16/15.
@@ -18,15 +16,8 @@ public final class NetworkModule {
 
     @Provides
     @Singleton
-    public NetworkApi provideNetworkApi(@Named("okClient") Client client) {
+    public NetworkApi provideNetworkApi(OkHttpClient client) {
         return new NetworkApi(client);
-    }
-
-    @Provides
-    @Singleton
-    @Named("okClient")
-    public Client provideOkClient(OkHttpClient okHttpClient) {
-        return new OkClient(okHttpClient);
     }
 
     @Provides

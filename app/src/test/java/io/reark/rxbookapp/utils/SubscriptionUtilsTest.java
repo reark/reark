@@ -1,4 +1,4 @@
-package io.reark.rxbookapp.utils;
+package io.reark.rxgithubapp.utils;
 
 import android.graphics.Color;
 import android.widget.TextView;

@@ -1,4 +1,4 @@
-package io.reark.rxbookapp.utils;
+package io.reark.rxgithubapp.utils;
 
 import com.squareup.okhttp.OkHttpClient;
 

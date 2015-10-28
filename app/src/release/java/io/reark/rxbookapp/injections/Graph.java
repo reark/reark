@@ -1,21 +1,20 @@
-package io.reark.rxbookapp.injections;
+package io.reark.rxgithubapp.injections;
 
 import android.app.Application;
-
-import io.reark.rxbookapp.RxBookApp;
-import io.reark.rxbookapp.activities.MainActivity;
-import io.reark.rxbookapp.data.DataStoreModule;
-import io.reark.rxbookapp.fragments.RepositoriesFragment;
-import io.reark.rxbookapp.fragments.RepositoryFragment;
-import io.reark.rxbookapp.network.NetworkService;
-import io.reark.rxbookapp.viewmodels.RepositoriesViewModel;
-import io.reark.rxbookapp.viewmodels.RepositoryViewModel;
-import io.reark.rxbookapp.viewmodels.ViewModelModule;
-import io.reark.rxbookapp.widget.WidgetService;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
+import io.reark.rxgithubapp.RxGitHubApp;
+import io.reark.rxgithubapp.activities.MainActivity;
+import io.reark.rxgithubapp.data.DataStoreModule;
+import io.reark.rxgithubapp.fragments.RepositoriesFragment;
+import io.reark.rxgithubapp.fragments.RepositoryFragment;
+import io.reark.rxgithubapp.network.NetworkService;
+import io.reark.rxgithubapp.viewmodels.RepositoriesViewModel;
+import io.reark.rxgithubapp.viewmodels.RepositoryViewModel;
+import io.reark.rxgithubapp.viewmodels.ViewModelModule;
+import io.reark.rxgithubapp.widget.WidgetService;
 
 /**
  * Created by pt2121 on 2/20/15.
@@ -32,7 +31,7 @@ public interface Graph {
     void inject(RepositoriesFragment repositoriesFragment);
     void inject(RepositoryFragment repositoryFragment);
     void inject(NetworkService networkService);
-    void inject(RxBookApp rxBookApp);
+    void inject(RxGitHubApp rxGitHubApp);
 
     final class Initializer {
 

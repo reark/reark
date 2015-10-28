@@ -1,9 +1,4 @@
-package io.reark.rxbookapp.viewmodels;
-
-import io.reark.rxbookapp.data.DataLayer;
-import io.reark.rxbookapp.data.DataLayer.GetGitHubRepositorySearch;
-import io.reark.rxbookapp.pojo.GitHubRepository;
-import io.reark.rxbookapp.pojo.GitHubRepositorySearch;
+package io.reark.rxgithubapp.viewmodels;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,16 +6,20 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import io.reark.rxgithubapp.data.DataLayer;
+import io.reark.rxgithubapp.data.DataLayer.GetGitHubRepositorySearch;
+import io.reark.rxgithubapp.pojo.GitHubRepository;
+import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static io.reark.reark.data.DataStreamNotification.fetchingError;
 import static io.reark.reark.data.DataStreamNotification.fetchingStart;
 import static io.reark.reark.data.DataStreamNotification.onNext;
-import static io.reark.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus.ERROR;
-import static io.reark.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
-import static io.reark.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus.LOADING;
-import static io.reark.rxbookapp.viewmodels.RepositoriesViewModel.toProgressStatus;
+import static io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.ProgressStatus.ERROR;
+import static io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
+import static io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.ProgressStatus.LOADING;
+import static io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.toProgressStatus;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 

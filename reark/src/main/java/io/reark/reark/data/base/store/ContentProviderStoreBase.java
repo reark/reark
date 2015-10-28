@@ -11,10 +11,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import io.reark.reark.utils.Preconditions;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reark.reark.utils.Preconditions;
 
 /**
  * Created by ttuo on 26/04/15.

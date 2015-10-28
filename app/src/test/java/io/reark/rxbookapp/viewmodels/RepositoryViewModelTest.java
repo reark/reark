@@ -1,11 +1,10 @@
-package io.reark.rxbookapp.viewmodels;
-
-import io.reark.rxbookapp.pojo.GitHubOwner;
-import io.reark.rxbookapp.pojo.GitHubRepository;
-import io.reark.rxbookapp.pojo.UserSettings;
+package io.reark.rxgithubapp.viewmodels;
 
 import org.junit.Test;
 
+import io.reark.rxgithubapp.pojo.GitHubOwner;
+import io.reark.rxgithubapp.pojo.GitHubRepository;
+import io.reark.rxgithubapp.pojo.UserSettings;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 

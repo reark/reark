@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.pojo.NetworkRequestStatus;
-
 import rx.Observable;
 import rx.functions.Func1;
 

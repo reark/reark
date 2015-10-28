@@ -1,17 +1,17 @@
-package io.reark.rxbookapp.injections;
+package io.reark.rxgithubapp.injections;
 
 import android.content.Context;
 
 import com.squareup.okhttp.OkHttpClient;
-import io.reark.rxbookapp.network.NetworkInstrumentation;
-import io.reark.rxbookapp.utils.ApplicationInstrumentation;
-import io.reark.rxbookapp.utils.NullInstrumentation;
-import io.reark.rxbookapp.utils.NullNetworkInstrumentation;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reark.rxgithubapp.network.NetworkInstrumentation;
+import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
+import io.reark.rxgithubapp.utils.NullInstrumentation;
+import io.reark.rxgithubapp.utils.NullNetworkInstrumentation;
 
 /**
  * Created by Pawel Polanski on 4/24/15.

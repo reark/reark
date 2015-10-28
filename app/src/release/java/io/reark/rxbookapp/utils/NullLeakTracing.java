@@ -1,4 +1,4 @@
-package io.reark.rxbookapp.utils;
+package io.reark.rxgithubapp.utils;
 
 /**
  * Created by Pawel Polanski on 5/9/15.

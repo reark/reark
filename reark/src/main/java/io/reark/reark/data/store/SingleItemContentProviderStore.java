@@ -1,4 +1,4 @@
-package io.reark.reark.data.base.store;
+package io.reark.reark.data.store;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
@@ -18,12 +18,12 @@ import rx.subjects.Subject;
 /**
  * Created by ttuo on 26/04/15.
  */
-abstract public class SingleItemContentProviderStoreBase<T, U> extends ContentProviderStoreBase<T> {
-    private static final String TAG = SingleItemContentProviderStoreBase.class.getSimpleName();
+abstract public class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T> {
+    private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 
     final private ConcurrentMap<Uri, Subject<T, T>> subjectMap = new ConcurrentHashMap<>();
 
-    public SingleItemContentProviderStoreBase(@NonNull ContentResolver contentResolver) {
+    public SingleItemContentProviderStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
         Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
     }

@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.base.store.SingleItemContentProviderStoreBase;
+import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
@@ -18,7 +18,7 @@ import io.reark.rxgithubapp.pojo.GitHubRepository;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class GitHubRepositoryStore extends SingleItemContentProviderStoreBase<GitHubRepository, Integer> {
+public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(@NonNull ContentResolver contentResolver) {

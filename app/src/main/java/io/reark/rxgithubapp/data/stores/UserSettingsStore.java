@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.base.store.SingleItemContentProviderStoreBase;
+import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
@@ -19,7 +19,7 @@ import io.reark.rxgithubapp.pojo.UserSettings;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class UserSettingsStore extends SingleItemContentProviderStoreBase<UserSettings, Integer> {
+public class UserSettingsStore extends SingleItemContentProviderStore<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;

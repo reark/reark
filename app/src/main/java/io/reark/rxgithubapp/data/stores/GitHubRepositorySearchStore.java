@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.base.store.SingleItemContentProviderStoreBase;
+import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositorySearchColumns;
@@ -17,7 +17,7 @@ import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 /**
  * Created by ttuo on 07/01/15.
  */
-public class GitHubRepositorySearchStore extends SingleItemContentProviderStoreBase<GitHubRepositorySearch, String> {
+public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
     public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver) {

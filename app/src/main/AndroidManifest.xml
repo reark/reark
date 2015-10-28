@@ -23,7 +23,7 @@
 
         <provider
             android:name=".data.schematicProvider.generated.GitHubProvider"
-            android:authorities=".data.schematicProvider.GitHubProvider"
+            android:authorities="io.reark.rxgithubapp.data.schematicProvider.GitHubProvider"
             android:exported="false">
         </provider>
 

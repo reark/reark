@@ -1,4 +1,4 @@
-package io.reark.reark.data.base.store;
+package io.reark.reark.data.store;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -19,8 +19,8 @@ import io.reark.reark.utils.Preconditions;
 /**
  * Created by ttuo on 26/04/15.
  */
-public abstract class ContentProviderStoreBase<T> {
-    private static final String TAG = ContentProviderStoreBase.class.getSimpleName();
+public abstract class ContentProviderStore<T> {
+    private static final String TAG = ContentProviderStore.class.getSimpleName();
 
     @NonNull
     final protected ContentResolver contentResolver;
@@ -28,7 +28,7 @@ public abstract class ContentProviderStoreBase<T> {
     @NonNull
     private final ContentObserver contentObserver = getContentObserver();
 
-    public ContentProviderStoreBase(ContentResolver contentResolver) {
+    public ContentProviderStore(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
         this.contentResolver.registerContentObserver(
                 getContentUri(), true, contentObserver);

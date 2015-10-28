@@ -1,7 +1,8 @@
 package com.tehmou.rxbookapp.viewmodels;
 
+import com.tehmou.rxandroidarchitecture.viewmodels.AbstractViewModel;
 import com.tehmou.rxbookapp.data.DataLayer;
-import com.tehmou.rxbookapp.data.DataStreamNotification;
+import com.tehmou.rxandroidarchitecture.data.DataStreamNotification;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 import com.tehmou.rxandroidarchitecture.utils.RxUtils;
@@ -19,7 +20,6 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-
 
 /**
  * Created by ttuo on 19/03/14.
@@ -98,7 +98,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @Override
-    protected void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
+    public void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =

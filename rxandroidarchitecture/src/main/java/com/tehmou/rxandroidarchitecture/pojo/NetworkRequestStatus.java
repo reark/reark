@@ -1,4 +1,4 @@
-package com.tehmou.rxbookapp.pojo;
+package com.tehmou.rxandroidarchitecture.pojo;
 
 /**
  * Created by ttuo on 26/04/15.

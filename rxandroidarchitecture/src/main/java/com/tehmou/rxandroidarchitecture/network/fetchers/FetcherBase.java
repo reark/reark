@@ -1,10 +1,9 @@
-package com.tehmou.rxbookapp.network.fetchers;
-
-import com.tehmou.rxbookapp.network.NetworkApi;
-import com.tehmou.rxbookapp.pojo.NetworkRequestStatus;
+package com.tehmou.rxandroidarchitecture.network.fetchers;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,16 +21,12 @@ abstract public class FetcherBase implements Fetcher {
 
     public static final int NO_ERROR_CODE = -1;
 
-    protected final NetworkApi networkApi;
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
-    public FetcherBase(@NonNull NetworkApi networkApi,
-                       @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
-        Preconditions.checkNotNull(networkApi, "Network Api cannot be null.");
+    public FetcherBase(@NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         Preconditions.checkNotNull(updateNetworkRequestStatus, "Update Network Status cannot be null.");
 
-        this.networkApi = networkApi;
         this.updateNetworkRequestStatus = updateNetworkRequestStatus;
     }
 

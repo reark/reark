@@ -7,7 +7,7 @@ import com.tehmou.rxbookapp.data.stores.StoreModule;
 import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
 import com.tehmou.rxbookapp.injections.ForApplication;
 import com.tehmou.rxbookapp.network.ServiceDataLayer;
-import com.tehmou.rxbookapp.network.fetchers.Fetcher;
+import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
 import com.tehmou.rxbookapp.network.fetchers.FetcherModule;
 
 import android.content.Context;

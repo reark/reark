@@ -1,5 +1,6 @@
 package com.tehmou.rxbookapp.network.fetchers;
 
+import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;

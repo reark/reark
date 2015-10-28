@@ -1,4 +1,4 @@
-package com.tehmou.rxbookapp.network.fetchers;
+package com.tehmou.rxandroidarchitecture.network.fetchers;
 
 import android.content.Intent;
 import android.net.Uri;

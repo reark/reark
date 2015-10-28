@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 

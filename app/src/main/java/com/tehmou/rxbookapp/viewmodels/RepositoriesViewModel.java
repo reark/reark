@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;

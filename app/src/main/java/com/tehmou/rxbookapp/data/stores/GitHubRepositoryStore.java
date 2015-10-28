@@ -13,7 +13,7 @@ import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 07/01/15.

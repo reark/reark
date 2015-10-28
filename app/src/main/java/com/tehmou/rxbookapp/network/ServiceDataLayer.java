@@ -15,7 +15,7 @@ import android.util.Log;
 import java.util.Arrays;
 import java.util.Collection;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 16/04/15.

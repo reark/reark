@@ -15,7 +15,7 @@ import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.utils.glide.SerialTarget;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 

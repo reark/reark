@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.tehmou.rxandroidarchitecture.utils.RxViewBinder;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.utils.TextWatcherObservable;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 
@@ -20,9 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.android.widget.WidgetObservable;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -52,8 +52,7 @@ public class RepositoriesView extends FrameLayout {
         super.onFinishInflate();
 
         EditText editText = (EditText) findViewById(R.id.repositories_search);
-        searchStringObservable = WidgetObservable.text(editText)
-                .map(onTextChangeEvent -> onTextChangeEvent.text().toString());
+        searchStringObservable = TextWatcherObservable.create(editText);
 
         statusText = (TextView) findViewById(R.id.repositories_status_text);
 

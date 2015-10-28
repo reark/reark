@@ -6,7 +6,7 @@ import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 
 import android.support.annotation.NonNull;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 16/04/15.

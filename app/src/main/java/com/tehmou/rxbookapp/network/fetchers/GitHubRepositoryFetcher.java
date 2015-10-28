@@ -13,7 +13,7 @@ import android.util.Log;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 

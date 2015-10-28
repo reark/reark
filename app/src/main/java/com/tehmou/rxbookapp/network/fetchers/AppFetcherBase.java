@@ -8,7 +8,7 @@ import com.tehmou.rxandroidarchitecture.network.fetchers.FetcherBase;
 import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.network.NetworkApi;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.functions.Action1;
 
 /**

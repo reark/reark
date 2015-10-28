@@ -14,7 +14,7 @@ import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
 import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 26/04/15.

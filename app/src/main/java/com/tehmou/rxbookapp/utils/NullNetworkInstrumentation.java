@@ -5,7 +5,7 @@ import com.tehmou.rxbookapp.network.NetworkInstrumentation;
 
 import android.support.annotation.NonNull;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 /**
  * Created by Pawel Polanski on 7/18/15.
  */

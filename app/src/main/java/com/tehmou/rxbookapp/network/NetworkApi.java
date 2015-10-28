@@ -10,7 +10,7 @@ import java.util.Map;
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import rx.Observable;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 06/01/15.

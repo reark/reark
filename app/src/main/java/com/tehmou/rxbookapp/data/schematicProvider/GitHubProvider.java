@@ -9,7 +9,7 @@ import net.simonvt.schematic.annotation.InexactContentUri;
 import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.TableEndpoint;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 14/07/15.

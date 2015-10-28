@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by Pawel Polanski on 8/7/15.

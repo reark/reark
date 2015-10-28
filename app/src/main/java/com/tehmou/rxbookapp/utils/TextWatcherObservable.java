@@ -7,7 +7,7 @@ import android.widget.EditText;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
 

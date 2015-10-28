@@ -12,7 +12,7 @@ import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 07/01/15.

@@ -7,7 +7,7 @@ import android.widget.TextView;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**

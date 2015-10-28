@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by Pawel Polanski on 7/27/15.

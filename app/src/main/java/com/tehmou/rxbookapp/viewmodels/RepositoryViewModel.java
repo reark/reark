@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 

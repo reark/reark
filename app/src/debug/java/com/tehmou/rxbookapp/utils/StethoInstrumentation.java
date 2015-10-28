@@ -8,7 +8,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 import static com.facebook.stetho.Stetho.defaultDumperPluginsProvider;
 import static com.facebook.stetho.Stetho.defaultInspectorModulesProvider;

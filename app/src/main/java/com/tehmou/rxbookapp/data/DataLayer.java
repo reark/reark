@@ -18,7 +18,7 @@ import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 
 /**

@@ -3,7 +3,7 @@ package com.tehmou.rxandroidarchitecture.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 06/05/15.

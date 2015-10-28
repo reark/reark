@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 11/01/15.

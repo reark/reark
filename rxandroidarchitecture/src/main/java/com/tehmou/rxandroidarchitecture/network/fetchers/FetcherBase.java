@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import retrofit.RetrofitError;
 import rx.Subscription;
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.functions.Action1;
 
 /**

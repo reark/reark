@@ -38,8 +38,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'io.reactivex:rxjava:1.0.11'
-    compile 'io.reactivex:rxandroid:0.24.0'
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile 'io.reactivex:rxandroid:1.0.1'
     compile 'com.android.support:support-annotations:22.2.0'
 
     compile 'com.squareup.retrofit:retrofit:1.9.0'

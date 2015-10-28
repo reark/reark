@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
 
 /**
  * Created by Pawel Polanski on 6/4/15.

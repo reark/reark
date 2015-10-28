@@ -26,6 +26,7 @@ import rx.schedulers.Schedulers;
  */
 public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
+    public static final String IDENTIFIER = TAG;
 
     private final GitHubRepositoryStore gitHubRepositoryStore;
     private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
@@ -42,6 +43,11 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
 
         this.gitHubRepositoryStore = gitHubRepositoryStore;
         this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
     }
 
     @Override

@@ -61,7 +61,7 @@ retrolambda {
 }
 
 dependencies {
-    compile project(':rxandroidarchitecture')
+    compile project(':reark')
 
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -111,7 +111,7 @@ dependencies {
 // Get the path to ADB.  Required when running tests directly from Android Studio.
 // Source: http://stackoverflow.com/a/26771087/112705
 def adb = android.getAdbExe().toString()
-def packageName = 'com.tehmou.rxbookapp'
+def packageName = 'io.reark.rxbookapp'
 def command = "$adb shell pm grant $packageName android.permission.SET_ANIMATION_SCALE".split(' ')
 
 task grantAnimationPermission(type: Exec, dependsOn: 'installDebug') {

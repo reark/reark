@@ -3,5 +3,5 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tehmou.rxbookapp.activities.MainActivity"
+    tools:context="io.reark.rxbookapp.activities.MainActivity"
     tools:ignore="MergeRootFrame" />

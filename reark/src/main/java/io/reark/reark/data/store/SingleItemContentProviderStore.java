@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,7 +55,6 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         Log.v(TAG, "getStream(" + id + ")");
-
         final T item = query(id);
         final Observable<T> observable = lazyGetSubject(id);
         if (item != null) {
@@ -74,7 +74,7 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
         return subjectMap.get(uri);
     }
 
-    @NonNull
+    @Nullable
     protected T query(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 

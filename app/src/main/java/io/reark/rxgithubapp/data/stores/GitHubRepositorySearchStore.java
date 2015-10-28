@@ -27,7 +27,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     @NonNull
     @Override
     protected String getIdFor(@NonNull GitHubRepositorySearch item) {
-        Preconditions.checkNotNull(item, "Github Repository Search cannot be null.");
+        Preconditions.checkNotNull(item, "GitHub Repository Search cannot be null.");
 
         return item.getSearch();
     }
@@ -63,9 +63,23 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
 
     @NonNull
     @Override
+    protected ContentValues readRaw(Cursor cursor) {
+        final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GitHubRepositorySearchColumns.JSON, json);
+        return contentValues;
+    }
+
+    @NonNull
+    @Override
     public Uri getUriForKey(@NonNull String id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositorySearches.withSearch(id);
+    }
+
+    @Override
+    protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
+        return v1.getAsString(GitHubRepositorySearchColumns.JSON).equals(v2.getAsString(GitHubRepositorySearchColumns.JSON));
     }
 }

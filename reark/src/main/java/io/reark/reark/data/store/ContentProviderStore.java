@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reark.reark.utils.Preconditions;
-import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -34,7 +33,7 @@ public abstract class ContentProviderStore<T> {
 
     protected final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
-    public ContentProviderStore(ContentResolver contentResolver) {
+    public ContentProviderStore(@NonNull ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
         this.contentResolver.registerContentObserver(
                 getContentUri(), true, contentObserver);
@@ -47,12 +46,25 @@ public abstract class ContentProviderStore<T> {
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.computation())
                 .subscribe(pair -> {
-                    ContentValues values = getContentValuesForItem(pair.first);
-                    Log.v(TAG, "insertOrUpdate to " + pair.second);
-                    Log.v(TAG, "values(" + values + ")");
+                    boolean valuesEqual = false;
+                    final Cursor cursor = contentResolver.query(pair.second, getProjection(), null, null, null);
+                    final ContentValues newValues = getContentValuesForItem(pair.first);
 
-                    if (contentResolver.update(pair.second, values, null, null) == 0) {
-                        final Uri resultUri = contentResolver.insert(pair.second, values);
+                    if (cursor != null) {
+                        if (cursor.moveToFirst()) {
+                            ContentValues currentValues = readRaw(cursor);
+                            valuesEqual = contentValuesEqual(currentValues, newValues);
+                        }
+                        cursor.close();
+                    }
+
+                    Log.v(TAG, "insertOrUpdate to " + pair.second);
+                    Log.v(TAG, "values(" + newValues + ")");
+
+                    if (valuesEqual) {
+                        Log.v(TAG, "Data already up to date at " + pair.second);
+                    } else if (contentResolver.update(pair.second, newValues, null, null) == 0) {
+                        final Uri resultUri = contentResolver.insert(pair.second, newValues);
                         Log.v(TAG, "Inserted at " + resultUri);
                     } else {
                         Log.v(TAG, "Updated at " + pair.second);
@@ -95,7 +107,7 @@ public abstract class ContentProviderStore<T> {
         return list;
     }
 
-    @NonNull
+    @Nullable
     protected T queryOne(Uri uri) {
         final List<T> queryResults = queryList(uri);
 
@@ -121,5 +133,10 @@ public abstract class ContentProviderStore<T> {
     protected abstract T read(Cursor cursor);
 
     @NonNull
+    protected abstract ContentValues readRaw(Cursor cursor);
+
+    @NonNull
     protected abstract ContentValues getContentValuesForItem(T item);
+
+    protected abstract boolean contentValuesEqual(ContentValues v1, ContentValues v2);
 }

@@ -1,16 +1,15 @@
 package com.tehmou.rxbookapp.utils.glide;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
-
-import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by Pawel Polanski on 8/7/15.

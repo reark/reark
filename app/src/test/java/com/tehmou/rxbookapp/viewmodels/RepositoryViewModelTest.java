@@ -6,8 +6,6 @@ import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import org.junit.Test;
 
-import java.security.acl.Owner;
-
 import rx.Observable;
 import rx.observers.TestSubscriber;
 

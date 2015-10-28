@@ -1,17 +1,17 @@
 package com.tehmou.rxbookapp.fragments;
 
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.activities.ChooseRepositoryActivity;
 import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 import com.tehmou.rxbookapp.view.RepositoriesView;
 import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
-
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import javax.inject.Inject;
 

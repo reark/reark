@@ -1,7 +1,8 @@
 package com.tehmou.rxbookapp.injections;
 
+import android.app.Application;
+
 import com.tehmou.rxbookapp.RxBookApp;
-import com.tehmou.rxbookapp.injections.DaggerGraph;
 import com.tehmou.rxbookapp.activities.MainActivity;
 import com.tehmou.rxbookapp.data.DataStoreModule;
 import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
@@ -11,8 +12,6 @@ import com.tehmou.rxbookapp.viewmodels.RepositoriesViewModel;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 import com.tehmou.rxbookapp.viewmodels.ViewModelModule;
 import com.tehmou.rxbookapp.widget.WidgetService;
-
-import android.app.Application;
 
 import javax.inject.Singleton;
 

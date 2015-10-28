@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import rx.Observable;
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 

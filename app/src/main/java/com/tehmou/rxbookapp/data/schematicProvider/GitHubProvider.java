@@ -3,13 +3,12 @@ package com.tehmou.rxbookapp.data.schematicProvider;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
-import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.TableEndpoint;
-
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 14/07/15.

@@ -8,11 +8,10 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.tehmou.rxandroidarchitecture.data.base.store.SingleItemContentProviderStoreBase;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 07/01/15.

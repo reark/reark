@@ -1,11 +1,11 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.RxBookApp;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.tehmou.rxbookapp.RxBookApp;
 
 import javax.inject.Inject;
 

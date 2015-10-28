@@ -1,12 +1,12 @@
 package com.tehmou.rxbookapp.injections;
 
+import android.content.Context;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.tehmou.rxbookapp.network.NetworkInstrumentation;
 import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 import com.tehmou.rxbookapp.utils.NullInstrumentation;
 import com.tehmou.rxbookapp.utils.NullNetworkInstrumentation;
-
-import android.content.Context;
 
 import javax.inject.Singleton;
 

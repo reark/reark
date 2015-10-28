@@ -1,5 +1,8 @@
 package com.tehmou.rxbookapp.injections;
 
+import android.app.Application;
+import android.content.Context;
+
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -9,9 +12,6 @@ import com.tehmou.rxbookapp.utils.DebugApplicationInstrumentation;
 import com.tehmou.rxbookapp.utils.LeakCanaryTracing;
 import com.tehmou.rxbookapp.utils.LeakTracing;
 import com.tehmou.rxbookapp.utils.StethoInstrumentation;
-
-import android.app.Application;
-import android.content.Context;
 
 import javax.inject.Singleton;
 

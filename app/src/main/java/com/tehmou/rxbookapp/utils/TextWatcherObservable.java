@@ -5,9 +5,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+
 import rx.Observable;
 import rx.Subscriber;
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
 

@@ -1,12 +1,12 @@
 package com.tehmou.rxbookapp.utils.glide;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
-
-import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 
 /**
  * Created by Pawel Polanski on 8/7/15.

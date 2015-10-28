@@ -1,14 +1,13 @@
 package com.tehmou.rxbookapp.utils;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.tehmou.rxbookapp.network.NetworkInstrumentation;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.OkHttpClient;
 import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+import com.tehmou.rxbookapp.network.NetworkInstrumentation;
 
 import static com.facebook.stetho.Stetho.defaultDumperPluginsProvider;
 import static com.facebook.stetho.Stetho.defaultInspectorModulesProvider;

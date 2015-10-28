@@ -1,15 +1,15 @@
 package com.tehmou.rxbookapp.viewmodels;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxandroidarchitecture.viewmodels.AbstractViewModel;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
-
 import rx.Observable;
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 

@@ -1,12 +1,11 @@
 package com.tehmou.rxbookapp.data;
 
-import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
-import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
-import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
-
 import android.support.annotation.NonNull;
 
 import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 
 /**
  * Created by ttuo on 16/04/15.

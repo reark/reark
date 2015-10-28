@@ -2,6 +2,7 @@ package com.tehmou.rxbookapp.network;
 
 import android.support.annotation.NonNull;
 
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Map;
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import rx.Observable;
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 06/01/15.

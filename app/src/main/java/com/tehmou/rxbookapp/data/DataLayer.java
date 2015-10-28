@@ -6,19 +6,19 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.tehmou.rxandroidarchitecture.data.DataStreamNotification;
+import com.tehmou.rxandroidarchitecture.data.utils.DataLayerUtils;
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
 import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
-import com.tehmou.rxandroidarchitecture.data.utils.DataLayerUtils;
 import com.tehmou.rxbookapp.network.NetworkService;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
 import rx.Observable;
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 
 /**

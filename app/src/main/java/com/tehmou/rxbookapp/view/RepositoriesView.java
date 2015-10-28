@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxandroidarchitecture.utils.RxViewBinder;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
@@ -21,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;

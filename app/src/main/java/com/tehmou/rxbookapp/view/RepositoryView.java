@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxandroidarchitecture.utils.RxViewBinder;
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 import com.tehmou.rxbookapp.utils.glide.SerialTarget;
 import com.tehmou.rxbookapp.viewmodels.RepositoryViewModel;
 
-import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 

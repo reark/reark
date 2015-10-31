@@ -1,10 +1,10 @@
 package com.tehmou.rxbookapp;
 
-import com.tehmou.rxbookapp.injections.Graph;
-import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
-
 import android.app.Application;
 import android.support.annotation.NonNull;
+
+import com.tehmou.rxbookapp.injections.Graph;
+import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 
 import javax.inject.Inject;
 

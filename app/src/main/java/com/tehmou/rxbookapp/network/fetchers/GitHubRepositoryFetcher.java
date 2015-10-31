@@ -1,19 +1,18 @@
 package com.tehmou.rxbookapp.network.fetchers;
 
-import com.tehmou.rxandroidarchitecture.network.fetchers.FetcherBase;
-import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
-import com.tehmou.rxbookapp.network.NetworkApi;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.network.NetworkApi;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
+
 import rx.Observable;
 import rx.Subscription;
-import rx.android.internal.Preconditions;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 

@@ -1,15 +1,15 @@
 package com.tehmou.rxbookapp.activities;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
 import com.tehmou.rxbookapp.R;
 import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.fragments.RepositoryFragment;
 import com.tehmou.rxbookapp.pojo.UserSettings;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import javax.inject.Inject;
 

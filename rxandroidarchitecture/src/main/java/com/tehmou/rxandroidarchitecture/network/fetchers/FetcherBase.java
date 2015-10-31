@@ -4,13 +4,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import retrofit.RetrofitError;
 import rx.Subscription;
-import rx.android.internal.Preconditions;
 import rx.functions.Action1;
 
 /**

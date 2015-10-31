@@ -9,12 +9,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.tehmou.rxandroidarchitecture.data.base.store.SingleItemContentProviderStoreBase;
+import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 import com.tehmou.rxbookapp.data.schematicProvider.GitHubProvider;
 import com.tehmou.rxbookapp.data.schematicProvider.JsonIdColumns;
 import com.tehmou.rxbookapp.data.schematicProvider.UserSettingsColumns;
-import com.tehmou.rxandroidarchitecture.pojo.NetworkRequestStatus;
-
-import rx.android.internal.Preconditions;
 
 /**
  * Created by ttuo on 26/04/15.

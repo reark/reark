@@ -14,8 +14,6 @@ import com.tehmou.rxbookapp.RxBookApp;
 import com.tehmou.rxbookapp.data.DataLayer;
 import com.tehmou.rxbookapp.pojo.UserSettings;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;

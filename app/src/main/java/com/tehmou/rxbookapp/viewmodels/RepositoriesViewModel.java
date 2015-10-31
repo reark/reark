@@ -1,20 +1,20 @@
 package com.tehmou.rxbookapp.viewmodels;
 
-import com.tehmou.rxandroidarchitecture.viewmodels.AbstractViewModel;
-import com.tehmou.rxbookapp.data.DataLayer;
-import com.tehmou.rxandroidarchitecture.data.DataStreamNotification;
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
-import com.tehmou.rxandroidarchitecture.utils.RxUtils;
-
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.tehmou.rxandroidarchitecture.data.DataStreamNotification;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.RxUtils;
+import com.tehmou.rxandroidarchitecture.viewmodels.AbstractViewModel;
+import com.tehmou.rxbookapp.data.DataLayer;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
+import com.tehmou.rxbookapp.pojo.GitHubRepositorySearch;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.android.internal.Preconditions;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;

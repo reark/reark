@@ -4,10 +4,11 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.widget.TextView;
 
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.android.internal.Preconditions;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**

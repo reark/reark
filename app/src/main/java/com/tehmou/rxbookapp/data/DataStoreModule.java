@@ -1,5 +1,8 @@
 package com.tehmou.rxbookapp.data;
 
+import android.content.Context;
+
+import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
 import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
 import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
@@ -7,10 +10,7 @@ import com.tehmou.rxbookapp.data.stores.StoreModule;
 import com.tehmou.rxbookapp.data.stores.UserSettingsStore;
 import com.tehmou.rxbookapp.injections.ForApplication;
 import com.tehmou.rxbookapp.network.ServiceDataLayer;
-import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
 import com.tehmou.rxbookapp.network.fetchers.FetcherModule;
-
-import android.content.Context;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

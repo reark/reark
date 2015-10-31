@@ -2,7 +2,7 @@ package com.tehmou.rxbookapp.utils;
 
 import android.support.annotation.NonNull;
 
-import rx.android.internal.Preconditions;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 public class DebugApplicationInstrumentation implements ApplicationInstrumentation
 {

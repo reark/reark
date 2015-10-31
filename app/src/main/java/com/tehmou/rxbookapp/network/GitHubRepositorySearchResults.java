@@ -1,12 +1,11 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.pojo.GitHubRepository;
-
 import android.support.annotation.NonNull;
 
-import java.util.List;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
-import rx.android.internal.Preconditions;
+import java.util.List;
 
 /**
  * Created by ttuo on 11/01/15.

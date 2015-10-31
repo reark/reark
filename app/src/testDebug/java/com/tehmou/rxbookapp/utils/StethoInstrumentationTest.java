@@ -1,5 +1,7 @@
 package com.tehmou.rxbookapp.utils;
 
+import android.content.Context;
+
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -7,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import android.content.Context;
 
 import java.util.List;
 

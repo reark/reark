@@ -1,11 +1,10 @@
 package com.tehmou.rxbookapp.pojo;
 
-import com.google.gson.annotations.SerializedName;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rx.android.internal.Preconditions;
+import com.google.gson.annotations.SerializedName;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
 
 /**
  * Created by ttuo on 06/01/15.

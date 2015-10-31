@@ -1,6 +1,5 @@
 package com.tehmou.rxbookapp.data.schematicProvider;
 
-import net.simonvt.schematic.annotation.AutoIncrement;
 import net.simonvt.schematic.annotation.DataType;
 import net.simonvt.schematic.annotation.PrimaryKey;
 

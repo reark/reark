@@ -1,11 +1,11 @@
 package com.tehmou.rxbookapp.activities;
 
-import com.tehmou.rxbookapp.R;
-import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.tehmou.rxbookapp.R;
+import com.tehmou.rxbookapp.fragments.RepositoriesFragment;
 
 
 public class ChooseRepositoryActivity extends AppCompatActivity {

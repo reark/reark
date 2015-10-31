@@ -1,21 +1,20 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.data.DataLayerBase;
-import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
-import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
-import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
-import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.tehmou.rxandroidarchitecture.network.fetchers.Fetcher;
+import com.tehmou.rxandroidarchitecture.utils.Preconditions;
+import com.tehmou.rxbookapp.data.DataLayerBase;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositorySearchStore;
+import com.tehmou.rxbookapp.data.stores.GitHubRepositoryStore;
+import com.tehmou.rxbookapp.data.stores.NetworkRequestStatusStore;
+
 import java.util.Arrays;
 import java.util.Collection;
-
-import rx.android.internal.Preconditions;
 
 /**
  * Created by ttuo on 16/04/15.

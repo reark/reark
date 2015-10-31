@@ -1,8 +1,8 @@
 package com.tehmou.rxbookapp.network;
 
-import com.tehmou.rxbookapp.utils.Instrumentation;
-
 import android.support.annotation.NonNull;
+
+import com.tehmou.rxbookapp.utils.Instrumentation;
 
 public interface NetworkInstrumentation<T> extends Instrumentation
 {

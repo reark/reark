@@ -26,9 +26,8 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
 
     public UserSettingsStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
-        if (!hasUserSettings()) {
-            put(new UserSettings(DEFAULT_REPOSITORY_ID));
-        }
+
+        initUserSettings();
     }
 
     @NonNull
@@ -43,8 +42,13 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
         return GitHubProvider.UserSettings.USER_SETTINGS;
     }
 
-    private boolean hasUserSettings() {
-        return query(DataLayer.DEFAULT_USER_ID) != null;
+    private void initUserSettings() {
+        query(DataLayer.DEFAULT_USER_ID)
+                .first()
+                .filter(userSettings -> userSettings == null)
+                .subscribe(userSettings -> {
+                    put(new UserSettings(DEFAULT_REPOSITORY_ID));
+                });
     }
 
     @NonNull

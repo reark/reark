@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -12,6 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -38,7 +38,7 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
                 Log.v(TAG, "onChange(" + uri + ")");
 
                 if (subjectMap.containsKey(uri)) {
-                    subjectMap.get(uri).onNext(queryOne(uri));
+                    queryOne(uri).subscribe(t -> subjectMap.get(uri).onNext(t));
                 }
             }
         };
@@ -55,13 +55,18 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         Log.v(TAG, "getStream(" + id + ")");
-        final T item = query(id);
-        final Observable<T> observable = lazyGetSubject(id);
-        if (item != null) {
-            Log.v(TAG, "Found existing item for id=" + id);
-            return observable.startWith(item);
-        }
-        return observable;
+
+        return query(id)
+                .flatMap(item -> {
+                    final Observable<T> observable = lazyGetSubject(id);
+                    if (item != null) {
+                        Log.v(TAG, "Found existing item for id=" + id);
+                        return observable.startWith(item);
+                    }
+                    return observable;
+                })
+                .subscribeOn(AndroidSchedulers.mainThread());
+
     }
 
     @NonNull
@@ -74,8 +79,8 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
         return subjectMap.get(uri);
     }
 
-    @Nullable
-    protected T query(@NonNull U id) {
+    @NonNull
+    protected Observable<T> query(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         final Uri uri = getUriForKey(id);

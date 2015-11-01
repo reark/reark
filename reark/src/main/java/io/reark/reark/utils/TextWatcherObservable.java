@@ -5,7 +5,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
-import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subjects.BehaviorSubject;

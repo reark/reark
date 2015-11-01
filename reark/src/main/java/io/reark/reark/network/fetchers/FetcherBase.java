@@ -1,12 +1,12 @@
 package io.reark.reark.network.fetchers;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
+import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import retrofit.RetrofitError;
 import rx.Subscription;

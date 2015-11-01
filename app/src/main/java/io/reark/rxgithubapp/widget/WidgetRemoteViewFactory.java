@@ -1,10 +1,10 @@
 package io.reark.rxgithubapp.widget;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 
 /**

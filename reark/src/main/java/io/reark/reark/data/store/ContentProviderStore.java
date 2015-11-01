@@ -9,12 +9,12 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;

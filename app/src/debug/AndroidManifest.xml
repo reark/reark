@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.tehmou.rxbookapp">
+        package="io.reark.rxgithubapp">
 
     <!-- Disable animations on debug builds so that the animations do not interfere with Espresso
          tests.  Adding this permission to the manifest is not sufficient - you must also grant the

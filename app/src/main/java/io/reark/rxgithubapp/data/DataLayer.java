@@ -14,6 +14,7 @@ import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.network.NetworkService;
+import io.reark.rxgithubapp.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.pojo.UserSettings;
@@ -70,7 +71,13 @@ public class DataLayer extends DataLayerBase {
         Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
 
         Intent intent = new Intent(context, NetworkService.class);
+
+        // Fetchers can be identified either by contentUri, which selects first fetcher
+        // implementing the content type, or an identifier that can be used to choose a
+        // specific fetcher from multiple fetchers that return the same value types.
         intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
+        intent.putExtra("fetcherIdentifier", GitHubRepositorySearchFetcher.IDENTIFIER);
+
         intent.putExtra("searchString", searchString);
         context.startService(intent);
     }

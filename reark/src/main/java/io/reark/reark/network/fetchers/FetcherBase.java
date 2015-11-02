@@ -19,6 +19,7 @@ abstract public class FetcherBase implements Fetcher {
     private static final String TAG = FetcherBase.class.getSimpleName();
 
     public static final int NO_ERROR_CODE = -1;
+    public static String IDENTIFIER = "fetcherBase";
 
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();

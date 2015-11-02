@@ -20,6 +20,7 @@ import rx.schedulers.Schedulers;
  */
 public class GitHubRepositoryFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
+    public static final String IDENTIFIER = TAG;
 
     @NonNull
     private final GitHubRepositoryStore gitHubRepositoryStore;
@@ -32,6 +33,11 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");
 
         this.gitHubRepositoryStore = gitHubRepositoryStore;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
     }
 
     @Override

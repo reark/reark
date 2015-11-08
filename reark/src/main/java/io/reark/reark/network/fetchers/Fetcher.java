@@ -8,5 +8,5 @@ import android.net.Uri;
  */
 public interface Fetcher {
     void fetch(Intent intent);
-    Uri getContentUri();
+    Uri getServiceUri();
 }

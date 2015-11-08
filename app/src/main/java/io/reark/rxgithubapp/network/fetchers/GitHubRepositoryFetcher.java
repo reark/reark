@@ -8,6 +8,7 @@ import android.util.Log;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
+import io.reark.rxgithubapp.network.GitHubService;
 import io.reark.rxgithubapp.network.NetworkApi;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 import rx.Observable;
@@ -71,7 +72,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
 
     @NonNull
     @Override
-    public Uri getContentUri() {
-        return gitHubRepositoryStore.getContentUri();
+    public Uri getServiceUri() {
+        return GitHubService.REPOSITORY;
     }
 }

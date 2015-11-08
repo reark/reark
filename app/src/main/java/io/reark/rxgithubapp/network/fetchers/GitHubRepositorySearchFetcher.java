@@ -13,6 +13,7 @@ import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
+import io.reark.rxgithubapp.network.GitHubService;
 import io.reark.rxgithubapp.network.NetworkApi;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
@@ -91,7 +92,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
 
     @NonNull
     @Override
-    public Uri getContentUri() {
-        return gitHubRepositorySearchStore.getContentUri();
+    public Uri getServiceUri() {
+        return GitHubService.REPOSITORY_SEARCH;
     }
 }

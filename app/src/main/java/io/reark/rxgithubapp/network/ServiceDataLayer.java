@@ -46,15 +46,15 @@ public class ServiceDataLayer extends DataLayerBase {
     public void processIntent(@NonNull Intent intent) {
         Preconditions.checkNotNull(intent, "Intent cannot be null.");
 
-        final String contentUriString = intent.getStringExtra("contentUriString");
-        if (contentUriString != null) {
-            final Uri contentUri = Uri.parse(contentUriString);
-            Fetcher matchingFetcher = findFetcher(contentUri);
+        final String serviceUriString = intent.getStringExtra("serviceUriString");
+        if (serviceUriString != null) {
+            final Uri serviceUri = Uri.parse(serviceUriString);
+            Fetcher matchingFetcher = findFetcher(serviceUri);
             if (matchingFetcher != null) {
-                Log.v(TAG, "Fetcher found for " + contentUri);
+                Log.v(TAG, "Fetcher found for " + serviceUri);
                 matchingFetcher.fetch(intent);
             } else {
-                Log.e(TAG, "Unknown Uri " + contentUri);
+                Log.e(TAG, "Unknown Uri " + serviceUri);
             }
         } else {
             Log.e(TAG, "No Uri defined");
@@ -62,11 +62,11 @@ public class ServiceDataLayer extends DataLayerBase {
     }
 
     @Nullable
-    private Fetcher findFetcher(@NonNull Uri contentUri) {
-        Preconditions.checkNotNull(contentUri, "Content URL cannot be null.");
+    private Fetcher findFetcher(@NonNull Uri serviceUri) {
+        Preconditions.checkNotNull(serviceUri, "Service URI cannot be null.");
 
         for (Fetcher fetcher : fetchers) {
-            if (fetcher.getContentUri().equals(contentUri)) {
+            if (fetcher.getServiceUri().equals(serviceUri)) {
                 return fetcher;
             }
         }

@@ -13,6 +13,7 @@ import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
+import io.reark.rxgithubapp.network.GitHubService;
 import io.reark.rxgithubapp.network.NetworkService;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
@@ -70,7 +71,7 @@ public class DataLayer extends DataLayerBase {
         Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
 
         Intent intent = new Intent(context, NetworkService.class);
-        intent.putExtra("contentUriString", gitHubRepositorySearchStore.getContentUri().toString());
+        intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
         intent.putExtra("searchString", searchString);
         context.startService(intent);
     }
@@ -92,7 +93,7 @@ public class DataLayer extends DataLayerBase {
 
     private void fetchGitHubRepository(@NonNull Integer repositoryId) {
         Intent intent = new Intent(context, NetworkService.class);
-        intent.putExtra("contentUriString", gitHubRepositoryStore.getContentUri().toString());
+        intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
         intent.putExtra("id", repositoryId);
         context.startService(intent);
     }

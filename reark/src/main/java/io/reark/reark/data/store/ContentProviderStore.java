@@ -31,45 +31,45 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     private final ContentObserver contentObserver = getContentObserver();
 
+    @NonNull
     protected final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
     public ContentProviderStore(@NonNull ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
-        this.contentResolver.registerContentObserver(
-                getContentUri(), true, contentObserver);
+        this.contentResolver.registerContentObserver(getContentUri(), true, contentObserver);
 
-        subscribe();
-    }
-
-    private void subscribe() {
         updateSubject
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.computation())
                 .subscribe(pair -> {
-                    boolean valuesEqual = false;
-                    final Cursor cursor = contentResolver.query(pair.second, getProjection(), null, null, null);
-                    final ContentValues newValues = getContentValuesForItem(pair.first);
-
-                    if (cursor != null) {
-                        if (cursor.moveToFirst()) {
-                            ContentValues currentValues = readRaw(cursor);
-                            valuesEqual = contentValuesEqual(currentValues, newValues);
-                        }
-                        cursor.close();
-                    }
-
-                    Log.v(TAG, "insertOrUpdate to " + pair.second);
-                    Log.v(TAG, "values(" + newValues + ")");
-
-                    if (valuesEqual) {
-                        Log.v(TAG, "Data already up to date at " + pair.second);
-                    } else if (contentResolver.update(pair.second, newValues, null, null) == 0) {
-                        final Uri resultUri = contentResolver.insert(pair.second, newValues);
-                        Log.v(TAG, "Inserted at " + resultUri);
-                    } else {
-                        Log.v(TAG, "Updated at " + pair.second);
-                    }
+                    updateIfValueChanged(this, pair);
                 });
+    }
+
+    protected static <T> void updateIfValueChanged(ContentProviderStore store, Pair<T, Uri> pair) {
+        boolean valuesEqual = false;
+        final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
+        final ContentValues newValues = store.getContentValuesForItem(pair.first);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                ContentValues currentValues = store.readRaw(cursor);
+                valuesEqual = store.contentValuesEqual(currentValues, newValues);
+            }
+            cursor.close();
+        }
+
+        Log.v(TAG, "insertOrUpdate to " + pair.second);
+        Log.v(TAG, "values(" + newValues + ")");
+
+        if (valuesEqual) {
+            Log.v(TAG, "Data already up to date at " + pair.second);
+        } else if (store.contentResolver.update(pair.second, newValues, null, null) == 0) {
+            final Uri resultUri = store.contentResolver.insert(pair.second, newValues);
+            Log.v(TAG, "Inserted at " + resultUri);
+        } else {
+            Log.v(TAG, "Updated at " + pair.second);
+        }
     }
 
     @NonNull

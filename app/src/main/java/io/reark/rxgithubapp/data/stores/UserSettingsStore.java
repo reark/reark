@@ -70,6 +70,14 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
         return value;
     }
 
+    @NonNull
+    @Override
+    protected ContentValues readRaw(Cursor cursor) {
+        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(JsonIdColumns.JSON, json);
+        return contentValues;
+    }
 
     @NonNull
     @Override
@@ -77,5 +85,10 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.UserSettings.withId(id);
+    }
+
+    @Override
+    protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
+        return v1.getAsString(JsonIdColumns.JSON).equals(v2.getAsString(JsonIdColumns.JSON));
     }
 }

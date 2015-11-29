@@ -61,7 +61,7 @@ public abstract class ContentProviderStore<T> {
             cursor.close();
         }
 
-        Log.v(TAG, "insertOrUpdate to " + pair.second);
+        Log.v(TAG, "updateIfValueChanged to " + pair.second);
         Log.v(TAG, "values(" + newValues + ")");
 
         if (valuesEqual) {
@@ -81,10 +81,31 @@ public abstract class ContentProviderStore<T> {
         return new Handler(handlerThread.getLooper());
     }
 
-    protected void insertOrUpdate(T item, Uri uri) {
+    protected void put(T item, Uri uri) {
         Preconditions.checkNotNull(item, "Item to be inserted cannot be null");
 
         updateSubject.onNext(new Pair<>(item, uri));
+    }
+
+    @NonNull
+    protected Observable<List<T>> get(Uri uri) {
+        return Observable.just(uri)
+                .observeOn(Schedulers.computation())
+                .map(this::queryList);
+    }
+
+    @NonNull
+    protected Observable<T> getOne(Uri uri) {
+        return get(uri)
+                .map(queryResults -> {
+                    if (queryResults.size() == 0) {
+                        return null;
+                    } else if (queryResults.size() > 1) {
+                        Log.w(TAG, "Multiple items found in a get for a single item:" + queryResults.size());
+                    }
+
+                    return queryResults.get(0);
+                });
     }
 
     @NonNull
@@ -107,23 +128,6 @@ public abstract class ContentProviderStore<T> {
             Log.v(TAG, "Could not find with uri: " + uri);
         }
         return list;
-    }
-
-    @NonNull
-    protected Observable<T> queryOne(Uri uri) {
-        return Observable.just(uri)
-                .observeOn(Schedulers.computation())
-                .map(uri1 -> {
-                    final List<T> queryResults = queryList(uri1);
-
-                    if (queryResults.size() == 0) {
-                        return null;
-                    } else if (queryResults.size() > 1) {
-                        Log.w(TAG, "Multiple items found in a query for a single item");
-                    }
-
-                    return queryResults.get(0);
-                });
     }
 
     @NonNull

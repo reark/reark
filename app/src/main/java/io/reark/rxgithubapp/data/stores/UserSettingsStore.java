@@ -43,7 +43,7 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
     }
 
     private void initUserSettings() {
-        query(DataLayer.DEFAULT_USER_ID)
+        getOne(DataLayer.DEFAULT_USER_ID)
                 .first()
                 .filter(userSettings -> userSettings == null)
                 .subscribe(userSettings -> {

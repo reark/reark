@@ -5,6 +5,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.List;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
@@ -36,7 +37,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
             public void onChange(boolean selfChange, Uri uri) {
                 super.onChange(selfChange, uri);
 
-                queryOne(uri)
+                getOne(uri)
                         .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
                         .map(it -> new StoreItem<>(uri, it))
                         .subscribe(subjectCache::onNext,
@@ -48,16 +49,31 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     public void put(@NonNull T item) {
         Preconditions.checkNotNull(item, "Item cannot be null.");
 
-        insertOrUpdate(item, getUriForItem(item));
+        put(item, getUriForItem(item));
+    }
+
+    @NonNull
+    public Observable<List<T>> get(@NonNull U id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
+        final Uri uri = getUriForKey(id);
+        return get(uri);
+    }
+
+    @NonNull
+    public Observable<T> getOne(@NonNull U id) {
+        Preconditions.checkNotNull(id, "Id cannot be null.");
+
+        final Uri uri = getUriForKey(id);
+        return getOne(uri);
     }
 
     @NonNull
     public Observable<T> getStream(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
-
         Log.v(TAG, "getStream(" + id + ")");
 
-        return concat(query(id).filter(it -> it != null),
+        return concat(getOne(id).filter(it -> it != null),
                       getItemObservable(id))
                 .subscribeOn(AndroidSchedulers.mainThread());
     }
@@ -65,18 +81,10 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     @NonNull
     private Observable<T> getItemObservable(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
-
         return subjectCache
                 .filter(it -> it.uri().equals(getUriForKey(id)))
                 .doOnNext(it -> Log.v(TAG, "getItemObservable(" + it + ')'))
                 .map(StoreItem::item);
-    }
-
-    @NonNull
-    protected Observable<T> query(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
-
-        return queryOne(getUriForKey(id));
     }
 
     @NonNull

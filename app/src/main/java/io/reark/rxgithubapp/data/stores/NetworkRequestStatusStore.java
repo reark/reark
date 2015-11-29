@@ -43,7 +43,7 @@ public class NetworkRequestStatusStore extends SingleItemContentProviderStore<Ne
     public void put(@NonNull NetworkRequestStatus item) {
         Preconditions.checkNotNull(item, "Network Request Status cannot be null.");
 
-        Log.v(TAG, "insertOrUpdate(" + item.getStatus() + ", " + item.getUri() + ")");
+        Log.v(TAG, "put(" + item.getStatus() + ", " + item.getUri() + ")");
         super.put(item);
     }
 

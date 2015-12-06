@@ -1,4 +1,4 @@
-package io.reark.rxgithubapp.utils;
+package io.reark.reark.utils;
 
 import android.support.annotation.NonNull;
 import android.text.Editable;

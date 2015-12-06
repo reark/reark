@@ -1,8 +1,8 @@
 package io.reark.reark.viewmodels;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
+import io.reark.reark.utils.Log;
 import rx.subscriptions.CompositeSubscription;
 
 /**

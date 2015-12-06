@@ -3,10 +3,10 @@ package io.reark.rxgithubapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import javax.inject.Inject;
 
+import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.DataLayer;

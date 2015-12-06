@@ -1,12 +1,12 @@
 package io.reark.rxgithubapp.viewmodels;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.DataStreamNotification;
+import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxUtils;
 import io.reark.reark.viewmodels.AbstractViewModel;
@@ -108,17 +108,16 @@ public class RepositoriesViewModel extends AbstractViewModel {
                           .publish();
 
         compositeSubscription.add(repositorySearchSource
-                                          .map(toProgressStatus())
-                                          .subscribe(this::setNetworkStatusText));
-        compositeSubscription.add(
-                repositorySearchSource
-                        .filter(DataStreamNotification::isOnNext)
-                        .map(DataStreamNotification::getValue)
-                        .map(GitHubRepositorySearch::getItems)
-                        .flatMap(toGitHubRepositoryList())
-                        .doOnNext(list -> Log.d(TAG, "Publishing " + list.size()
-                                                              + " repositories from the ViewModel"))
-                        .subscribe(RepositoriesViewModel.this.repositories::onNext));
+                .map(toProgressStatus())
+                .subscribe(this::setNetworkStatusText));
+
+        compositeSubscription.add(repositorySearchSource
+                .filter(DataStreamNotification::isOnNext)
+                .map(DataStreamNotification::getValue)
+                .map(GitHubRepositorySearch::getItems)
+                .flatMap(toGitHubRepositoryList())
+                .doOnNext(list -> Log.d(TAG, "Publishing " + list.size() + " repositories from the ViewModel"))
+                .subscribe(RepositoriesViewModel.this.repositories::onNext));
 
         compositeSubscription.add(repositorySearchSource.connect());
     }
@@ -136,9 +135,9 @@ public class RepositoriesViewModel extends AbstractViewModel {
     Observable<GitHubRepository> getGitHubRepositoryObservable(@NonNull Integer repositoryId) {
         Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
 
-        return getGitHubRepository.call(repositoryId)
-                                  .doOnNext((repository) -> Log.v(TAG, "Received repository "
-                                                                       + repository.getId()));
+        return getGitHubRepository
+                .call(repositoryId)
+                .doOnNext((repository) -> Log.v(TAG, "Received repository " + repository.getId()));
     }
 
     void setNetworkStatusText(@NonNull ProgressStatus status) {
@@ -146,5 +145,4 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
         networkRequestStatusText.onNext(status);
     }
-
 }

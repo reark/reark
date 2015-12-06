@@ -3,13 +3,13 @@ package io.reark.rxgithubapp.network.fetchers;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
+import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;

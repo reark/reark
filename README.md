@@ -16,7 +16,7 @@ Reference Architecture for Android using RxJava
 
 This is an ambitious reference project of what can be done with RxJava to create an app based on streams of data.
 
-![High-level architecture](http://tehmou.github.io/rx-android-architecture/images/architecture2.1.png "High-level architecture")
+![High-level architecture](http://reark.github.io/reark/images/architecture2.1.png "High-level architecture")
 
 In the repository you will find several library-like solutions that might or might not be reusable. Parts of the architecture are, however, already used in real applications, and as the parts mature they are likely to be extracted into separate libraries. If you follow the general guidelines illustrated here, your application should be in a position to have portions of it easily replaced as more or less official solutions emerge. The architecture is designed to support large-scale applications with remote processes, such as those used in widgets.
 
@@ -107,7 +107,7 @@ View Model has two important responsibilities:
 
 The suggested VM life cycle is much like that of fragment, and not by coincidence.
 
-![View Model life cycle](http://tehmou.github.io/rx-android-architecture/images/android_rx_viewmodel_lifecycle.svg "View Model life cycle")
+![View Model life cycle](http://reark.github.io/reark/images/android_rx_viewmodel_lifecycle.svg "View Model life cycle")
 
 The data layer offers a permanent subscription to a data source, and it pushes a new item whenever new data arrives. This connection should be established in onViewCreated and released in onViewDestroyed. **More details of a good data layer architecture will follow in another article.**
 

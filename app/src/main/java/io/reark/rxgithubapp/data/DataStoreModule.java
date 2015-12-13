@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
@@ -13,7 +14,6 @@ import io.reark.rxgithubapp.data.stores.StoreModule;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.injections.ForApplication;
 import io.reark.rxgithubapp.network.ServiceDataLayer;
-import io.reark.reark.network.fetchers.FetcherManager;
 import io.reark.rxgithubapp.network.fetchers.FetcherModule;
 
 /**
@@ -59,7 +59,7 @@ public final class DataStoreModule {
 
     @Provides
     @Singleton
-    public ServiceDataLayer provideServiceDataLayer(FetcherManager fetcherManager,
+    public ServiceDataLayer provideServiceDataLayer(UriFetcherManager fetcherManager,
                                                     NetworkRequestStatusStore networkRequestStatusStore,
                                                     GitHubRepositoryStore gitHubRepositoryStore,
                                                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {

@@ -5,13 +5,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import io.reark.reark.network.fetchers.Fetcher;
+import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.DataLayerBase;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
-import io.reark.reark.network.fetchers.FetcherManager;
 
 /**
  * Created by ttuo on 16/04/15.
@@ -19,9 +19,9 @@ import io.reark.reark.network.fetchers.FetcherManager;
 public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
 
-    final private FetcherManager fetcherManager;
+    final private UriFetcherManager fetcherManager;
 
-    public ServiceDataLayer(@NonNull FetcherManager fetcherManager,
+    public ServiceDataLayer(@NonNull UriFetcherManager fetcherManager,
                             @NonNull NetworkRequestStatusStore networkRequestStatusStore,
                             @NonNull GitHubRepositoryStore gitHubRepositoryStore,
                             @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {

@@ -7,7 +7,7 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import io.reark.reark.network.fetchers.Fetcher;
-import io.reark.reark.network.fetchers.FetcherManager;
+import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
@@ -43,9 +43,9 @@ public final class FetcherModule {
     }
 
     @Provides
-    public FetcherManager provideFetcherManager(@Named("gitHubRepository")Fetcher gitHubRepositoryFetcher,
-                                                @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher) {
-        return new FetcherManager.Builder()
+    public UriFetcherManager provideUriFetcherManager(@Named("gitHubRepository")Fetcher gitHubRepositoryFetcher,
+                                                      @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher) {
+        return new UriFetcherManager.Builder()
                 .fetchers(Arrays.asList(gitHubRepositoryFetcher, gitHubRepositorySearchFetcher))
                 .build();
     }

@@ -1,5 +1,7 @@
 package io.reark.rxgithubapp.network.fetchers;
 
+import java.util.Arrays;
+
 import javax.inject.Named;
 
 import dagger.Module;
@@ -39,4 +41,11 @@ public final class FetcherModule {
                                                  gitHubRepositorySearchStore);
     }
 
+    @Provides
+    public FetcherManager provideFetcherManager(@Named("gitHubRepository")Fetcher gitHubRepositoryFetcher,
+                                                @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher) {
+        return new FetcherManager.Builder()
+                .fetchers(Arrays.asList(gitHubRepositoryFetcher, gitHubRepositorySearchFetcher))
+                .build();
+    }
 }

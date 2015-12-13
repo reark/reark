@@ -15,6 +15,7 @@ import io.reark.rxgithubapp.data.stores.StoreModule;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.injections.ForApplication;
 import io.reark.rxgithubapp.network.ServiceDataLayer;
+import io.reark.rxgithubapp.network.fetchers.FetcherManager;
 import io.reark.rxgithubapp.network.fetchers.FetcherModule;
 
 /**
@@ -60,13 +61,11 @@ public final class DataStoreModule {
 
     @Provides
     @Singleton
-    public ServiceDataLayer provideServiceDataLayer(@Named("gitHubRepository")Fetcher gitHubRepositoryFetcher,
-                                                    @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher,
+    public ServiceDataLayer provideServiceDataLayer(FetcherManager fetcherManager,
                                                     NetworkRequestStatusStore networkRequestStatusStore,
                                                     GitHubRepositoryStore gitHubRepositoryStore,
                                                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        return new ServiceDataLayer(gitHubRepositoryFetcher,
-                                    gitHubRepositorySearchFetcher,
+        return new ServiceDataLayer(fetcherManager,
                                     networkRequestStatusStore,
                                     gitHubRepositoryStore,
                                     gitHubRepositorySearchStore);

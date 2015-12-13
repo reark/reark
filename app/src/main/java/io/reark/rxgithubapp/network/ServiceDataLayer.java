@@ -15,6 +15,7 @@ import io.reark.rxgithubapp.data.DataLayerBase;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
+import io.reark.rxgithubapp.network.fetchers.FetcherManager;
 
 /**
  * Created by ttuo on 16/04/15.
@@ -22,25 +23,17 @@ import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
 
-    @NonNull
-    final private Collection<Fetcher> fetchers;
+    final private FetcherManager fetcherManager;
 
-    public ServiceDataLayer(@NonNull Fetcher gitHubRepositoryFetcher,
-                            @NonNull Fetcher gitHubRepositorySearchFetcher,
+    public ServiceDataLayer(@NonNull FetcherManager fetcherManager,
                             @NonNull NetworkRequestStatusStore networkRequestStatusStore,
                             @NonNull GitHubRepositoryStore gitHubRepositoryStore,
                             @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
-        Preconditions.checkNotNull(gitHubRepositoryFetcher,
-                                   "GitHub Repository Fetcher cannot be null.");
-        Preconditions.checkNotNull(gitHubRepositorySearchFetcher,
-                                   "GitHub Repository Search Fetcher cannot be null.");
-
-        fetchers = Arrays.asList(
-                gitHubRepositoryFetcher,
-                gitHubRepositorySearchFetcher
-        );
+        Preconditions.checkNotNull(fetcherManager,
+                "FetcherManager cannot be null.");
+        this.fetcherManager = fetcherManager;
     }
 
     public void processIntent(@NonNull Intent intent) {
@@ -49,7 +42,7 @@ public class ServiceDataLayer extends DataLayerBase {
         final String serviceUriString = intent.getStringExtra("serviceUriString");
         if (serviceUriString != null) {
             final Uri serviceUri = Uri.parse(serviceUriString);
-            Fetcher matchingFetcher = findFetcher(serviceUri);
+            Fetcher matchingFetcher = fetcherManager.findFetcher(serviceUri);
             if (matchingFetcher != null) {
                 Log.v(TAG, "Fetcher found for " + serviceUri);
                 matchingFetcher.fetch(intent);
@@ -59,17 +52,5 @@ public class ServiceDataLayer extends DataLayerBase {
         } else {
             Log.e(TAG, "No Uri defined");
         }
-    }
-
-    @Nullable
-    private Fetcher findFetcher(@NonNull Uri serviceUri) {
-        Preconditions.checkNotNull(serviceUri, "Service URI cannot be null.");
-
-        for (Fetcher fetcher : fetchers) {
-            if (fetcher.getServiceUri().equals(serviceUri)) {
-                return fetcher;
-            }
-        }
-        return null;
     }
 }

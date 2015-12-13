@@ -2,12 +2,10 @@ package io.reark.rxgithubapp.data;
 
 import android.content.Context;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reark.reark.network.fetchers.Fetcher;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
@@ -15,7 +13,7 @@ import io.reark.rxgithubapp.data.stores.StoreModule;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.injections.ForApplication;
 import io.reark.rxgithubapp.network.ServiceDataLayer;
-import io.reark.rxgithubapp.network.fetchers.FetcherManager;
+import io.reark.reark.network.fetchers.FetcherManager;
 import io.reark.rxgithubapp.network.fetchers.FetcherModule;
 
 /**

@@ -7,6 +7,7 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import io.reark.reark.network.fetchers.Fetcher;
+import io.reark.reark.network.fetchers.FetcherManager;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;

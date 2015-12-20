@@ -14,9 +14,11 @@ abstract public class AbstractViewModel {
 
     final public void subscribeToDataStore() {
         Log.v(TAG, "subscribeToDataStore");
-        unsubscribeFromDataStore();
-        compositeSubscription = new CompositeSubscription();
-        subscribeToDataStoreInternal(compositeSubscription);
+
+        if (compositeSubscription == null) {
+            compositeSubscription = new CompositeSubscription();
+            subscribeToDataStoreInternal(compositeSubscription);
+        }
     }
 
     public void dispose() {
@@ -34,6 +36,7 @@ abstract public class AbstractViewModel {
 
     public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");
+
         if (compositeSubscription != null) {
             compositeSubscription.clear();
             compositeSubscription = null;

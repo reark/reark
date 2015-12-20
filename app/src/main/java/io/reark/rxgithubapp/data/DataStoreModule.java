@@ -2,12 +2,11 @@ package io.reark.rxgithubapp.data;
 
 import android.content.Context;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reark.reark.network.fetchers.Fetcher;
+import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
@@ -60,13 +59,11 @@ public final class DataStoreModule {
 
     @Provides
     @Singleton
-    public ServiceDataLayer provideServiceDataLayer(@Named("gitHubRepository")Fetcher gitHubRepositoryFetcher,
-                                                    @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher,
+    public ServiceDataLayer provideServiceDataLayer(UriFetcherManager fetcherManager,
                                                     NetworkRequestStatusStore networkRequestStatusStore,
                                                     GitHubRepositoryStore gitHubRepositoryStore,
                                                     GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        return new ServiceDataLayer(gitHubRepositoryFetcher,
-                                    gitHubRepositorySearchFetcher,
+        return new ServiceDataLayer(fetcherManager,
                                     networkRequestStatusStore,
                                     gitHubRepositoryStore,
                                     gitHubRepositorySearchStore);

@@ -188,7 +188,7 @@ public abstract class ContentProviderStore<T> {
     protected abstract boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2);
 
     @NonNull
-    protected ContentValues mergeValues(ContentValues v1, ContentValues v2) {
+    protected ContentValues mergeValues(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v2; // Default behavior is new values overriding
     }
 }

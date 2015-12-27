@@ -110,7 +110,7 @@ public class NetworkRequestStatusStore extends SingleItemContentProviderStore<Ne
     }
 
     @Override
-    protected boolean contentValuesEqual(ContentValues v1, @NonNull ContentValues v2) {
+    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v1.getAsString(JsonIdColumns.JSON).equals(v2.getAsString(JsonIdColumns.JSON));
     }
 }

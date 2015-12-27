@@ -101,7 +101,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     }
 
     @Override
-    protected boolean contentValuesEqual(ContentValues v1, @NonNull ContentValues v2) {
+    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v1.getAsString(GitHubRepositorySearchColumns.JSON).equals(v2.getAsString(GitHubRepositorySearchColumns.JSON));
     }
 }

@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
+import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositoryColumns;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
@@ -102,7 +103,16 @@ public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHub
     }
 
     @Override
-    protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
+    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v1.getAsString(JsonIdColumns.JSON).equals(v2.getAsString(JsonIdColumns.JSON));
+    }
+
+    @NonNull
+    @Override
+    protected ContentValues mergeValues(@NonNull ContentValues v1, @NonNull ContentValues v2) {
+        Gson gson = new Gson();
+        GitHubRepository b1 = gson.fromJson(v1.getAsString(GitHubRepositoryColumns.JSON), GitHubRepository.class);
+        GitHubRepository b2 = gson.fromJson(v2.getAsString(GitHubRepositoryColumns.JSON), GitHubRepository.class);
+        return getContentValuesForItem(b1.overwrite(b2));
     }
 }

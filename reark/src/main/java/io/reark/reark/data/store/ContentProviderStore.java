@@ -93,6 +93,7 @@ public abstract class ContentProviderStore<T> {
                 valuesEqual = store.contentValuesEqual(currentValues, newValues);
 
                 if (!valuesEqual) {
+                    Log.v(TAG, "Merging values at " + pair.second);
                     newValues = store.mergeValues(currentValues, newValues);
                 }
             }
@@ -183,7 +184,7 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     protected abstract ContentValues getContentValuesForItem(T item);
 
-    protected abstract boolean contentValuesEqual(ContentValues v1, ContentValues v2);
+    protected abstract boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2);
 
     @NonNull
     protected ContentValues mergeValues(ContentValues v1, ContentValues v2) {

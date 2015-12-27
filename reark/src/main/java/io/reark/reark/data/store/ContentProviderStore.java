@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.List;
 
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -86,7 +86,7 @@ public abstract class ContentProviderStore<T> {
     }
 
     @NonNull
-    protected List<T> queryList(Uri uri) {
+    private List<T> queryList(Uri uri) {
         Preconditions.checkNotNull(uri, "Uri cannot be null.");
 
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
@@ -107,17 +107,21 @@ public abstract class ContentProviderStore<T> {
         return list;
     }
 
-    @Nullable
-    protected T queryOne(Uri uri) {
-        final List<T> queryResults = queryList(uri);
+    @NonNull
+    protected Observable<T> queryOne(Uri uri) {
+        return Observable.just(uri)
+                .observeOn(Schedulers.computation())
+                .map(uri1 -> {
+                    final List<T> queryResults = queryList(uri1);
 
-        if (queryResults.size() == 0) {
-            return null;
-        } else if (queryResults.size() > 1) {
-            Log.w(TAG, "Multiple items found in a query for a single item");
-        }
+                    if (queryResults.size() == 0) {
+                        return null;
+                    } else if (queryResults.size() > 1) {
+                        Log.w(TAG, "Multiple items found in a query for a single item");
+                    }
 
-        return queryResults.get(0);
+                    return queryResults.get(0);
+                });
     }
 
     @NonNull

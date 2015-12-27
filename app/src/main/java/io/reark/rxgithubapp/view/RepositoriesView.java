@@ -15,9 +15,9 @@ import java.util.List;
 
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
+import io.reark.reark.utils.TextWatcherObservable;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
-import io.reark.reark.utils.TextWatcherObservable;
 import io.reark.rxgithubapp.viewmodels.RepositoriesViewModel;
 import io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 import rx.Observable;

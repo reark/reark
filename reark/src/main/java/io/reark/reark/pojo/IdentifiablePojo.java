@@ -1,10 +1,9 @@
 package io.reark.reark.pojo;
 
-import android.util.Log;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import io.reark.reark.utils.Log;
 
 /**
  * Pojo base class that supports overwriting the fields with fields from
@@ -32,7 +31,7 @@ public abstract class IdentifiablePojo<T extends IdentifiablePojo> {
 
         for (Field field : getTypeParameterClass().getDeclaredFields()) {
             final int modifiers = field.getModifiers();
-            if (Modifier.isFinal(modifiers) || Modifier.isStatic(modifiers)) {
+            if (hasIllegalAccessModifiers(modifiers)) {
                 continue;
             }
 
@@ -48,7 +47,13 @@ public abstract class IdentifiablePojo<T extends IdentifiablePojo> {
         return (T) this;
     }
 
-    protected boolean isEmpty(Field field, IdentifiablePojo pojo) {
+    private boolean hasIllegalAccessModifiers(int modifiers) {
+        return Modifier.isFinal(modifiers)
+                || Modifier.isStatic(modifiers)
+                || Modifier.isTransient(modifiers);
+    }
+
+    private boolean isEmpty(Field field, IdentifiablePojo pojo) {
         try {
             Object value = field.get(pojo);
             if (value == null) {

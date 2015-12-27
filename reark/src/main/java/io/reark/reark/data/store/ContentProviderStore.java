@@ -95,6 +95,7 @@ public abstract class ContentProviderStore<T> {
                 if (!valuesEqual) {
                     Log.v(TAG, "Merging values at " + pair.second);
                     newValues = store.mergeValues(currentValues, newValues);
+                    valuesEqual = store.contentValuesEqual(currentValues, newValues);
                 }
             }
             cursor.close();

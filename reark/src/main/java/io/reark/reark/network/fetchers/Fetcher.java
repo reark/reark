@@ -26,7 +26,6 @@
 package io.reark.reark.network.fetchers;
 
 import android.content.Intent;
-import android.net.Uri;
 
 public interface Fetcher<T> {
     void fetch(Intent intent);

@@ -1,5 +1,7 @@
 package io.reark.reark.pojo;
 
+import android.support.annotation.NonNull;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -8,20 +10,6 @@ import static org.junit.Assert.assertEquals;
  * Created by apoi on 27/12/15.
  */
 public class IdentifiablePojoTest {
-
-    private class TestPojo extends IdentifiablePojo<TestPojo> {
-        public String value;
-
-        public TestPojo(int id, String value) {
-            super(id);
-            this.value = value;
-        }
-
-        @Override
-        protected Class<TestPojo> getTypeParameterClass() {
-            return TestPojo.class;
-        }
-    }
 
     @Test
     public void testSameIdPojoEquals() {
@@ -40,7 +28,7 @@ public class IdentifiablePojoTest {
     }
 
     @Test
-    public void testOverwriteValuePojoWithItself() {
+    public void testOverwriteWithItself() {
         TestPojo pojo1 = new TestPojo(100, "foo");
 
         pojo1.overwrite(pojo1);
@@ -50,7 +38,7 @@ public class IdentifiablePojoTest {
     }
 
     @Test
-    public void testOverwriteValuePojoWithAnother() {
+    public void testOverwriteWithAnother() {
         TestPojo pojo1 = new TestPojo(100, "foo");
         TestPojo pojo2 = new TestPojo(200, "bar");
 
@@ -59,5 +47,20 @@ public class IdentifiablePojoTest {
         assertEquals(false, pojo1.equals(pojo2));
         assertEquals(100, pojo1.getId());
         assertEquals("bar", pojo1.value);
+    }
+
+    private class TestPojo extends IdentifiablePojo<TestPojo> {
+        public String value;
+
+        public TestPojo(int id, String value) {
+            super(id);
+            this.value = value;
+        }
+
+        @NonNull
+        @Override
+        protected Class<TestPojo> getTypeParameterClass() {
+            return TestPojo.class;
+        }
     }
 }

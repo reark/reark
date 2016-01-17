@@ -1,9 +1,12 @@
 package io.reark.reark.pojo;
 
+import android.support.annotation.NonNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import io.reark.reark.utils.Log;
+import io.reark.reark.utils.Preconditions;
 
 /**
  * Pojo base class that supports overwriting the fields with fields from
@@ -22,9 +25,14 @@ public abstract class IdentifiablePojo<T extends IdentifiablePojo> {
         return id;
     }
 
+    @NonNull
     protected abstract Class<T> getTypeParameterClass();
 
-    public T overwrite(T other) {
+    @NonNull
+    @SuppressWarnings("unchecked")
+    public T overwrite(@NonNull T other) {
+        Preconditions.checkNotNull(other, "Can't overwrite with null value");
+
         if (equals(other)) {
             return (T) this;
         }

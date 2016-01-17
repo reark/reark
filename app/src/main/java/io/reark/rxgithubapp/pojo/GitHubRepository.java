@@ -62,6 +62,7 @@ public class GitHubRepository extends IdentifiablePojo<GitHubRepository> {
         this.owner = owner;
     }
 
+    @NonNull
     @Override
     protected Class<GitHubRepository> getTypeParameterClass() {
         return GitHubRepository.class;

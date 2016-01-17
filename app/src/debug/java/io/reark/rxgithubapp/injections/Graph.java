@@ -33,6 +33,10 @@ import dagger.Component;
 import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.activities.MainActivity;
 import io.reark.rxgithubapp.data.DataStoreModule;
+import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
+import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
+import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
+import io.reark.rxgithubapp.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.fragments.RepositoriesFragment;
 import io.reark.rxgithubapp.fragments.RepositoryFragment;
 import io.reark.rxgithubapp.network.NetworkService;
@@ -54,6 +58,11 @@ public interface Graph {
     void inject(RepositoryFragment repositoryFragment);
     void inject(NetworkService networkService);
     void inject(RxGitHubApp rxGitHubApp);
+
+    void inject(UserSettingsStore userSettingsStore);
+    void inject(NetworkRequestStatusStore networkRequestStatusStore);
+    void inject(GitHubRepositoryStore gitHubRepositoryStore);
+    void inject(GitHubRepositorySearchStore gitHubRepositorySearchStore);
 
     final class Initializer {
 

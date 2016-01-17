@@ -31,19 +31,19 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.google.gson.Gson;
-
-import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
+import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 
-public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<GitHubRepositorySearch, String> {
+public class GitHubRepositorySearchStore extends StoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
     public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
+
+        RxGitHubApp.getInstance().getGraph().inject(this);
     }
 
     @NonNull
@@ -71,7 +71,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     protected ContentValues getContentValuesForItem(GitHubRepositorySearch item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
-        contentValues.put(GitHubRepositorySearchColumns.JSON, new Gson().toJson(item));
+        contentValues.put(GitHubRepositorySearchColumns.JSON, getGson().toJson(item));
         return contentValues;
     }
 
@@ -79,7 +79,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     @Override
     protected GitHubRepositorySearch read(Cursor cursor) {
         final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
-        final GitHubRepositorySearch value = new Gson().fromJson(json, GitHubRepositorySearch.class);
+        final GitHubRepositorySearch value = getGson().fromJson(json, GitHubRepositorySearch.class);
         return value;
     }
 

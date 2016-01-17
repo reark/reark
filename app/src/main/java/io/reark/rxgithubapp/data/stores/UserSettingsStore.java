@@ -31,23 +31,23 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.google.gson.Gson;
-
-import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
+import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.pojo.UserSettings;
 
-public class UserSettingsStore extends SingleItemContentProviderStore<UserSettings, Integer> {
+public class UserSettingsStore extends StoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
     public UserSettingsStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
+
+        RxGitHubApp.getInstance().getGraph().inject(this);
 
         initUserSettings();
     }
@@ -84,7 +84,7 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
     protected ContentValues getContentValuesForItem(UserSettings item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, DataLayer.DEFAULT_USER_ID);
-        contentValues.put(JsonIdColumns.JSON, new Gson().toJson(item));
+        contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
         return contentValues;
     }
 
@@ -92,7 +92,7 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
     @Override
     protected UserSettings read(Cursor cursor) {
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final UserSettings value = new Gson().fromJson(json, UserSettings.class);
+        final UserSettings value = getGson().fromJson(json, UserSettings.class);
         return value;
     }
 

@@ -11,7 +11,10 @@ import io.reark.reark.utils.Preconditions;
 public class DataStreamNotification<T> {
 
     private enum Type {
-        FETCHING_START, FETCHING_ERROR, ON_NEXT
+        FETCHING_START,
+        FETCHING_COMPLETED,
+        FETCHING_ERROR,
+        ON_NEXT
     }
 
     @NonNull
@@ -43,6 +46,11 @@ public class DataStreamNotification<T> {
     }
 
     @NonNull
+    public static<T> DataStreamNotification<T> fetchingCompleted() {
+        return new DataStreamNotification<>(Type.FETCHING_COMPLETED, null, null);
+    }
+
+    @NonNull
     public static<T> DataStreamNotification<T> fetchingError() {
         return new DataStreamNotification<>(Type.FETCHING_ERROR, null, null);
     }
@@ -53,6 +61,10 @@ public class DataStreamNotification<T> {
 
     public boolean isOnNext() {
         return type.equals(Type.ON_NEXT);
+    }
+
+    public boolean isFetchingCompleted() {
+        return type.equals(Type.FETCHING_COMPLETED);
     }
 
     public boolean isFetchingError() {

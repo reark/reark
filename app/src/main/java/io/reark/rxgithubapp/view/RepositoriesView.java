@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
@@ -75,7 +76,6 @@ public class RepositoriesView extends FrameLayout {
 
         String networkStatusText = "";
         switch (networkRequestStatus) {
-
             case LOADING:
                 networkStatusText = "Loading..";
                 break;

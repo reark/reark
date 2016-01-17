@@ -38,7 +38,8 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
                 queryOne(uri)
                         .doOnNext(item -> Log.v(TAG, "onChange(" + uri + ')'))
                         .map(it -> new StoreItem<>(uri, it))
-                        .subscribe(subjectCache);
+                        .subscribe(subjectCache::onNext,
+                                   error -> Log.e(TAG, "Cannot retrieve the item: " + uri, error));
             }
         };
     }

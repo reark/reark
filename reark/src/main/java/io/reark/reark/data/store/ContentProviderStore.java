@@ -35,6 +35,8 @@ public abstract class ContentProviderStore<T> {
     protected final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
     public ContentProviderStore(@NonNull ContentResolver contentResolver) {
+        Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
+
         this.contentResolver = contentResolver;
         this.contentResolver.registerContentObserver(getContentUri(), true, contentObserver);
 

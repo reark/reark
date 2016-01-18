@@ -11,19 +11,20 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
+import static java.lang.String.format;
 import static rx.Observable.concat;
 
 /**
  * Created by ttuo on 26/04/15.
  */
-abstract public class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T> {
+public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T> {
 
     private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 
     @NonNull
-    final private PublishSubject<StoreItem<T>> subjectCache = PublishSubject.create();
+    private final PublishSubject<StoreItem<T>> subjectCache = PublishSubject.create();
 
-    public SingleItemContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected SingleItemContentProviderStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
     }
 
@@ -36,7 +37,7 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
                 super.onChange(selfChange, uri);
 
                 queryOne(uri)
-                        .doOnNext(item -> Log.v(TAG, "onChange(" + uri + ')'))
+                        .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
                         .map(it -> new StoreItem<>(uri, it))
                         .subscribe(subjectCache::onNext,
                                    error -> Log.e(TAG, "Cannot retrieve the item: " + uri, error));
@@ -86,9 +87,9 @@ abstract public class SingleItemContentProviderStore<T, U> extends ContentProvid
     }
 
     @NonNull
-    abstract public Uri getUriForKey(@NonNull U id);
+    public abstract Uri getUriForKey(@NonNull U id);
 
     @NonNull
-    abstract protected U getIdFor(@NonNull T item);
+    protected abstract U getIdFor(@NonNull T item);
 
 }

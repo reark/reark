@@ -26,7 +26,5 @@
 package io.reark.rxgithubapp.utils;
 
 public interface LeakTracing extends Instrumentation {
-
     void traceLeakage(Object reference);
-
 }

@@ -28,9 +28,7 @@ package io.reark.rxgithubapp.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-public class NullInstrumentation implements ApplicationInstrumentation
-{
-
+public class NullInstrumentation implements ApplicationInstrumentation {
     @SuppressWarnings("unused")
     public NullInstrumentation(Context context) { }
 
@@ -42,5 +40,4 @@ public class NullInstrumentation implements ApplicationInstrumentation
     public LeakTracing getLeakTracing() {
         return new NullLeakTracing();
     }
-
 }

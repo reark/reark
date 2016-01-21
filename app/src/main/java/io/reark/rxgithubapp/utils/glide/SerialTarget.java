@@ -44,7 +44,6 @@ public class SerialTarget<T> implements Target<T> {
     private static final AtomicReferenceFieldUpdater<SerialTarget, State> STATE_UPDATER
             = AtomicReferenceFieldUpdater.newUpdater(SerialTarget.class, State.class, "state");
 
-
     private static final class State<T> {
 
         final Target<T> target;

@@ -29,9 +29,7 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.utils.Preconditions;
 
-public class DebugApplicationInstrumentation implements ApplicationInstrumentation
-{
-
+public class DebugApplicationInstrumentation implements ApplicationInstrumentation {
     @NonNull
     private final LeakTracing leakTracing;
 
@@ -59,5 +57,4 @@ public class DebugApplicationInstrumentation implements ApplicationInstrumentati
     public LeakTracing getLeakTracing() {
         return leakTracing;
     }
-
 }

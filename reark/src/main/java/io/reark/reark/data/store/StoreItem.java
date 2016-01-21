@@ -78,7 +78,6 @@ class StoreItem<T> {
         return result;
     }
 
-
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("StoreItem{");

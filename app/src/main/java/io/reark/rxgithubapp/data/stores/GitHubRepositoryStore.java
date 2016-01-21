@@ -61,7 +61,6 @@ public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHub
         return GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
     }
 
-
     @NonNull
     @Override
     protected String[] getProjection() {

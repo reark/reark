@@ -32,7 +32,6 @@ import android.support.v7.app.AppCompatActivity;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.fragments.RepositoriesFragment;
 
-
 public class ChooseRepositoryActivity extends AppCompatActivity {
     private static final String TAG = ChooseRepositoryActivity.class.getSimpleName();
 

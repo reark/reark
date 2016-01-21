@@ -118,7 +118,6 @@ public class RepositoriesView extends FrameLayout {
         statusText.setText(networkRequestStatusText);
     }
 
-
     public static class ViewBinder extends RxViewBinder {
         private RepositoriesView view;
         private RepositoriesViewModel viewModel;

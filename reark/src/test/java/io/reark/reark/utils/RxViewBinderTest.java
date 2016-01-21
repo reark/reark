@@ -136,7 +136,6 @@ public class RxViewBinderTest {
         assertEquals("testString", testSubscriber.getOnNextEvents().get(0));
     }
 
-
     @Test
     public void testDoubleBind() throws Exception {
         binder.bind();

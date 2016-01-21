@@ -56,7 +56,6 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
         this.interceptor = interceptor;
     }
 
-
     @Override
     public void init() {
         initStetho();

@@ -28,9 +28,6 @@ package io.reark.rxgithubapp.data.schematicProvider;
 import net.simonvt.schematic.annotation.Database;
 import net.simonvt.schematic.annotation.Table;
 
-/**
- * Created by ttuo on 14/07/15.
- */
 @Database(version = GitHubDatabase.VERSION)
 public final class GitHubDatabase {
     public static final int VERSION = 1;

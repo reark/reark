@@ -32,9 +32,6 @@ import java.util.List;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 
-/**
- * Created by ttuo on 11/01/15.
- */
 public class GitHubRepositorySearchResults {
 
     @NonNull

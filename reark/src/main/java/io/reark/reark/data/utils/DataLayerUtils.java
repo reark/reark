@@ -32,9 +32,6 @@ import io.reark.reark.pojo.NetworkRequestStatus;
 import rx.Observable;
 import rx.functions.Func1;
 
-/**
- * Created by ttuo on 06/05/15.
- */
 public class DataLayerUtils {
     private DataLayerUtils() {
 

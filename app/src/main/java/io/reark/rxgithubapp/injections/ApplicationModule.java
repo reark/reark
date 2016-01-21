@@ -34,9 +34,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by Pawel Polanski on 5/16/15.
- */
 @Module
 public class ApplicationModule {
 

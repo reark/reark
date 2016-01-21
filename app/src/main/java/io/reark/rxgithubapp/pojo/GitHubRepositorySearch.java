@@ -27,9 +27,6 @@ package io.reark.rxgithubapp.pojo;
 
 import java.util.List;
 
-/**
- * Created by ttuo on 06/01/15.
- */
 public class GitHubRepositorySearch {
     final private String search;
     final private List<Integer> items;

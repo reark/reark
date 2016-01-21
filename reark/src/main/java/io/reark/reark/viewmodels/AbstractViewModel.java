@@ -30,9 +30,6 @@ import android.support.annotation.NonNull;
 import io.reark.reark.utils.Log;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by ttuo on 06/04/15.
- */
 abstract public class AbstractViewModel {
     private static final String TAG = AbstractViewModel.class.getSimpleName();
     private CompositeSubscription compositeSubscription;

@@ -33,9 +33,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 
-/**
- * Created by Pawel Polanski on 8/7/15.
- */
 public class NullTarget<T> implements Target<T> {
 
     private static final Target<Object> EMPTY = new NullTarget<>();

@@ -32,9 +32,6 @@ import android.widget.RemoteViewsService;
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 
-/**
- * Created by ttuo on 26/03/15.
- */
 public class WidgetRemoteViewFactory implements RemoteViewsService.RemoteViewsFactory {
     private static final String TAG = WidgetRemoteViewFactory.class.getSimpleName();
     final private Context context;

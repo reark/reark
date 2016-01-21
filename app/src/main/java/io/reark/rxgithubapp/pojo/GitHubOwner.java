@@ -32,9 +32,6 @@ import com.google.gson.annotations.SerializedName;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by Pawel Polanski on 7/27/15.
- */
 public class GitHubOwner {
 
     @Nullable

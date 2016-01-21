@@ -37,9 +37,6 @@ import retrofit.RetrofitError;
 import rx.Subscription;
 import rx.functions.Action1;
 
-/**
- * Created by ttuo on 16/04/15.
- */
 abstract public class FetcherBase implements Fetcher {
     private static final String TAG = FetcherBase.class.getSimpleName();
 

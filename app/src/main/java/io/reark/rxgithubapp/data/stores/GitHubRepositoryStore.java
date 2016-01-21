@@ -40,9 +40,6 @@ import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 
-/**
- * Created by ttuo on 07/01/15.
- */
 public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 

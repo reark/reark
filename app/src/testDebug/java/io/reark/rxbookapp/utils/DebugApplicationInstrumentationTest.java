@@ -32,9 +32,6 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.verify;
 
-/**
- * Created by Pawel Polanski on 7/20/15.
- */
 public class DebugApplicationInstrumentationTest {
 
     private DebugApplicationInstrumentation applicationInstrumentation;

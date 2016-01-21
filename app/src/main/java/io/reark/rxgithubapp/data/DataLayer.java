@@ -45,10 +45,6 @@ import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.pojo.UserSettings;
 import rx.Observable;
 
-
-/**
- * Created by ttuo on 19/03/14.
- */
 public class DataLayer extends DataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
     private final Context context;

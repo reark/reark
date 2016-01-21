@@ -39,9 +39,6 @@ import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 
-/**
- * Created by ttuo on 07/01/15.
- */
 public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 

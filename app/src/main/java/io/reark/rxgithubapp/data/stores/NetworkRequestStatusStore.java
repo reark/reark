@@ -41,9 +41,6 @@ import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
 
-/**
- * Created by ttuo on 26/04/15.
- */
 public class NetworkRequestStatusStore extends SingleItemContentProviderStore<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 

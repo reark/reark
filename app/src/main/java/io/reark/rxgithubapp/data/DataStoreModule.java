@@ -41,9 +41,6 @@ import io.reark.rxgithubapp.injections.ForApplication;
 import io.reark.rxgithubapp.network.ServiceDataLayer;
 import io.reark.rxgithubapp.network.fetchers.FetcherModule;
 
-/**
- * Created by pt2121 on 2/20/15.
- */
 @Module(includes = { FetcherModule.class, StoreModule.class })
 public final class DataStoreModule {
 

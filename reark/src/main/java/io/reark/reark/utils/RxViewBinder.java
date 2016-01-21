@@ -30,9 +30,6 @@ import android.support.annotation.Nullable;
 
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by ttuo on 19/08/15.
- */
 public abstract class RxViewBinder {
 
     @Nullable

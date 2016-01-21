@@ -31,9 +31,6 @@ import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by Pawel Polanski on 12/28/15.
- */
 class StoreItem<T> {
 
     @NonNull

@@ -25,9 +25,6 @@
  */
 package io.reark.rxgithubapp.utils;
 
-public interface Instrumentation
-{
-
+public interface Instrumentation {
     void init();
-
 }

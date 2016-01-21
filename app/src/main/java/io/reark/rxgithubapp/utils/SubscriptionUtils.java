@@ -35,9 +35,6 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-/**
- * Created by ttuo on 13/06/14.
- */
 public class SubscriptionUtils {
     private SubscriptionUtils() { }
 

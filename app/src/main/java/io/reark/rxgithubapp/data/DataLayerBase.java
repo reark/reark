@@ -32,9 +32,6 @@ import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 
-/**
- * Created by ttuo on 16/04/15.
- */
 abstract public class DataLayerBase {
     protected final NetworkRequestStatusStore networkRequestStatusStore;
     protected final GitHubRepositoryStore gitHubRepositoryStore;

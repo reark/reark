@@ -38,9 +38,6 @@ import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.utils.NullInstrumentation;
 import io.reark.rxgithubapp.utils.NullNetworkInstrumentation;
 
-/**
- * Created by Pawel Polanski on 4/24/15.
- */
 @Module
 public class InstrumentationModule {
 

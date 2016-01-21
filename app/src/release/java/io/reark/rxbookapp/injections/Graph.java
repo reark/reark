@@ -41,9 +41,6 @@ import io.reark.rxgithubapp.viewmodels.RepositoryViewModel;
 import io.reark.rxgithubapp.viewmodels.ViewModelModule;
 import io.reark.rxgithubapp.widget.WidgetService;
 
-/**
- * Created by pt2121 on 2/20/15.
- */
 @Singleton
 @Component(modules = {ApplicationModule.class, DataStoreModule.class, ViewModelModule.class,
                       InstrumentationModule.class})

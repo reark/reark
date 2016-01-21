@@ -39,9 +39,6 @@ import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.network.NetworkApi;
 import io.reark.rxgithubapp.network.NetworkModule;
 
-/**
- * Created by Pawel Polanski on 5/16/15.
- */
 @Module(includes = NetworkModule.class)
 public final class FetcherModule {
 

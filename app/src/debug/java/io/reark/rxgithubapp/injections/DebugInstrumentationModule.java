@@ -43,9 +43,6 @@ import io.reark.rxgithubapp.utils.LeakCanaryTracing;
 import io.reark.rxgithubapp.utils.LeakTracing;
 import io.reark.rxgithubapp.utils.StethoInstrumentation;
 
-/**
- * Created by Pawel Polanski on 4/24/15.
- */
 @Module
 public class DebugInstrumentationModule {
 

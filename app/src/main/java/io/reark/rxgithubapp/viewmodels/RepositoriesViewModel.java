@@ -45,9 +45,6 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by ttuo on 19/03/14.
- */
 public class RepositoriesViewModel extends AbstractViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
 

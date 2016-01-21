@@ -37,9 +37,6 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by ttuo on 06/04/15.
- */
 public class RepositoryViewModel extends AbstractViewModel {
     private static final String TAG = RepositoryViewModel.class.getSimpleName();
 

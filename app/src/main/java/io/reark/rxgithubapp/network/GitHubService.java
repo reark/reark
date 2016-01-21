@@ -35,9 +35,6 @@ import retrofit.http.Path;
 import retrofit.http.QueryMap;
 import rx.Observable;
 
-/**
- * Created by ttuo on 06/01/15.
- */
 public interface GitHubService {
     static Uri REPOSITORY_SEARCH = Uri.parse("github/search");
     static Uri REPOSITORY = Uri.parse("github/repository");

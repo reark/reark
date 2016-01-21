@@ -36,9 +36,6 @@ import retrofit.RestAdapter;
 import retrofit.client.Client;
 import rx.Observable;
 
-/**
- * Created by ttuo on 06/01/15.
- */
 public class NetworkApi {
 
     private final GitHubService gitHubService;

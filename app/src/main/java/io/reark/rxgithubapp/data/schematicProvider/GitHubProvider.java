@@ -35,9 +35,6 @@ import net.simonvt.schematic.annotation.TableEndpoint;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by ttuo on 14/07/15.
- */
 @ContentProvider(authority = GitHubProvider.AUTHORITY, database = GitHubDatabase.class)
 public class GitHubProvider {
     public static final String AUTHORITY = "io.reark.rxgithubapp.data.schematicProvider.GitHubProvider";

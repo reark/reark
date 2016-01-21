@@ -37,9 +37,6 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by Pawel Polanski on 8/7/15.
- */
 public class SerialTarget<T> implements Target<T> {
 
     private volatile State<T> state = new State<>(NullTarget.empty());

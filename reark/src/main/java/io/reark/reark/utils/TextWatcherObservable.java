@@ -35,9 +35,6 @@ import rx.Subscriber;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.Subject;
 
-/**
- * Created by ttuo on 27/01/15.
- */
 public class TextWatcherObservable {
     static public Observable<String> create(@NonNull EditText editText) {
         Preconditions.checkNotNull(editText, "Edit Text cannot be null.");

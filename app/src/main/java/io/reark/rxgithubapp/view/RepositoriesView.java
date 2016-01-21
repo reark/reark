@@ -50,9 +50,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-/**
- * Created by ttuo on 06/01/15.
- */
 public class RepositoriesView extends FrameLayout {
 
     private TextView statusText;

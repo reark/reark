@@ -40,9 +40,6 @@ import java.util.List;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 
-/**
- * Created by Pawel Polanski on 7/27/15.
- */
 public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.ViewHolder> {
 
     private final List<GitHubRepository> gitHubRepositories = new ArrayList<>();

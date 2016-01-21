@@ -31,9 +31,6 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Created by ttuo on 13/12/15.
- */
 public class UriFetcherManager extends FetcherManagerBase<Uri> {
     private UriFetcherManager(Collection<Fetcher<Uri>> fetchers) {
         super(fetchers);

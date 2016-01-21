@@ -32,9 +32,6 @@ import com.google.gson.annotations.SerializedName;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by ttuo on 06/01/15.
- */
 public class GitHubRepository {
     final private int id;
 

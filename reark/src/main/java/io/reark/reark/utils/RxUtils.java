@@ -32,9 +32,6 @@ import java.util.List;
 
 import rx.Observable;
 
-/**
- * Created by Pawel Polanski on 6/4/15.
- */
 public final class RxUtils {
 
     private RxUtils() {

@@ -40,9 +40,6 @@ import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.view.RepositoryView;
 import io.reark.rxgithubapp.viewmodels.RepositoryViewModel;
 
-/**
- * Created by ttuo on 06/04/15.
- */
 public class RepositoryFragment extends Fragment {
     private RepositoryView.ViewBinder repositoryViewBinder;
 

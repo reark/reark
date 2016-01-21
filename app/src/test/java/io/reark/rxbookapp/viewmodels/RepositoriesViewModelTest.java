@@ -48,9 +48,6 @@ import static io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.toProgressSt
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-/**
- * Created by Pawel Polanski on 5/31/15.
- */
 public class RepositoriesViewModelTest {
 
     private RepositoriesViewModel viewModel;

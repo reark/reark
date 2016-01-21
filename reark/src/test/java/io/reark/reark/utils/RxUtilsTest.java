@@ -35,9 +35,6 @@ import rx.observers.TestSubscriber;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Pawel Polanski on 6/4/15.
- */
 public class RxUtilsTest {
 
     @Test

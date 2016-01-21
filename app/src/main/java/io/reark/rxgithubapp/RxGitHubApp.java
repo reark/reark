@@ -33,9 +33,6 @@ import javax.inject.Inject;
 import io.reark.rxgithubapp.injections.Graph;
 import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
 
-/**
- * Created by pt2121 on 2/20/15.
- */
 public class RxGitHubApp extends Application {
 
     private static RxGitHubApp instance;

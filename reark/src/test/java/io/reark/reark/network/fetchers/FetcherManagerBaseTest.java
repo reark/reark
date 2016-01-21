@@ -35,9 +35,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by ttuo on 13/12/15.
- */
 public class FetcherManagerBaseTest {
 
     @Test

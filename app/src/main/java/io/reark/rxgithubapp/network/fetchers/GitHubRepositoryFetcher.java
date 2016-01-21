@@ -41,9 +41,6 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-/**
- * Created by ttuo on 16/04/15.
- */
 public class GitHubRepositoryFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 

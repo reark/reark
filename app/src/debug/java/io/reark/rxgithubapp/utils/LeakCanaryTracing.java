@@ -30,9 +30,6 @@ import android.app.Application;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-/**
- * Created by Pawel Polanski on 5/9/15.
- */
 public class LeakCanaryTracing implements LeakTracing {
 
     private RefWatcher refWatcher;

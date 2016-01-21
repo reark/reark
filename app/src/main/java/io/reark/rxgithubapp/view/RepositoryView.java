@@ -44,9 +44,6 @@ import io.reark.rxgithubapp.viewmodels.RepositoryViewModel;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by ttuo on 06/04/15.
- */
 public class RepositoryView extends FrameLayout {
     private TextView titleTextView;
     private TextView stargazersTextView;

@@ -34,9 +34,6 @@ import java.util.Collection;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by ttuo on 13/12/15.
- */
 public abstract class FetcherManagerBase<T> {
     @NonNull
     final private Collection<Fetcher<T>> fetchers;

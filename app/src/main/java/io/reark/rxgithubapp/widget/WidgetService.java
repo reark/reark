@@ -44,9 +44,6 @@ import io.reark.rxgithubapp.pojo.UserSettings;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by ttuo on 26/03/15.
- */
 public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
 

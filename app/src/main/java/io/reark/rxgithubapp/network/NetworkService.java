@@ -34,9 +34,6 @@ import javax.inject.Inject;
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.RxGitHubApp;
 
-/**
- * Created by ttuo on 16/04/15.
- */
 public class NetworkService extends Service {
     private static final String TAG = NetworkService.class.getSimpleName();
 

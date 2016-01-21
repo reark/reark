@@ -1,8 +1,5 @@
 package io.reark.rxgithubapp.activities.utils;
 
-/**
- * Created by Pawel Polanski on 5/22/15.
- */
 
 import android.content.Context;
 import android.content.pm.PackageManager;

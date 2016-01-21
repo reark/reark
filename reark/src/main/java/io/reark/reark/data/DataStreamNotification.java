@@ -30,9 +30,6 @@ import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
-/**
- * Created by ttuo on 06/05/15.
- */
 public class DataStreamNotification<T> {
 
     private enum Type {

@@ -25,9 +25,6 @@
  */
 package io.reark.reark.pojo;
 
-/**
- * Created by ttuo on 26/04/15.
- */
 public class NetworkRequestStatus {
     private static final String NETWORK_STATUS_ONGOING = "networkStatusOngoing";
     private static final String NETWORK_STATUS_ERROR = "networkStatusError";

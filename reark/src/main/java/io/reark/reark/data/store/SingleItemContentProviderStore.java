@@ -76,7 +76,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     public Observable<List<T>> get(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
-        final Uri uri = getUriForKey(id);
+        final Uri uri = getUriForId(id);
         return get(uri);
     }
 
@@ -88,7 +88,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     public Observable<T> getOne(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
-        final Uri uri = getUriForKey(id);
+        final Uri uri = getUriForId(id);
         return getOne(uri);
     }
 
@@ -110,13 +110,13 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      * Returns unique Uri for the given id in the content provider of this store.
      */
     @NonNull
-    public abstract Uri getUriForKey(@NonNull U id);
+    public abstract Uri getUriForId(@NonNull U id);
 
     @NonNull
     private Observable<T> getItemObservable(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
         return subjectCache
-                .filter(it -> it.uri().equals(getUriForKey(id)))
+                .filter(it -> it.uri().equals(getUriForId(id)))
                 .doOnNext(it -> Log.v(TAG, "getItemObservable(" + it + ')'))
                 .map(StoreItem::item);
     }
@@ -125,7 +125,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     private Uri getUriForItem(@NonNull T item) {
         Preconditions.checkNotNull(item, "Item cannot be null.");
 
-        return getUriForKey(getIdFor(item));
+        return getUriForId(getIdFor(item));
     }
 
     @NonNull

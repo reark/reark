@@ -85,7 +85,7 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
 
     @NonNull
     @Override
-    public Uri getUriForKey(@NonNull Integer id) {
+    public Uri getUriForId(@NonNull Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.UserSettings.withId(id);

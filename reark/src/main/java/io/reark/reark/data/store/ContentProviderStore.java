@@ -20,7 +20,16 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
- * Created by ttuo on 26/04/15.
+ * ContentProviderStore implements an Observable based item store that uses a content provider as
+ * its data backing store.
+ *
+ * All content provider operations are threaded. The store executes put operations in order, but
+ * provides no guarantee for the execution order between get and put operations.
+ *
+ * This in an abstract class that implements the content provider access and expects extending
+ * classes to implement data type specific methods.
+ *
+ * @param <T> Type of the data this store contains.
  */
 public abstract class ContentProviderStore<T> {
     private static final String TAG = ContentProviderStore.class.getSimpleName();
@@ -34,7 +43,7 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     protected final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
-    public ContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
         Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
 
         this.contentResolver = contentResolver;
@@ -48,7 +57,7 @@ public abstract class ContentProviderStore<T> {
                 });
     }
 
-    protected static <T> void updateIfValueChanged(ContentProviderStore store, Pair<T, Uri> pair) {
+    private static <T> void updateIfValueChanged(ContentProviderStore store, Pair<T, Uri> pair) {
         boolean valuesEqual = false;
         final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
         final ContentValues newValues = store.getContentValuesForItem(pair.first);
@@ -131,7 +140,7 @@ public abstract class ContentProviderStore<T> {
     }
 
     @NonNull
-    abstract protected Uri getContentUri();
+    protected abstract Uri getContentUri();
 
     @NonNull
     protected abstract ContentObserver getContentObserver();

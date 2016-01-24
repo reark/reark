@@ -47,7 +47,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
 
                 getOne(uri)
                         .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
-                        .map(it -> new StoreItem<>(uri, it))
+                        .map(item -> new StoreItem<>(uri, item))
                         .subscribe(subjectCache::onNext,
                                    error -> Log.e(TAG, "Cannot retrieve the item: " + uri, error));
             }
@@ -101,7 +101,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
         Preconditions.checkNotNull(id, "Id cannot be null.");
         Log.v(TAG, "getStream(" + id + ")");
 
-        return concat(getOne(id).filter(it -> it != null),
+        return concat(getOne(id).filter(item -> item != null),
                       getItemObservable(id))
                 .subscribeOn(AndroidSchedulers.mainThread());
     }
@@ -116,8 +116,8 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     private Observable<T> getItemObservable(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
         return subjectCache
-                .filter(it -> it.uri().equals(getUriForId(id)))
-                .doOnNext(it -> Log.v(TAG, "getItemObservable(" + it + ')'))
+                .filter(item -> item.uri().equals(getUriForId(id)))
+                .doOnNext(item -> Log.v(TAG, "getItemObservable(" + item + ')'))
                 .map(StoreItem::item);
     }
 

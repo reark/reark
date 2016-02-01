@@ -72,7 +72,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
 
     @NonNull
     @Override
-    public Uri getUriForKey(@NonNull String id) {
+    public Uri getUriForId(@NonNull String id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositorySearches.withSearch(id);

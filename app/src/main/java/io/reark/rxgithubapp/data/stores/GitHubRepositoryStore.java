@@ -74,7 +74,7 @@ public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHub
 
     @NonNull
     @Override
-    public Uri getUriForKey(@NonNull Integer id) {
+    public Uri getUriForId(@NonNull Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositories.withId(id);

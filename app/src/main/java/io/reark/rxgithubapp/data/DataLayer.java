@@ -48,7 +48,7 @@ public class DataLayer extends DataLayerBase {
     public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
         Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
 
-        final Uri uri = gitHubRepositorySearchStore.getUriForKey(searchString);
+        final Uri uri = gitHubRepositorySearchStore.getUriForId(searchString);
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
                 networkRequestStatusStore.getStream(uri.toString().hashCode());
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =

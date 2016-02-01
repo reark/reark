@@ -64,7 +64,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
             return;
         }
-        final String uri = gitHubRepositorySearchStore.getUriForKey(searchString).toString();
+        final String uri = gitHubRepositorySearchStore.getUriForId(searchString).toString();
         Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {

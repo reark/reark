@@ -43,7 +43,7 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
     }
 
     private void initUserSettings() {
-        query(DataLayer.DEFAULT_USER_ID)
+        getOne(DataLayer.DEFAULT_USER_ID)
                 .first()
                 .filter(userSettings -> userSettings == null)
                 .subscribe(userSettings -> {
@@ -85,7 +85,7 @@ public class UserSettingsStore extends SingleItemContentProviderStore<UserSettin
 
     @NonNull
     @Override
-    public Uri getUriForKey(@NonNull Integer id) {
+    public Uri getUriForId(@NonNull Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.UserSettings.withId(id);

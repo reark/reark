@@ -20,7 +20,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
 
     private static final String AUTHORITY = "test.authority";
     private static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
-    private static final Uri DATA_URI = Uri.withAppendedPath(AUTHORITY_URI, "testPath");
+    private static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, "veggies");
     private static final String[] PROJECTION = new String[] { DataColumns.KEY, DataColumns.VALUE };
 
     private TestStore store;
@@ -36,7 +36,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         store = new TestStore(getMockContentResolver());
 
         Action1<String> insert = value ->
-                SingleItemContentProviderStoreTest.this.getProvider().insert(
+                getProvider().insert(
                         store.getUriForId(store.getIdFor(value)),
                         store.getContentValuesForItem(value)
                 );
@@ -136,7 +136,6 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
     public void testGetEmptyStream() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = new ArrayList<>();
 
         // ACT
         store.getStream(store.getIdFor("bacon")).subscribe(testSubscriber);
@@ -145,7 +144,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertNoValues();
     }
 
     /**
@@ -160,7 +159,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         @NonNull
         @Override
         public Uri getUriForId(@NonNull Integer id) {
-            return Uri.parse(getContentUri() + "/" + id);
+            return Uri.withAppendedPath(getContentUri(), String.valueOf(id));
         }
 
         @NonNull
@@ -172,7 +171,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         @NonNull
         @Override
         public Uri getContentUri() {
-            return DATA_URI;
+            return CONTENT_URI;
         }
 
         @NonNull
@@ -207,7 +206,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
 
         @Override
         protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
-            return v1.getAsString(DataColumns.KEY).equals(v2.getAsString(DataColumns.KEY));
+            return v1.getAsString(DataColumns.VALUE).equals(v2.getAsString(DataColumns.VALUE));
         }
     }
 }

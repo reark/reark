@@ -2,70 +2,55 @@ package io.reark.reark.data.stores;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
-import android.test.mock.MockContentResolver;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.store.SingleItemContentProviderStore;
-import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
+import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 public class SingleItemContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
 
-    private static final String AUTHORITY = SimpleMockContentProvider.AUTHORITY;
+    private static final String AUTHORITY = "test.authority";
     private static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
     private static final Uri DATA_URI = Uri.withAppendedPath(AUTHORITY_URI, "testPath");
+    private static final String[] PROJECTION = new String[] { DataColumns.KEY, DataColumns.VALUE };
 
-
-    private MockContentResolver resolver;
-    private Context context;
     private TestStore store;
 
-    public interface DataColumns {
-        String KEY = "key";
-        String VALUE = "value";
-    }
-
     public SingleItemContentProviderStoreTest() {
-        super(SimpleMockContentProvider.class, SimpleMockContentProvider.AUTHORITY);
+        super(SimpleMockContentProvider.class, AUTHORITY);
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        resolver = getMockContentResolver();
-        store = new TestStore(resolver);
+        store = new TestStore(getMockContentResolver());
 
         Action1<String> insert = value ->
                 SingleItemContentProviderStoreTest.this.getProvider().insert(
                         store.getUriForId(store.getIdFor(value)),
-                        store.getContentValuesForItem(value));
+                        store.getContentValuesForItem(value)
+                );
 
         // Prepare the mock content provider with values
         insert.call("parsnip");
         insert.call("lettuce");
-    }
-
-    @Override
-    public MockContentResolver getMockContentResolver() {
-        MockContentResolver resolver = new MockContentResolver();
-        resolver.addProvider(AUTHORITY, getProvider());
-        return resolver;
+        insert.call("spinach");
     }
 
     public void testGetOneWithData() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        List<String> expected = new ArrayList<String>(){{ add("parsnip"); }};
 
         // ACT
         store.getOne(store.getIdFor("parsnip")).subscribe(testSubscriber);
@@ -74,9 +59,98 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertCompleted();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(new ArrayList<String>(){{ add("parsnip"); }});
+        testSubscriber.assertReceivedOnNext(expected);
     }
 
+    public void testGetOneWithoutData() {
+        // ARRANGE
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        List<String> expected = new ArrayList<String>(){{ add(null); }};
+
+        // ACT
+        store.getOne(store.getIdFor("bacon")).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
+    public void testGetWithData() {
+        // ARRANGE
+        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
+        List<List<String>> expected = new ArrayList<List<String>>(){{
+            add(new ArrayList<String>() {{ add("parsnip"); }});
+        }};
+
+        // ACT
+        store.get(store.getIdFor("parsnip")).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
+    public void testGetAll() {
+        // ARRANGE
+        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
+        List<List<String>> expected = new ArrayList<List<String>>(){{
+            add(new ArrayList<String>() {{
+                add("parsnip");
+                add("lettuce");
+                add("spinach");
+            }});
+        }};
+
+        // ACT
+        // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
+        // this would be an asterisk. The exact wildcard is not important for the test as we just
+        // want to make sure the provider stores can return a larger listing of results.
+        store.get(0).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
+    public void testGetStream() {
+        // ARRANGE
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        List<String> expected = new ArrayList<String>(){{ add("spinach"); }};
+
+        // ACT
+        store.getStream(store.getIdFor("spinach")).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
+    public void testGetEmptyStream() {
+        // ARRANGE
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        List<String> expected = new ArrayList<>();
+
+        // ACT
+        store.getStream(store.getIdFor("bacon")).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
+    /**
+     * A simple store containing String values tracked with Integer keys.
+     */
     public class TestStore extends SingleItemContentProviderStore<String, Integer> {
 
         public TestStore(@NonNull ContentResolver contentResolver) {
@@ -104,7 +178,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         @NonNull
         @Override
         protected String[] getProjection() {
-            return SimpleMockContentProvider.PROJECTION;
+            return PROJECTION;
         }
 
         @NonNull

@@ -73,20 +73,19 @@ public class RepositoriesView extends FrameLayout {
     private void setNetworkRequestStatus(@NonNull ProgressStatus networkRequestStatus) {
         Preconditions.checkNotNull(networkRequestStatus, "Network Request Status cannot be null.");
 
-        String networkStatusText = "";
-        switch (networkRequestStatus) {
+        setNetworkRequestStatusText(getLoadingStatusString(networkRequestStatus));
+    }
 
+    private String getLoadingStatusString(ProgressStatus networkRequestStatus) {
+        switch (networkRequestStatus) {
             case LOADING:
-                networkStatusText = "Loading..";
-                break;
+                return "Loading..";
             case ERROR:
-                networkStatusText = "Error occurred";
-                break;
+                return "Error occurred";
             case IDLE:
-                networkStatusText = "";
-                break;
+            default:
+                return "";
         }
-        setNetworkRequestStatusText(networkStatusText);
     }
 
     private void setNetworkRequestStatusText(@NonNull String networkRequestStatusText) {

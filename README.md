@@ -45,7 +45,7 @@ Application Structure
 To use the app start writing a search in the text box of at least 3 characters. This will trigger a network request and the five first results of which will be shown as a list. The input also throttled in a way that makes it trigger when the user stops typing. This is a very good basic example of Rx streams.
 
 `.filter((string) -> string.length() > 2)
-.throttleLast(500, TimeUnit.MILLISECONDS)`
+.debounce(500, TimeUnit.MILLISECONDS)`
 
 
 The Basic Data Flow

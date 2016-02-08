@@ -31,6 +31,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     private static final int MAX_REPOSITORIES_DISPLAYED = 5;
+    private static final int SEARCH_INPUT_DELAY = 500;
 
     @NonNull
     private final DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
@@ -103,7 +104,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
                 searchString
                           .filter((string) -> string.length() > 2)
-                          .throttleLast(500, TimeUnit.MILLISECONDS)
+                          .debounce(SEARCH_INPUT_DELAY, TimeUnit.MILLISECONDS)
                           .switchMap(getGitHubRepositorySearch::call)
                           .publish();
 

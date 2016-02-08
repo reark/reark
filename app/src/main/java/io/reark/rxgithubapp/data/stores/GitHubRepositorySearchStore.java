@@ -31,8 +31,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
@@ -40,10 +41,8 @@ import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 public class GitHubRepositorySearchStore extends StoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
-    public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver);
-
-        RxGitHubApp.getInstance().getGraph().inject(this);
+    public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver, gson);
     }
 
     @NonNull

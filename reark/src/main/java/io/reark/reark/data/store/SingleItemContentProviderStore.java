@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.List;
+
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;

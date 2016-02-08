@@ -27,6 +27,8 @@ package io.reark.rxgithubapp.data.stores;
 
 import android.content.ContentResolver;
 
+import com.google.gson.Gson;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -37,26 +39,26 @@ public final class StoreModule {
 
     @Provides
     @Singleton
-    public UserSettingsStore provideUserSettingsStore(ContentResolver contentResolver) {
-        return new UserSettingsStore(contentResolver);
+    public UserSettingsStore provideUserSettingsStore(ContentResolver contentResolver, Gson gson) {
+        return new UserSettingsStore(contentResolver, gson);
     }
 
     @Provides
     @Singleton
-    public NetworkRequestStatusStore provideNetworkRequestStatusStore(ContentResolver contentResolver) {
-        return new NetworkRequestStatusStore(contentResolver);
+    public NetworkRequestStatusStore provideNetworkRequestStatusStore(ContentResolver contentResolver, Gson gson) {
+        return new NetworkRequestStatusStore(contentResolver, gson);
     }
 
     @Provides
     @Singleton
-    public GitHubRepositoryStore provideGitHubRepositoryStore(ContentResolver contentResolver) {
-        return new GitHubRepositoryStore(contentResolver);
+    public GitHubRepositoryStore provideGitHubRepositoryStore(ContentResolver contentResolver, Gson gson) {
+        return new GitHubRepositoryStore(contentResolver, gson);
     }
 
     @Provides
     @Singleton
-    public GitHubRepositorySearchStore provideGitHubRepositorySearchStore(ContentResolver contentResolver) {
-        return new GitHubRepositorySearchStore(contentResolver);
+    public GitHubRepositorySearchStore provideGitHubRepositorySearchStore(ContentResolver contentResolver, Gson gson) {
+        return new GitHubRepositorySearchStore(contentResolver, gson);
     }
 
 }

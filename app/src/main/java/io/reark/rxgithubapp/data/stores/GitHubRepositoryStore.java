@@ -31,8 +31,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositoryColumns;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
@@ -42,10 +43,8 @@ import io.reark.rxgithubapp.pojo.GitHubRepository;
 public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
-    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver);
-
-        RxGitHubApp.getInstance().getGraph().inject(this);
+    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver, gson);
     }
 
     @NonNull

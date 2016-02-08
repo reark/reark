@@ -31,8 +31,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
@@ -44,10 +45,8 @@ public class UserSettingsStore extends StoreBase<UserSettings, Integer> {
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
-    public UserSettingsStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver);
-
-        RxGitHubApp.getInstance().getGraph().inject(this);
+    public UserSettingsStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver, gson);
 
         initUserSettings();
     }

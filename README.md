@@ -1,6 +1,7 @@
 Latest Updates
 ==============
 
+* TextWatcherObservable wrapper replaced with [RxBinding](https://github.com/JakeWharton/RxBinding) library
 * Library module that can be included in projects
 * Breaking changes to the old version: you can keep using it and start replacing core classes as the library module progresses
 * All network requests moved into NetworkService that runs in a remote process

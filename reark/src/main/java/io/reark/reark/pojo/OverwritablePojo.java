@@ -70,13 +70,13 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
         return (T) this;
     }
 
-    private boolean hasIllegalAccessModifiers(int modifiers) {
+    protected boolean hasIllegalAccessModifiers(int modifiers) {
         return Modifier.isFinal(modifiers)
                 || Modifier.isStatic(modifiers)
                 || Modifier.isTransient(modifiers);
     }
 
-    private boolean isEmpty(Field field, OverwritablePojo pojo) {
+    protected boolean isEmpty(Field field, OverwritablePojo pojo) {
         try {
             Object value = field.get(pojo);
             if (value == null) {

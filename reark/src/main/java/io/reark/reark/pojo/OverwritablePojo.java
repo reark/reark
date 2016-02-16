@@ -150,10 +150,6 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
 
     @Override
     public boolean equals(Object o) {
-        if (!getTypeParameterClass().isInstance(o)) {
-            return false;
-        }
-
-        return true;
+        return getTypeParameterClass().isInstance(o);
     }
 }

@@ -30,10 +30,11 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import io.reark.reark.pojo.IdentifiablePojo;
+import io.reark.reark.pojo.OverwritablePojo;
 import io.reark.reark.utils.Preconditions;
 
-public class GitHubRepository extends IdentifiablePojo<GitHubRepository> {
+public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
+    private final int id;
     private final String name;
 
     @SerializedName("stargazers_count")
@@ -52,10 +53,9 @@ public class GitHubRepository extends IdentifiablePojo<GitHubRepository> {
                             int stargazersCount,
                             int forksCount,
                             @NonNull GitHubOwner owner) {
-        super(id);
-
         Preconditions.checkNotNull(owner, "Owner cannot be null.");
 
+        this.id = id;
         this.name = name;
         this.stargazersCount = stargazersCount;
         this.forksCount = forksCount;
@@ -66,6 +66,10 @@ public class GitHubRepository extends IdentifiablePojo<GitHubRepository> {
     @Override
     protected Class<GitHubRepository> getTypeParameterClass() {
         return GitHubRepository.class;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {

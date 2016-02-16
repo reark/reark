@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class IdentifiablePojoTest {
+public class OverwritablePojoTest {
 
     @Test
     public void testSameIdPojoEquals() {
@@ -55,7 +55,7 @@ public class IdentifiablePojoTest {
 
         pojo1.overwrite(pojo1);
 
-        assertEquals(100, pojo1.getId());
+        assertEquals(100, pojo1.id);
         assertEquals("foo", pojo1.value);
     }
 
@@ -67,15 +67,16 @@ public class IdentifiablePojoTest {
         pojo1.overwrite(pojo2);
 
         assertEquals(false, pojo1.equals(pojo2));
-        assertEquals(100, pojo1.getId());
+        assertEquals(100, pojo1.id);
         assertEquals("bar", pojo1.value);
     }
 
-    private class TestPojo extends IdentifiablePojo<TestPojo> {
+    private class TestPojo extends OverwritablePojo<TestPojo> {
+        public final int id;
         public String value;
 
         public TestPojo(int id, String value) {
-            super(id);
+            this.id = id;
             this.value = value;
         }
 
@@ -83,6 +84,23 @@ public class IdentifiablePojoTest {
         @Override
         protected Class<TestPojo> getTypeParameterClass() {
             return TestPojo.class;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+
+            TestPojo testPojo = (TestPojo) o;
+
+            if (id != testPojo.id) {
+                return false;
+            } else {
+                return value != null
+                        ? value.equals(testPojo.value)
+                        : testPojo.value == null;
+            }
         }
     }
 }

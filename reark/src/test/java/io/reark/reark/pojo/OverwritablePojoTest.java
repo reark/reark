@@ -72,8 +72,8 @@ public class OverwritablePojoTest {
     }
 
     private class TestPojo extends OverwritablePojo<TestPojo> {
-        public final int id;
-        public String value;
+        private final int id;
+        private String value;
 
         public TestPojo(int id, String value) {
             this.id = id;

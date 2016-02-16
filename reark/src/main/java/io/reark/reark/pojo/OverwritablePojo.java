@@ -54,8 +54,13 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
 
         for (Field field : getTypeParameterClass().getDeclaredFields()) {
             final int modifiers = field.getModifiers();
+
             if (hasIllegalAccessModifiers(modifiers)) {
                 continue;
+            } else if (!Modifier.isPublic(modifiers)) {
+                // We want to overwrite also protected and private fields. This allows field access
+                // for this instance of the field. The actual field of the class isn't modified.
+                field.setAccessible(true);
             }
 
             try {

@@ -86,16 +86,24 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
             Object value = field.get(pojo);
             if (value == null) {
                 return true;
-            } if (value instanceof String) {
+            } else if (value instanceof String) {
                 return isEmpty((String) value);
+            } else if (value instanceof Boolean) {
+                return false;
             } else if (value instanceof Long) {
                 return isEmpty((Long) value);
             } else if (value instanceof Integer) {
                 return isEmpty((Integer) value);
+            } else if (value instanceof Double) {
+                return isEmpty((Double) value);
             } else if (value instanceof Float) {
                 return isEmpty((Float) value);
-            } else if (value instanceof Boolean) {
-                return false;
+            } else if (value instanceof Short) {
+                return isEmpty((Short) value);
+            } else if (value instanceof Byte) {
+                return isEmpty((Byte) value);
+            } else if (value instanceof Character) {
+                return isEmpty((Character) value);
             }
         } catch (IllegalAccessException e) {
             Log.e(TAG, "Failed get at " + field.getName(), e);
@@ -109,21 +117,35 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
     }
 
     protected boolean isEmpty(String value) {
-        return value == null || value.isEmpty();
+        return false;
     }
 
-    // Default implementation expects all values to be zero or greater,
-    // override for other expected behavior.
     protected boolean isEmpty(long value) {
-        return value <= 0;
+        return false;
     }
 
     protected boolean isEmpty(int value) {
-        return value <= 0;
+        return false;
+    }
+
+    protected boolean isEmpty(double value) {
+        return false;
     }
 
     protected boolean isEmpty(float value) {
-        return value <= 0.0f;
+        return false;
+    }
+
+    protected boolean isEmpty(short value) {
+        return false;
+    }
+
+    protected boolean isEmpty(byte value) {
+        return false;
+    }
+
+    protected boolean isEmpty(char value) {
+        return false;
     }
 
     @Override

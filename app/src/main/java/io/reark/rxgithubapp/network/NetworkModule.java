@@ -25,6 +25,7 @@
  */
 package io.reark.rxgithubapp.network;
 
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 
 import javax.inject.Named;
@@ -57,4 +58,9 @@ public final class NetworkModule {
         return networkInstrumentation.decorateNetwork(new OkHttpClient());
     }
 
+    @Provides
+    @Singleton
+    public Gson provideGson() {
+        return new Gson();
+    }
 }

@@ -33,17 +33,16 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositorySearchColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
 
-public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<GitHubRepositorySearch, String> {
+public class GitHubRepositorySearchStore extends StoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
-    public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver);
+    public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver, gson);
     }
 
     @NonNull
@@ -71,7 +70,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     protected ContentValues getContentValuesForItem(GitHubRepositorySearch item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
-        contentValues.put(GitHubRepositorySearchColumns.JSON, new Gson().toJson(item));
+        contentValues.put(GitHubRepositorySearchColumns.JSON, getGson().toJson(item));
         return contentValues;
     }
 
@@ -79,7 +78,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     @Override
     protected GitHubRepositorySearch read(Cursor cursor) {
         final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
-        final GitHubRepositorySearch value = new Gson().fromJson(json, GitHubRepositorySearch.class);
+        final GitHubRepositorySearch value = getGson().fromJson(json, GitHubRepositorySearch.class);
         return value;
     }
 
@@ -101,7 +100,7 @@ public class GitHubRepositorySearchStore extends SingleItemContentProviderStore<
     }
 
     @Override
-    protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
+    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v1.getAsString(GitHubRepositorySearchColumns.JSON).equals(v2.getAsString(GitHubRepositorySearchColumns.JSON));
     }
 }

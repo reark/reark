@@ -33,18 +33,18 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
+import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositoryColumns;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 
-public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHubRepository, Integer> {
+public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
-    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver);
+    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver, gson);
     }
 
     @NonNull
@@ -72,7 +72,7 @@ public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHub
     protected ContentValues getContentValuesForItem(GitHubRepository item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, item.getId());
-        contentValues.put(JsonIdColumns.JSON, new Gson().toJson(item));
+        contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
         return contentValues;
     }
 
@@ -80,7 +80,7 @@ public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHub
     @Override
     protected GitHubRepository read(Cursor cursor) {
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final GitHubRepository value = new Gson().fromJson(json, GitHubRepository.class);
+        final GitHubRepository value = getGson().fromJson(json, GitHubRepository.class);
         return value;
     }
 
@@ -102,7 +102,15 @@ public class GitHubRepositoryStore extends SingleItemContentProviderStore<GitHub
     }
 
     @Override
-    protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
+    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v1.getAsString(JsonIdColumns.JSON).equals(v2.getAsString(JsonIdColumns.JSON));
+    }
+
+    @NonNull
+    @Override
+    protected ContentValues mergeValues(@NonNull ContentValues v1, @NonNull ContentValues v2) {
+        GitHubRepository b1 = getGson().fromJson(v1.getAsString(GitHubRepositoryColumns.JSON), GitHubRepository.class);
+        GitHubRepository b2 = getGson().fromJson(v2.getAsString(GitHubRepositoryColumns.JSON), GitHubRepository.class);
+        return getContentValuesForItem(b1.overwrite(b2));
     }
 }

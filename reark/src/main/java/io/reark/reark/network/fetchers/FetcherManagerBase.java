@@ -25,11 +25,9 @@
  */
 package io.reark.reark.network.fetchers;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import io.reark.reark.utils.Preconditions;

@@ -23,11 +23,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.network.fetchers;
+package io.reark.rxgithubapp.data.stores;
 
-import android.content.Intent;
+import android.content.ContentResolver;
+import android.support.annotation.NonNull;
 
-public interface Fetcher<T> {
-    void fetch(Intent intent);
-    T getServiceUri();
+import com.google.gson.Gson;
+
+import io.reark.reark.data.store.SingleItemContentProviderStore;
+import io.reark.reark.utils.Preconditions;
+
+public abstract class StoreBase<T, U> extends SingleItemContentProviderStore<T, U> {
+
+    private final Gson gson;
+
+    public StoreBase(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver);
+
+        Preconditions.checkNotNull(gson, "Gson cannot be null.");
+
+        this.gson = gson;
+    }
+
+    protected Gson getGson() {
+        return gson;
+    }
 }

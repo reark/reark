@@ -33,7 +33,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
@@ -41,11 +40,11 @@ import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
 
-public class NetworkRequestStatusStore extends SingleItemContentProviderStore<NetworkRequestStatus, Integer> {
+public class NetworkRequestStatusStore extends StoreBase<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
-    public NetworkRequestStatusStore(@NonNull ContentResolver contentResolver) {
-        super(contentResolver);
+    public NetworkRequestStatusStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver, gson);
     }
 
     @NonNull
@@ -80,7 +79,7 @@ public class NetworkRequestStatusStore extends SingleItemContentProviderStore<Ne
     protected ContentValues getContentValuesForItem(NetworkRequestStatus item) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, item.getUri().hashCode());
-        contentValues.put(JsonIdColumns.JSON, new Gson().toJson(item));
+        contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
         return contentValues;
     }
 
@@ -88,7 +87,7 @@ public class NetworkRequestStatusStore extends SingleItemContentProviderStore<Ne
     @Override
     protected NetworkRequestStatus read(Cursor cursor) {
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final NetworkRequestStatus value = new Gson().fromJson(json, NetworkRequestStatus.class);
+        final NetworkRequestStatus value = getGson().fromJson(json, NetworkRequestStatus.class);
         return value;
     }
 
@@ -110,7 +109,7 @@ public class NetworkRequestStatusStore extends SingleItemContentProviderStore<Ne
     }
 
     @Override
-    protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
+    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
         return v1.getAsString(JsonIdColumns.JSON).equals(v2.getAsString(JsonIdColumns.JSON));
     }
 }

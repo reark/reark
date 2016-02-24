@@ -83,20 +83,23 @@ public abstract class ContentProviderStore<T> {
     }
 
     private static <T> void updateIfValueChanged(ContentProviderStore store, Pair<T, Uri> pair) {
-        boolean valuesEqual = false;
         final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
-        final ContentValues newValues = store.getContentValuesForItem(pair.first);
+        ContentValues newValues = store.getContentValuesForItem(pair.first);
+        boolean valuesEqual = false;
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 ContentValues currentValues = store.readRaw(cursor);
                 valuesEqual = store.contentValuesEqual(currentValues, newValues);
+
+                if (!valuesEqual) {
+                    Log.v(TAG, "Merging values at " + pair.second);
+                    newValues = store.mergeValues(currentValues, newValues);
+                    valuesEqual = store.contentValuesEqual(currentValues, newValues);
+                }
             }
             cursor.close();
         }
-
-        Log.v(TAG, "updateIfValueChanged to " + pair.second);
-        Log.v(TAG, "values(" + newValues + ")");
 
         if (valuesEqual) {
             Log.v(TAG, "Data already up to date at " + pair.second);
@@ -182,5 +185,10 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     protected abstract ContentValues getContentValuesForItem(T item);
 
-    protected abstract boolean contentValuesEqual(ContentValues v1, ContentValues v2);
+    protected abstract boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2);
+
+    @NonNull
+    protected ContentValues mergeValues(@NonNull ContentValues v1, @NonNull ContentValues v2) {
+        return v2; // Default behavior is new values overriding
+    }
 }

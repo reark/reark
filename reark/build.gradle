@@ -49,6 +49,9 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.14'
     compile 'io.reactivex:rxandroid:1.0.1'
 
+    // RxBinding wrappers
+    compile 'com.jakewharton.rxbinding:rxbinding:0.3.0'
+
     // Unit test build
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.5'

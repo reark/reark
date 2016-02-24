@@ -35,12 +35,13 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
+
 import java.util.Collections;
 import java.util.List;
 
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
-import io.reark.reark.utils.TextWatcherObservable;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.pojo.GitHubRepository;
 import io.reark.rxgithubapp.viewmodels.RepositoriesViewModel;
@@ -73,7 +74,7 @@ public class RepositoriesView extends FrameLayout {
         super.onFinishInflate();
 
         EditText editText = (EditText) findViewById(R.id.repositories_search);
-        searchStringObservable = TextWatcherObservable.create(editText);
+        searchStringObservable = RxTextView.textChanges(editText).map(CharSequence::toString);
 
         statusText = (TextView) findViewById(R.id.repositories_status_text);
 

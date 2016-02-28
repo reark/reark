@@ -29,7 +29,7 @@ Including in an Android Project
 
 We are working in moving the core classes into the library module that can be include in a project as a dependency. You can already include the library in your project, though it is quite empty until the migration is finished. Pull requests moving classes into the shared library are welcome.
 
-```
+```groovy
 repositories {
     mavenCentral()
 }

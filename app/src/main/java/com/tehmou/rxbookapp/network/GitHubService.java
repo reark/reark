@@ -4,9 +4,9 @@ import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import java.util.Map;
 
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.QueryMap;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.QueryMap;
 import rx.Observable;
 
 /**

@@ -1,6 +1,6 @@
 package com.tehmou.rxbookapp.injections;
 
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 import com.tehmou.rxbookapp.network.NetworkInstrumentation;
 import com.tehmou.rxbookapp.utils.ApplicationInstrumentation;
 import com.tehmou.rxbookapp.utils.NullInstrumentation;

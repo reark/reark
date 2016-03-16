@@ -1,7 +1,9 @@
 package com.tehmou.rxbookapp.utils;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.tehmou.rxbookapp.network.NetworkInstrumentation;
 
 import android.content.Context;
@@ -20,15 +22,10 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     @NonNull
     private final Context context;
 
-    @NonNull
-    private final Interceptor interceptor;
 
-    public StethoInstrumentation(@NonNull Context context, @NonNull Interceptor interceptor) {
+    public StethoInstrumentation(@NonNull Context context) {
         Preconditions.checkNotNull(context, "Context cannot be null.");
-        Preconditions.checkNotNull(interceptor, "Interceptor cannot be null.");
-
         this.context = context;
-        this.interceptor = interceptor;
     }
 
 
@@ -50,17 +47,15 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     public OkHttpClient decorateNetwork(@NonNull final OkHttpClient httpClient) {
         Preconditions.checkNotNull(httpClient, "Http Client cannot be null.");
 
-        addInterceptor(httpClient, interceptor);
-
         return httpClient;
     }
 
     @VisibleForTesting
-    void addInterceptor(@NonNull OkHttpClient httpClient, @NonNull Interceptor interceptor) {
-        Preconditions.checkNotNull(httpClient, "Http Client cannot be null.");
-        Preconditions.checkNotNull(interceptor, "Interceptor cannot be null.");
-
-        httpClient.networkInterceptors().add(interceptor);
+    @Override
+    public Interceptor getInterceptor() {
+        return new StethoInterceptor();
     }
+
+
 
 }

@@ -1,6 +1,6 @@
 package com.tehmou.rxbookapp.utils;
 
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 import org.junit.Before;
 import org.junit.Test;

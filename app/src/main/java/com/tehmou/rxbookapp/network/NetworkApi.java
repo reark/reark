@@ -1,5 +1,8 @@
+
 package com.tehmou.rxbookapp.network;
 
+
+//import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.tehmou.rxbookapp.pojo.GitHubRepository;
 
 import android.support.annotation.NonNull;
@@ -7,9 +10,11 @@ import android.support.annotation.NonNull;
 import java.util.List;
 import java.util.Map;
 
-import retrofit.RestAdapter;
+import okhttp3.OkHttpClient;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
-import retrofit.client.Client;
 import rx.android.internal.Preconditions;
 
 /**
@@ -19,20 +24,21 @@ public class NetworkApi {
 
     private final GitHubService gitHubService;
 
-    public NetworkApi(@NonNull Client client) {
+    public NetworkApi(@NonNull OkHttpClient client) {
         Preconditions.checkNotNull(client, "Client cannot be null.");
 
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setClient(client)
-                .setEndpoint("https://api.github.com")
-                .setLogLevel(RestAdapter.LogLevel.NONE)
+        Retrofit retrofit = new Retrofit.Builder()
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://api.github.com")
+                .client(client)
                 .build();
-        gitHubService = restAdapter.create(GitHubService.class);
+        gitHubService = retrofit.create(GitHubService.class);
     }
 
     public Observable<List<GitHubRepository>> search(Map<String, String> search) {
         return gitHubService.search(search)
-                            .map(GitHubRepositorySearchResults::getItems);
+                .map(GitHubRepositorySearchResults::getItems);
     }
 
     public Observable<GitHubRepository> getRepository(int id) {

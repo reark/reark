@@ -27,8 +27,8 @@ package io.reark.rxgithubapp.utils;
 
 import android.content.Context;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class StethoInstrumentationTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        instrumentation = spy(new StethoInstrumentation(mock(Context.class), interceptor));
+        instrumentation = spy(new StethoInstrumentation(mock(Context.class)));
     }
 
     @Test
@@ -76,6 +76,5 @@ public class StethoInstrumentationTest {
 
         instrumentation.decorateNetwork(okHttpClient);
 
-        verify(instrumentation).addInterceptor(eq(okHttpClient), eq(interceptor));
     }
 }

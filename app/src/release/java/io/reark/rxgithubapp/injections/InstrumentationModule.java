@@ -27,7 +27,7 @@ package io.reark.rxgithubapp.injections;
 
 import android.content.Context;
 
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 import javax.inject.Singleton;
 

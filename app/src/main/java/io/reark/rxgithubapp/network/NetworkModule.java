@@ -26,36 +26,29 @@
 package io.reark.rxgithubapp.network;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.OkHttpClient;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.client.Client;
-import retrofit.client.OkClient;
+import okhttp3.OkHttpClient;
 
 @Module
 public final class NetworkModule {
 
     @Provides
     @Singleton
-    public NetworkApi provideNetworkApi(@Named("okClient") Client client) {
-        return new NetworkApi(client);
+    public NetworkApi provideNetworkApi() {
+        return new NetworkApi(new OkHttpClient());
     }
 
-    @Provides
-    @Singleton
-    @Named("okClient")
-    public Client provideOkClient(OkHttpClient okHttpClient) {
-        return new OkClient(okHttpClient);
-    }
 
     @Provides
     @Singleton
     public OkHttpClient provideOkHttpClient(NetworkInstrumentation<OkHttpClient> networkInstrumentation) {
-        return networkInstrumentation.decorateNetwork(new OkHttpClient());
+        OkHttpClient client = new OkHttpClient().newBuilder().addNetworkInterceptor(networkInstrumentation.getInterceptor()).build();
+        return networkInstrumentation.decorateNetwork(client);
     }
 
     @Provides

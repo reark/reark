@@ -29,11 +29,11 @@ import android.net.Uri;
 
 import java.util.Map;
 
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.QueryMap;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.QueryMap;
 import rx.Observable;
 
 public interface GitHubService {

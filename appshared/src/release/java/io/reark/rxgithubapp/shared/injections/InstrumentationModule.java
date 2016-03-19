@@ -26,11 +26,8 @@
 package io.reark.rxgithubapp.shared.injections;
 
 import android.content.Context;
-
-import com.squareup.okhttp.OkHttpClient;
-
+import okhttp3.OkHttpClient;
 import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import io.reark.rxgithubapp.shared.injections.ForApplication;
@@ -53,5 +50,4 @@ public class InstrumentationModule {
     public NetworkInstrumentation<OkHttpClient> providesNetworkInstrumentation() {
         return new NullNetworkInstrumentation();
     }
-
 }

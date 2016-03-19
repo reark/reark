@@ -33,7 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import retrofit.RetrofitError;
+import io.reark.reark.utils.Preconditions;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -94,9 +95,10 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         checkNotNull(uri);
 
         return throwable -> {
-            if (throwable instanceof RetrofitError) {
-                RetrofitError retrofitError = (RetrofitError) throwable;
-                errorRequest(uri, getStatusCode(retrofitError), retrofitError.getMessage());
+            if (throwable instanceof HttpException) {
+                HttpException httpException = (HttpException) throwable;
+                int statusCode = httpException.code();
+                errorRequest(uri, statusCode, httpException.getMessage());
             } else {
                 Log.e(TAG, "The error was not a RetroFitError");
                 errorRequest(uri, NO_ERROR_CODE, null);
@@ -104,9 +106,4 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         };
     }
 
-    private static int getStatusCode(@NonNull final RetrofitError retrofitError) {
-        return retrofitError.getResponse() != null
-                ? retrofitError.getResponse().getStatus()
-                : NO_ERROR_CODE;
-    }
 }

@@ -28,12 +28,10 @@ package io.reark.rxgithubapp.shared.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-
+import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
-
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import static com.facebook.stetho.Stetho.defaultDumperPluginsProvider;
 import static com.facebook.stetho.Stetho.defaultInspectorModulesProvider;
 import static com.facebook.stetho.Stetho.initialize;
@@ -49,10 +47,13 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     @NonNull
     private final Interceptor interceptor;
 
-    public StethoInstrumentation(@NonNull final Context context,
-                                 @NonNull final Interceptor interceptor) {
-        this.context = get(context);
-        this.interceptor = get(interceptor);
+    public StethoInstrumentation(@NonNull Context context,
+                                 @NonNull Interceptor interceptor) {
+        Preconditions.checkNotNull(context, "Context cannot be null.");
+        Preconditions.checkNotNull(interceptor, "Interceptor cannot be null.");
+
+        this.context = context;
+        this.interceptor = interceptor;
     }
 
     @Override
@@ -72,18 +73,7 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     @Override
     @NonNull
     public OkHttpClient decorateNetwork(@NonNull final OkHttpClient httpClient) {
-        checkNotNull(httpClient);
-
-        addInterceptor(httpClient, interceptor);
-
-        return httpClient;
-    }
-
-    @VisibleForTesting
-    void addInterceptor(@NonNull final OkHttpClient httpClient, @NonNull final Interceptor interceptor) {
-        checkNotNull(httpClient);
-        checkNotNull(interceptor);
-
-        httpClient.networkInterceptors().add(interceptor);
+        Preconditions.checkNotNull(httpClient, "Http Client cannot be null.");
+        return httpClient.newBuilder().addNetworkInterceptor(interceptor).build();
     }
 }

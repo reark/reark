@@ -27,6 +27,8 @@ package io.reark.rxgithubapp.network;
 
 import com.google.gson.Gson;
 
+import net.simonvt.schematic.annotation.NotNull;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -39,8 +41,8 @@ public final class NetworkModule {
 
     @Provides
     @Singleton
-    public NetworkApi provideNetworkApi() {
-        return new NetworkApi(new OkHttpClient());
+    public NetworkApi provideNetworkApi(OkHttpClient client) {
+        return new NetworkApi(client);
     }
 
 

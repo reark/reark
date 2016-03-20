@@ -37,7 +37,7 @@ public class NullNetworkInstrumentation implements NetworkInstrumentation<OkHttp
     @NonNull
     @Override
     public OkHttpClient decorateNetwork(@NonNull OkHttpClient httpClient) {
-        return httpClient;
+        return new OkHttpClient();
     }
 
     @Override

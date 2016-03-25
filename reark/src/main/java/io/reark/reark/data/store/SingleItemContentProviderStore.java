@@ -35,7 +35,7 @@ import java.util.List;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static java.lang.String.format;
@@ -129,7 +129,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
 
         return concat(getOne(id).filter(item -> item != null),
                       getItemObservable(id))
-                .subscribeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.computation());
     }
 
     /**
@@ -141,6 +141,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     @NonNull
     private Observable<T> getItemObservable(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
+
         return subjectCache
                 .filter(item -> item.uri().equals(getUriForId(id)))
                 .doOnNext(item -> Log.v(TAG, "getItemObservable(" + item + ')'))

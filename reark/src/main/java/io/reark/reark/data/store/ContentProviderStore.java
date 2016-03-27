@@ -60,7 +60,7 @@ public abstract class ContentProviderStore<T> {
     private static final String TAG = ContentProviderStore.class.getSimpleName();
 
     @NonNull
-    final protected ContentResolver contentResolver;
+    protected final ContentResolver contentResolver;
 
     @NonNull
     private final ContentObserver contentObserver = getContentObserver();

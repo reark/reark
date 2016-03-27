@@ -119,6 +119,16 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     }
 
     /**
+     * Returns a non-completing Observable of all new and updated items.
+     */
+    @NonNull
+    public Observable<T> getStream() {
+        Log.v(TAG, "getStream()");
+
+        return subjectCache.map(StoreItem::item);
+    }
+
+    /**
      * Returns a non-completing Observable of items matching the id. The Observable emits the first
      * matching item existing in the store, if any, and continues to emit all new matching items.
      */

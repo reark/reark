@@ -76,7 +76,7 @@ public abstract class ContentProviderStore<T> {
 
         updateSubject
                 .onBackpressureBuffer()
-                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.io())
                 .subscribe(pair -> {
                     updateIfValueChanged(this, pair);
                 });
@@ -132,7 +132,7 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     protected Observable<List<T>> get(Uri uri) {
         return Observable.just(uri)
-                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
 

@@ -81,5 +81,4 @@ public class GitHubOwner {
         sb.append('}');
         return sb.toString();
     }
-
 }

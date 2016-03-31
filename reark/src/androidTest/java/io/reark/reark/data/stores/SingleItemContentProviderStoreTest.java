@@ -213,25 +213,11 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
 
         @NonNull
         @Override
-        protected ContentValues readRaw(Cursor cursor) {
-            final String value = cursor.getString(cursor.getColumnIndex(DataColumns.VALUE));
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(DataColumns.VALUE, value);
-            return contentValues;
-        }
-
-        @NonNull
-        @Override
         protected ContentValues getContentValuesForItem(String item) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DataColumns.KEY, getIdFor(item));
             contentValues.put(DataColumns.VALUE, item);
             return contentValues;
-        }
-
-        @Override
-        protected boolean contentValuesEqual(ContentValues v1, ContentValues v2) {
-            return v1.getAsString(DataColumns.VALUE).equals(v2.getAsString(DataColumns.VALUE));
         }
     }
 }

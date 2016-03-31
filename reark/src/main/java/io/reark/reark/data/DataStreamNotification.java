@@ -32,7 +32,7 @@ import io.reark.reark.utils.Preconditions;
 
 public class DataStreamNotification<T> {
 
-    private enum Type {
+    public enum Type {
         FETCHING_START,
         FETCHING_COMPLETED,
         FETCHING_ERROR,
@@ -40,11 +40,15 @@ public class DataStreamNotification<T> {
     }
 
     @NonNull
-    final private Type type;
-    final private T value;
-    final private Throwable error;
+    private final Type type;
 
-    private DataStreamNotification(@NonNull Type type, T value, Throwable error) {
+    @Nullable
+    private final T value;
+
+    @Nullable
+    private final Throwable error;
+
+    private DataStreamNotification(@NonNull Type type, @Nullable T value, @Nullable Throwable error) {
         Preconditions.checkNotNull(type, "Type cannot be null.");
 
         this.type = type;
@@ -52,9 +56,19 @@ public class DataStreamNotification<T> {
         this.error = error;
     }
 
+    @NonNull
+    public Type getType() {
+        return type;
+    }
+
     @Nullable
     public T getValue() {
         return value;
+    }
+
+    @Nullable
+    public Throwable getError() {
+        return error;
     }
 
     @NonNull
@@ -91,10 +105,5 @@ public class DataStreamNotification<T> {
 
     public boolean isFetchingError() {
         return type.equals(Type.FETCHING_ERROR);
-    }
-
-    @Nullable
-    public Throwable getError() {
-        return error;
     }
 }

@@ -10,14 +10,15 @@
 # Optimization step doesn't update things correctly
 -optimizations !code/allocation/variable
 
--dontwarn okio.**
--dontwarn org.apache.http.**
--dontwarn com.squareup.okhttp.internal.huc.**
--dontwarn com.google.appengine.api.urlfetch.**
--dontwarn android.net.http.AndroidHttpClient
--dontwarn retrofit.client.ApacheClient$GenericEntityHttpRequest
--dontwarn retrofit.client.ApacheClient$GenericHttpRequest
--dontwarn retrofit.client.ApacheClient$TypedOutputEntity
+
+
+
+# OkHttp
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
 
 # For RxJava
 -dontwarn sun.misc.Unsafe
@@ -25,10 +26,12 @@
 # For retrolambda
 -dontwarn java.lang.invoke.*
 
-# Keep Retrofit
--keep class retrofit.** { *; }
--keepclasseswithmembers class * { @retrofit.** *; }
--keepclassmembers class * { @retrofit.** *; }
+# Keep Retrofit 2
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
 
 # Remove logging
 -assumenosideeffects class io.reark.reark.utils.Log { *; }

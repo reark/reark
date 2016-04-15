@@ -30,9 +30,9 @@ import android.net.Uri;
 import java.util.Map;
 
 import io.reark.rxgithubapp.pojo.GitHubRepository;
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.QueryMap;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.QueryMap;
 import rx.Observable;
 
 public interface GitHubService {

@@ -38,10 +38,10 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
     private final String name;
 
     @SerializedName("stargazers_count")
-    private final int stargazersCount;
+    private int stargazersCount;
 
     @SerializedName("forks_count")
-    private final int forksCount;
+    private int forksCount;
 
     @Nullable
     @SerializedName("owner")

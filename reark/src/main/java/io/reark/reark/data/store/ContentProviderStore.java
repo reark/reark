@@ -76,26 +76,26 @@ public abstract class ContentProviderStore<T> {
 
         updateSubject
                 .onBackpressureBuffer()
-                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.io())
                 .subscribe(pair -> {
                     updateIfValueChanged(this, pair);
                 });
     }
 
-    private static <T> void updateIfValueChanged(ContentProviderStore store, Pair<T, Uri> pair) {
+    private static <T> void updateIfValueChanged(ContentProviderStore<T> store, Pair<T, Uri> pair) {
         final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
-        ContentValues newValues = store.getContentValuesForItem(pair.first);
+        T newItem = pair.first;
         boolean valuesEqual = false;
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                ContentValues currentValues = store.readRaw(cursor);
-                valuesEqual = store.contentValuesEqual(currentValues, newValues);
+                T currentItem = store.read(cursor);
+                valuesEqual = newItem.equals(currentItem);
 
                 if (!valuesEqual) {
                     Log.v(TAG, "Merging values at " + pair.second);
-                    newValues = store.mergeValues(currentValues, newValues);
-                    valuesEqual = store.contentValuesEqual(currentValues, newValues);
+                    newItem = store.mergeValues(currentItem, newItem);
+                    valuesEqual = newItem.equals(currentItem);
                 }
             }
             cursor.close();
@@ -103,8 +103,13 @@ public abstract class ContentProviderStore<T> {
 
         if (valuesEqual) {
             Log.v(TAG, "Data already up to date at " + pair.second);
-        } else if (store.contentResolver.update(pair.second, newValues, null, null) == 0) {
-            final Uri resultUri = store.contentResolver.insert(pair.second, newValues);
+            return;
+        }
+
+        final ContentValues contentValues = store.getContentValuesForItem(newItem);
+
+        if (store.contentResolver.update(pair.second, contentValues, null, null) == 0) {
+            final Uri resultUri = store.contentResolver.insert(pair.second, contentValues);
             Log.v(TAG, "Inserted at " + resultUri);
         } else {
             Log.v(TAG, "Updated at " + pair.second);
@@ -127,7 +132,7 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     protected Observable<List<T>> get(Uri uri) {
         return Observable.just(uri)
-                .observeOn(Schedulers.computation())
+                .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
 
@@ -180,15 +185,10 @@ public abstract class ContentProviderStore<T> {
     protected abstract T read(Cursor cursor);
 
     @NonNull
-    protected abstract ContentValues readRaw(Cursor cursor);
-
-    @NonNull
     protected abstract ContentValues getContentValuesForItem(T item);
 
-    protected abstract boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2);
-
     @NonNull
-    protected ContentValues mergeValues(@NonNull ContentValues v1, @NonNull ContentValues v2) {
+    protected T mergeValues(@NonNull T v1, @NonNull T v2) {
         return v2; // Default behavior is new values overriding
     }
 }

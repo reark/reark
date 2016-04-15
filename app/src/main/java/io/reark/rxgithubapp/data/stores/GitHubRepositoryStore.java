@@ -86,31 +86,23 @@ public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> 
 
     @NonNull
     @Override
-    protected ContentValues readRaw(Cursor cursor) {
-        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(JsonIdColumns.JSON, json);
-        return contentValues;
-    }
-
-    @NonNull
-    @Override
     public Uri getUriForId(@NonNull Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositories.withId(id);
     }
 
-    @Override
-    protected boolean contentValuesEqual(@NonNull ContentValues v1, @NonNull ContentValues v2) {
-        return v1.getAsString(JsonIdColumns.JSON).equals(v2.getAsString(JsonIdColumns.JSON));
-    }
-
     @NonNull
     @Override
-    protected ContentValues mergeValues(@NonNull ContentValues v1, @NonNull ContentValues v2) {
-        GitHubRepository b1 = getGson().fromJson(v1.getAsString(GitHubRepositoryColumns.JSON), GitHubRepository.class);
-        GitHubRepository b2 = getGson().fromJson(v2.getAsString(GitHubRepositoryColumns.JSON), GitHubRepository.class);
-        return getContentValuesForItem(b1.overwrite(b2));
+    protected GitHubRepository mergeValues(@NonNull GitHubRepository v1, @NonNull GitHubRepository v2) {
+        // Creating a new object to avoid overwriting the passed argument
+        GitHubRepository newValue = new GitHubRepository(
+                v1.getId(),
+                v1.getName(),
+                v1.getStargazersCount(),
+                v1.getForksCount(),
+                v1.getOwner());
+
+        return newValue.overwrite(v2);
     }
 }

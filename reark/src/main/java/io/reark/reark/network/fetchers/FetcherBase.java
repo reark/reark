@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import retrofit.RetrofitError;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -77,11 +77,10 @@ abstract public class FetcherBase implements Fetcher {
         Preconditions.checkNotNull(uri, "URI cannot be null.");
 
         return throwable -> {
-            if (throwable instanceof RetrofitError) {
-                RetrofitError retrofitError = (RetrofitError) throwable;
-                int statusCode = retrofitError.getResponse() != null ?
-                        retrofitError.getResponse().getStatus() : NO_ERROR_CODE;
-                errorRequest(uri, statusCode, retrofitError.getMessage());
+            if (throwable instanceof HttpException) {
+                HttpException httpException = (HttpException) throwable;
+                int statusCode = httpException.code();
+                errorRequest(uri, statusCode, httpException.getMessage());
             } else {
                 Log.e(TAG, "The error was not a RetroFitError");
                 errorRequest(uri, NO_ERROR_CODE, null);

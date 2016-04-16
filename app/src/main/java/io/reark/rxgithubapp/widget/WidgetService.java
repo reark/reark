@@ -34,8 +34,6 @@ import android.widget.RemoteViews;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.AppWidgetTarget;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import io.reark.reark.utils.Log;

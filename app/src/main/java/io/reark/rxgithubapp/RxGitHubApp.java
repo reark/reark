@@ -26,14 +26,22 @@
 package io.reark.rxgithubapp;
 
 import android.app.Application;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
+import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.injections.Graph;
 import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
+import io.reark.rxgithubapp.widget.WidgetProvider;
 
 public class RxGitHubApp extends Application {
+    private static final String TAG = RxGitHubApp.class.getSimpleName();
 
     private static RxGitHubApp instance;
 
@@ -50,6 +58,8 @@ public class RxGitHubApp extends Application {
         getGraph().inject(this);
 
         instrumentation.init();
+
+        updateWidget();
     }
 
     @NonNull
@@ -62,4 +72,16 @@ public class RxGitHubApp extends Application {
         return mGraph;
     }
 
+    public void updateWidget() {
+        int widgetIds[] = AppWidgetManager
+                .getInstance(this)
+                .getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+
+        Log.d(TAG, "updateWidget(" + Arrays.toString(widgetIds) + ")");
+
+        Intent intent = new Intent(this, WidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
+        sendBroadcast(intent);
+    }
 }

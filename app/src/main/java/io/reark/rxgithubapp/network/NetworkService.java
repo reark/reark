@@ -50,13 +50,15 @@ public class NetworkService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
+        super.onStartCommand(intent, flags, startId);
+
         if (intent != null) {
             serviceDataLayer.processIntent(intent);
         } else {
             Log.d(TAG, "Intent was null, no action taken");
         }
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     @Override

@@ -35,7 +35,8 @@
                 android:resource="@xml/appwidget_info" />
         </receiver>
 
-        <service android:name=".widget.WidgetService" />
+        <service android:name=".widget.WidgetService"
+            android:process=":widgetservice" />
 
         <service android:name=".network.NetworkService"
             android:process=":networkservice" />

@@ -16,7 +16,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 15
@@ -72,30 +72,31 @@ retrolambda {
 dependencies {
     compile project(':reark')
 
-    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.3.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile 'javax.annotation:jsr250-api:1.0'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
-    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
 
     // RxJava
-    compile 'io.reactivex:rxjava:1.0.14'
-    compile 'io.reactivex:rxandroid:1.0.1'
+    compile 'io.reactivex:rxjava:1.1.3'
+    compile 'io.reactivex:rxandroid:1.1.0'
 
     // Dagger
-    compile 'com.google.dagger:dagger:2.0'
-    apt 'com.google.dagger:dagger-compiler:2.0'
+    apt 'com.google.guava:guava:19.0'
+    compile 'com.google.dagger:dagger:2.3'
+    apt 'com.google.dagger:dagger-compiler:2.3'
 
     // Stetho
-    debugCompile 'com.facebook.stetho:stetho:1.1.1'
-    debugCompile 'com.facebook.stetho:stetho-okhttp:1.1.1'
+    debugCompile 'com.facebook.stetho:stetho:1.3.1'
+    debugCompile 'com.facebook.stetho:stetho-okhttp:1.3.1'
 
     // Schematic
-    apt 'net.simonvt.schematic:schematic-compiler:0.6.2'
-    compile 'net.simonvt.schematic:schematic:0.6.2'
+    apt 'net.simonvt.schematic:schematic-compiler:0.6.7'
+    compile 'net.simonvt.schematic:schematic:0.6.7'
 
     // Leak tracing
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
@@ -103,15 +104,15 @@ dependencies {
 
     // Unit test build
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.9.5'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.1'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.4'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.4'
 
-    androidTestCompile 'com.android.support:support-annotations:23.1.0'
-    androidTestCompile 'com.android.support.test:runner:0.2'
-    androidTestCompile 'com.android.support.test:rules:0.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.1'
+    androidTestCompile 'com.android.support:support-annotations:23.3.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
     androidTestCompile 'org.mockito:mockito-core:1.10.19'
     androidTestCompile "com.google.dexmaker:dexmaker:1.2"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:1.2"

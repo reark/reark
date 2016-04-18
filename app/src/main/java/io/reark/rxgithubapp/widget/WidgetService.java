@@ -42,6 +42,7 @@ import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.pojo.UserSettings;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class WidgetService extends Service {
@@ -53,7 +54,7 @@ public class WidgetService extends Service {
     @Inject
     DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
-    private CompositeSubscription subscriptions;
+    private final CompositeSubscription subscriptions = new CompositeSubscription();
 
     public WidgetService() {
         RxGitHubApp.getInstance().getGraph().inject(this);
@@ -61,6 +62,8 @@ public class WidgetService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+
         if (intent != null && intent.hasExtra("widgetId")) {
             final int appWidgetId = intent.getIntExtra("widgetId", 0);
             Log.d(TAG, "onStartCommand(" + appWidgetId + ")");
@@ -68,7 +71,8 @@ public class WidgetService extends Service {
         } else {
             Log.e(TAG, "onStartCommand(<no widgetId>)");
         }
-        return super.onStartCommand(intent, flags, startId);
+
+        return START_NOT_STICKY;
     }
 
     private void updateWidget(final int widgetId) {
@@ -80,11 +84,13 @@ public class WidgetService extends Service {
         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
         clearSubscriptions();
+
         subscriptions.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
+                        .doOnNext(repositoryId -> Log.d(TAG, "Changed repository to " + repositoryId))
                         .switchMap(fetchAndGetGitHubRepository::call)
-                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {
                             remoteViews.setTextViewText(R.id.widget_layout_title, repository.getName());
@@ -103,15 +109,11 @@ public class WidgetService extends Service {
                                  .fitCenter()
                                  .into(widgetTarget);
                             appWidgetManager.updateAppWidget(widgetId, remoteViews);
-                        })
-        );
+                        }));
     }
 
     private void clearSubscriptions() {
-        if (subscriptions != null) {
-            subscriptions.clear();
-        }
-        subscriptions = new CompositeSubscription();
+        subscriptions.clear();
     }
 
     @Override

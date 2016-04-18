@@ -125,10 +125,11 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
                 searchString
-                          .filter((string) -> string.length() > 2)
-                          .debounce(SEARCH_INPUT_DELAY, TimeUnit.MILLISECONDS)
-                          .switchMap(getGitHubRepositorySearch::call)
-                          .publish();
+                        .filter((string) -> string.length() > 2)
+                        .debounce(SEARCH_INPUT_DELAY, TimeUnit.MILLISECONDS)
+                        .distinctUntilChanged()
+                        .switchMap(getGitHubRepositorySearch::call)
+                        .publish();
 
         compositeSubscription.add(repositorySearchSource
                 .map(toProgressStatus())

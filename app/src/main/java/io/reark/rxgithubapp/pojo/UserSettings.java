@@ -35,4 +35,19 @@ public class UserSettings {
     public int getSelectedRepositoryId() {
         return selectedRepositoryId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserSettings that = (UserSettings) o;
+
+        return selectedRepositoryId == that.selectedRepositoryId;
+    }
+
+    @Override
+    public int hashCode() {
+        return selectedRepositoryId;
+    }
 }

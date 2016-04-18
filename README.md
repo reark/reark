@@ -1,6 +1,9 @@
 Latest Updates
 ==============
 
+* Support for merging values to avoid overwrites with partial data
+* Comparison of existing ContentProvider data to avoid unnecessary writes
+* ContentProvider reads and writes off the main thread
 * TextWatcherObservable wrapper replaced with [RxBinding](https://github.com/JakeWharton/RxBinding) library
 * Library module that can be included in projects
 * Breaking changes to the old version: you can keep using it and start replacing core classes as the library module progresses

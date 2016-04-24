@@ -60,13 +60,13 @@ public abstract class ContentProviderStore<T> {
     private static final String TAG = ContentProviderStore.class.getSimpleName();
 
     @NonNull
-    protected final ContentResolver contentResolver;
+    private final ContentResolver contentResolver;
 
     @NonNull
     private final ContentObserver contentObserver = getContentObserver();
 
     @NonNull
-    protected final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
+    private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
     protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
         Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
@@ -173,10 +173,15 @@ public abstract class ContentProviderStore<T> {
     }
 
     @NonNull
-    protected abstract Uri getContentUri();
+    protected ContentResolver getContentResolver() {
+        return contentResolver;
+    }
 
     @NonNull
     protected abstract ContentObserver getContentObserver();
+
+    @NonNull
+    protected abstract Uri getContentUri();
 
     @NonNull
     protected abstract String[] getProjection();

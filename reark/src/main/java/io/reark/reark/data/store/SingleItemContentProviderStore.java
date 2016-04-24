@@ -53,7 +53,6 @@ import static rx.Observable.concat;
  * @param <U> Type of the id used in this store.
  */
 public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T> {
-
     private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 
     @NonNull

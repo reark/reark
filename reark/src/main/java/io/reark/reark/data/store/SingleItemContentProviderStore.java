@@ -53,7 +53,6 @@ import static rx.Observable.concat;
  * @param <U> Type of the id used in this store.
  */
 public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T> {
-
     private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 
     @NonNull
@@ -116,6 +115,16 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
 
         final Uri uri = getUriForId(id);
         return getOne(uri);
+    }
+
+    /**
+     * Returns a non-completing Observable of all new and updated items.
+     */
+    @NonNull
+    public Observable<T> getStream() {
+        Log.v(TAG, "getStream()");
+
+        return subjectCache.map(StoreItem::item);
     }
 
     /**

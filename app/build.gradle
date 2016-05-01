@@ -58,7 +58,9 @@ android {
         // For Okio
         // https://github.com/square/okio/issues/58
         warning 'InvalidPackage'
+        abortOnError false
     }
+
 
     packagingOptions {
         exclude 'LICENSE.txt'

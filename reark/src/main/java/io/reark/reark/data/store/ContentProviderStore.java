@@ -40,6 +40,7 @@ import java.util.List;
 
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
+import io.reark.reark.utils.LockObjectDealer;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -62,11 +63,9 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     private final ContentResolver contentResolver;
 
-    @NonNull
     private final ContentObserver contentObserver = getContentObserver();
-
-    @NonNull
     private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
+    private final LockObjectDealer<Uri> locker = new LockObjectDealer<>();
 
     protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
         Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
@@ -76,44 +75,50 @@ public abstract class ContentProviderStore<T> {
 
         updateSubject
                 .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .subscribe(pair -> {
-                    updateIfValueChanged(this, pair);
-                });
+                .doOnNext(pair -> locker.createLock(pair.second))
+                .flatMap(pair -> updateIfValueChanged(this, pair.first, pair.second))
+                .subscribe(locker::freeLock, error -> Log.e(TAG, "Error updating", error));
     }
 
-    private static <T> void updateIfValueChanged(ContentProviderStore<T> store, Pair<T, Uri> pair) {
-        final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
-        T newItem = pair.first;
-        boolean valuesEqual = false;
+    private static <T> Observable<Uri> updateIfValueChanged(ContentProviderStore<T> store, T item, Uri uri) {
+        return Observable.just(item)
+                .observeOn(Schedulers.io())
+                .map(newItem -> {
+                    synchronized (store.locker.getLock(uri)) {
+                        final Cursor cursor = store.contentResolver.query(uri, store.getProjection(), null, null, null);
+                        boolean valuesEqual = false;
 
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                T currentItem = store.read(cursor);
-                valuesEqual = newItem.equals(currentItem);
+                        if (cursor != null) {
+                            if (cursor.moveToFirst()) {
+                                T currentItem = store.read(cursor);
+                                valuesEqual = newItem.equals(currentItem);
 
-                if (!valuesEqual) {
-                    Log.v(TAG, "Merging values at " + pair.second);
-                    newItem = store.mergeValues(currentItem, newItem);
-                    valuesEqual = newItem.equals(currentItem);
-                }
-            }
-            cursor.close();
-        }
+                                if (!valuesEqual) {
+                                    Log.v(TAG, "Merging values at " + uri);
+                                    newItem = store.mergeValues(currentItem, newItem);
+                                    valuesEqual = newItem.equals(currentItem);
+                                }
+                            }
+                            cursor.close();
+                        }
 
-        if (valuesEqual) {
-            Log.v(TAG, "Data already up to date at " + pair.second);
-            return;
-        }
+                        if (valuesEqual) {
+                            Log.v(TAG, "Data already up to date at " + uri);
+                            return uri;
+                        }
 
-        final ContentValues contentValues = store.getContentValuesForItem(newItem);
+                        final ContentValues contentValues = store.getContentValuesForItem(newItem);
 
-        if (store.contentResolver.update(pair.second, contentValues, null, null) == 0) {
-            final Uri resultUri = store.contentResolver.insert(pair.second, contentValues);
-            Log.v(TAG, "Inserted at " + resultUri);
-        } else {
-            Log.v(TAG, "Updated at " + pair.second);
-        }
+                        if (store.contentResolver.update(uri, contentValues, null, null) == 0) {
+                            final Uri resultUri = store.contentResolver.insert(uri, contentValues);
+                            Log.v(TAG, "Inserted at " + resultUri);
+                        } else {
+                            Log.v(TAG, "Updated at " + uri);
+                        }
+
+                        return uri;
+                    }
+                });
     }
 
     @NonNull

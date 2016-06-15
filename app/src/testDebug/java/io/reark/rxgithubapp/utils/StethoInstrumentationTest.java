@@ -27,8 +27,8 @@ package io.reark.rxgithubapp.utils;
 
 import android.content.Context;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -67,15 +67,4 @@ public class StethoInstrumentationTest {
         verify(instrumentation).initStetho();
     }
 
-    @Test
-    public void testDecorateNetwork() {
-        @SuppressWarnings("unchecked")
-        List<Interceptor> interceptors = mock(List.class);
-        OkHttpClient okHttpClient = mock(OkHttpClient.class);
-        when(okHttpClient.networkInterceptors()).thenReturn(interceptors);
-
-        instrumentation.decorateNetwork(okHttpClient);
-
-        verify(instrumentation).addInterceptor(eq(okHttpClient), eq(interceptor));
-    }
 }

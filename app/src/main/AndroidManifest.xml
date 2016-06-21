@@ -5,13 +5,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".RxGitHubApp"
+        android:name=".advanced.RxGitHubApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".advanced.activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,15 +19,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ChooseRepositoryActivity" />
+        <activity android:name=".advanced.activities.ChooseRepositoryActivity" />
 
         <provider
-            android:name=".data.schematicProvider.generated.GitHubProvider"
-            android:authorities="io.reark.rxgithubapp.data.schematicProvider.GitHubProvider"
+            android:name=".advanced.data.schematicProvider.generated.GitHubProvider"
+            android:authorities="io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider"
             android:exported="false">
         </provider>
 
-        <receiver android:name=".widget.WidgetProvider" >
+        <receiver android:name=".advanced.widget.WidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -35,10 +35,10 @@
                 android:resource="@xml/appwidget_info" />
         </receiver>
 
-        <service android:name=".widget.WidgetService"
+        <service android:name=".advanced.widget.WidgetService"
             android:process=":widgetservice" />
 
-        <service android:name=".network.NetworkService"
+        <service android:name=".advanced.network.NetworkService"
             android:process=":networkservice" />
 
     </application>

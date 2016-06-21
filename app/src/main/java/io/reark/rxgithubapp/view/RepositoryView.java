@@ -38,7 +38,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.R;
-import io.reark.rxgithubapp.pojo.GitHubRepository;
+import com.tehmou.appshared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.utils.glide.SerialTarget;
 import io.reark.rxgithubapp.viewmodels.RepositoryViewModel;
 import rx.android.schedulers.AndroidSchedulers;

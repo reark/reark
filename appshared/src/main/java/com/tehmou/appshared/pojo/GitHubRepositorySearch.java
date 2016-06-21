@@ -23,28 +23,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.network;
-
-import android.support.annotation.NonNull;
+package com.tehmou.appshared.pojo;
 
 import java.util.List;
 
-import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.pojo.GitHubRepository;
+public class GitHubRepositorySearch {
+    final private String search;
+    final private List<Integer> items;
 
-public class GitHubRepositorySearchResults {
-
-    @NonNull
-    final private List<GitHubRepository> items;
-
-    public GitHubRepositorySearchResults(@NonNull final List<GitHubRepository> items) {
-        Preconditions.checkNotNull(items, "GitHub Repository Items cannot be null.");
-
+    public GitHubRepositorySearch(final String search, final List<Integer> items) {
+        this.search = search;
         this.items = items;
     }
 
-    @NonNull
-    public List<GitHubRepository> getItems() {
+    public String getSearch() {
+        return search;
+    }
+
+    public List<Integer> getItems() {
         return items;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GitHubRepositorySearch that = (GitHubRepositorySearch) o;
+
+        if (search != null ? !search.equals(that.search) : that.search != null) return false;
+        return items != null ? items.equals(that.items) : that.items == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = search != null ? search.hashCode() : 0;
+        result = 31 * result + (items != null ? items.hashCode() : 0);
+        return result;
     }
 }

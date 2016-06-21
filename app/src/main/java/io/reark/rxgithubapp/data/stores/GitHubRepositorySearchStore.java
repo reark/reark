@@ -36,7 +36,7 @@ import com.google.gson.Gson;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubRepositorySearchColumns;
-import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
+import com.tehmou.appshared.pojo.GitHubRepositorySearch;
 
 public class GitHubRepositorySearchStore extends StoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();

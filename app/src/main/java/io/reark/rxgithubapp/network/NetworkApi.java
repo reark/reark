@@ -31,7 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.pojo.GitHubRepository;
+
+import com.tehmou.appshared.network.GitHubService;
+import com.tehmou.appshared.pojo.GitHubRepository;
+import com.tehmou.appshared.pojo.GitHubRepositorySearchResults;
+
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import rx.Observable;

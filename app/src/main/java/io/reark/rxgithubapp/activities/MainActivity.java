@@ -36,7 +36,7 @@ import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.fragments.RepositoryFragment;
-import io.reark.rxgithubapp.pojo.UserSettings;
+import com.tehmou.appshared.pojo.UserSettings;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();

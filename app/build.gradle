@@ -71,6 +71,7 @@ retrolambda {
 
 dependencies {
     compile project(':reark')
+    compile project(':appshared')
 
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])

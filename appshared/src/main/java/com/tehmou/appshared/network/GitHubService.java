@@ -23,31 +23,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.pojo;
+package com.tehmou.appshared.network;
 
-public class UserSettings {
-    private final int selectedRepositoryId;
+import android.net.Uri;
 
-    public UserSettings(int selectedRepositoryId) {
-        this.selectedRepositoryId = selectedRepositoryId;
-    }
+import java.util.Map;
 
-    public int getSelectedRepositoryId() {
-        return selectedRepositoryId;
-    }
+import com.tehmou.appshared.pojo.GitHubRepository;
+import com.tehmou.appshared.pojo.GitHubRepositorySearchResults;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+import retrofit.http.GET;
+import retrofit.http.Path;
+import retrofit.http.QueryMap;
+import rx.Observable;
 
-        UserSettings that = (UserSettings) o;
+public interface GitHubService {
+    static Uri REPOSITORY_SEARCH = Uri.parse("github/search");
+    static Uri REPOSITORY = Uri.parse("github/repository");
 
-        return selectedRepositoryId == that.selectedRepositoryId;
-    }
+    @GET("/search/repositories")
+    Observable<GitHubRepositorySearchResults> search(@QueryMap Map<String, String> search);
 
-    @Override
-    public int hashCode() {
-        return selectedRepositoryId;
-    }
+    @GET("/repositories/{id}")
+    Observable<GitHubRepository> getRepository(@Path("id") Integer id);
 }

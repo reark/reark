@@ -33,8 +33,8 @@ import java.util.List;
 
 import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.data.DataLayer.GetGitHubRepositorySearch;
-import io.reark.rxgithubapp.pojo.GitHubRepository;
-import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
+import com.tehmou.appshared.pojo.GitHubRepository;
+import com.tehmou.appshared.pojo.GitHubRepositorySearch;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 

@@ -38,7 +38,7 @@ import io.reark.rxgithubapp.data.DataLayer;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
-import io.reark.rxgithubapp.pojo.UserSettings;
+import com.tehmou.appshared.pojo.UserSettings;
 
 public class UserSettingsStore extends StoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();

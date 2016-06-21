@@ -1,1 +1,1 @@
-include ':app', ':reark'
+include ':app', ':reark', ':appshared'

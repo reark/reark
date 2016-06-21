@@ -38,11 +38,12 @@ import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
-import io.reark.rxgithubapp.network.GitHubService;
 import io.reark.rxgithubapp.network.NetworkService;
-import io.reark.rxgithubapp.pojo.GitHubRepository;
-import io.reark.rxgithubapp.pojo.GitHubRepositorySearch;
-import io.reark.rxgithubapp.pojo.UserSettings;
+
+import com.tehmou.appshared.network.GitHubService;
+import com.tehmou.appshared.pojo.GitHubRepository;
+import com.tehmou.appshared.pojo.GitHubRepositorySearch;
+import com.tehmou.appshared.pojo.UserSettings;
 import rx.Observable;
 
 public class DataLayer extends DataLayerBase {

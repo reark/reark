@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.pojo;
+package com.tehmou.appshared.pojo;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

@@ -23,42 +23,62 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.pojo;
+package com.tehmou.appshared.pojo;
 
-import java.util.List;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-public class GitHubRepositorySearch {
-    final private String search;
-    final private List<Integer> items;
+import com.google.gson.annotations.SerializedName;
 
-    public GitHubRepositorySearch(final String search, final List<Integer> items) {
-        this.search = search;
-        this.items = items;
+import io.reark.reark.utils.Preconditions;
+
+public class GitHubOwner {
+
+    @Nullable
+    @SerializedName("avatar_url")
+    final private String avatarUrl;
+
+    @SuppressWarnings("NullableProblems")
+    public GitHubOwner(@NonNull String avatarUrl) {
+        Preconditions.checkNotNull(avatarUrl, "Avatar cannot be null");
+
+        this.avatarUrl = avatarUrl;
     }
 
-    public String getSearch() {
-        return search;
+    public GitHubOwner() {
+        this("");
     }
 
-    public List<Integer> getItems() {
-        return items;
+    @NonNull
+    public String getAvatarUrl() {
+        return avatarUrl == null ? "" : avatarUrl;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof GitHubOwner)) {
+            return false;
+        }
 
-        GitHubRepositorySearch that = (GitHubRepositorySearch) o;
+        GitHubOwner that = (GitHubOwner) o;
 
-        if (search != null ? !search.equals(that.search) : that.search != null) return false;
-        return items != null ? items.equals(that.items) : that.items == null;
+        return !(avatarUrl != null ? !avatarUrl.equals(that.avatarUrl) : that.avatarUrl != null);
+
     }
 
     @Override
     public int hashCode() {
-        int result = search != null ? search.hashCode() : 0;
-        result = 31 * result + (items != null ? items.hashCode() : 0);
-        return result;
+        return avatarUrl != null ? avatarUrl.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("GitHubOwner{");
+        sb.append("avatarUrl='").append(avatarUrl).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

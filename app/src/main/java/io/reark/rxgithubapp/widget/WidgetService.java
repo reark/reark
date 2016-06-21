@@ -40,7 +40,7 @@ import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.data.DataLayer;
-import io.reark.rxgithubapp.pojo.UserSettings;
+import com.tehmou.appshared.pojo.UserSettings;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;

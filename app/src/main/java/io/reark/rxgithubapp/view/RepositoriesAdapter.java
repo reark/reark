@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reark.rxgithubapp.R;
-import io.reark.rxgithubapp.pojo.GitHubRepository;
+import com.tehmou.appshared.pojo.GitHubRepository;
 
 public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.ViewHolder> {
 

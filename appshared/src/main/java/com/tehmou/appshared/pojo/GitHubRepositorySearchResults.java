@@ -23,62 +23,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.pojo;
+package com.tehmou.appshared.pojo;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 import io.reark.reark.utils.Preconditions;
 
-public class GitHubOwner {
+public class GitHubRepositorySearchResults {
 
-    @Nullable
-    @SerializedName("avatar_url")
-    final private String avatarUrl;
+    @NonNull
+    final private List<GitHubRepository> items;
 
-    @SuppressWarnings("NullableProblems")
-    public GitHubOwner(@NonNull String avatarUrl) {
-        Preconditions.checkNotNull(avatarUrl, "Avatar cannot be null");
+    public GitHubRepositorySearchResults(@NonNull final List<GitHubRepository> items) {
+        Preconditions.checkNotNull(items, "GitHub Repository Items cannot be null.");
 
-        this.avatarUrl = avatarUrl;
-    }
-
-    public GitHubOwner() {
-        this("");
+        this.items = items;
     }
 
     @NonNull
-    public String getAvatarUrl() {
-        return avatarUrl == null ? "" : avatarUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof GitHubOwner)) {
-            return false;
-        }
-
-        GitHubOwner that = (GitHubOwner) o;
-
-        return !(avatarUrl != null ? !avatarUrl.equals(that.avatarUrl) : that.avatarUrl != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return avatarUrl != null ? avatarUrl.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("GitHubOwner{");
-        sb.append("avatarUrl='").append(avatarUrl).append('\'');
-        sb.append('}');
-        return sb.toString();
+    public List<GitHubRepository> getItems() {
+        return items;
     }
 }

@@ -37,7 +37,7 @@ import javax.inject.Inject;
 
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.injections.Graph;
-import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
+import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.widget.WidgetProvider;
 
 public class RxGitHubApp extends Application {

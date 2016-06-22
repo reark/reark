@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.RxGitHubApp;
 import io.reark.rxgithubapp.activities.MainActivity;
-import io.reark.rxgithubapp.utils.ApplicationInstrumentation;
+import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.view.RepositoryView;
 import io.reark.rxgithubapp.viewmodels.RepositoryViewModel;
 

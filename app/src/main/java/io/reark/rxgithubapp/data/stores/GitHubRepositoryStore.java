@@ -37,7 +37,7 @@ import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.data.schematicProvider.UserSettingsColumns;
-import com.tehmou.appshared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
 public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();

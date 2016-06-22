@@ -30,7 +30,7 @@ import android.support.annotation.NonNull;
 import io.reark.reark.network.fetchers.FetcherBase;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.network.NetworkApi;
+import io.reark.rxgithubapp.shared.network.NetworkApi;
 import rx.functions.Action1;
 
 public abstract class AppFetcherBase extends FetcherBase {

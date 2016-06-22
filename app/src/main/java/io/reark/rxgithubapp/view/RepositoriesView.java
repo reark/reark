@@ -43,7 +43,7 @@ import java.util.List;
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.R;
-import com.tehmou.appshared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.viewmodels.RepositoriesViewModel;
 import io.reark.rxgithubapp.viewmodels.RepositoriesViewModel.ProgressStatus;
 import rx.Observable;

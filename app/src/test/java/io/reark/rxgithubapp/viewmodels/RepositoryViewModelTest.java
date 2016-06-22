@@ -27,9 +27,9 @@ package io.reark.rxgithubapp.viewmodels;
 
 import org.junit.Test;
 
-import com.tehmou.appshared.pojo.GitHubOwner;
-import com.tehmou.appshared.pojo.GitHubRepository;
-import com.tehmou.appshared.pojo.UserSettings;
+import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 

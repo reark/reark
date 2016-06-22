@@ -36,8 +36,8 @@ import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.rxgithubapp.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
-import io.reark.rxgithubapp.network.NetworkApi;
-import io.reark.rxgithubapp.network.NetworkModule;
+import io.reark.rxgithubapp.shared.network.NetworkApi;
+import io.reark.rxgithubapp.shared.network.NetworkModule;
 
 @Module(includes = NetworkModule.class)
 public final class FetcherModule {

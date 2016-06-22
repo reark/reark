@@ -33,10 +33,10 @@ import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
-import io.reark.rxgithubapp.network.NetworkApi;
+import io.reark.rxgithubapp.shared.network.NetworkApi;
 
-import com.tehmou.appshared.network.GitHubService;
-import com.tehmou.appshared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.network.GitHubService;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;

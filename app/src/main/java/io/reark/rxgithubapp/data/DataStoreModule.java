@@ -37,7 +37,7 @@ import io.reark.rxgithubapp.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.data.stores.StoreModule;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
-import io.reark.rxgithubapp.injections.ForApplication;
+import io.reark.rxgithubapp.shared.injections.ForApplication;
 import io.reark.rxgithubapp.network.ServiceDataLayer;
 import io.reark.rxgithubapp.network.fetchers.FetcherModule;
 

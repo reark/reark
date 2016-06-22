@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reark.rxgithubapp.shared.injections.ForApplication;
 
 @Module
 public class ApplicationModule {

@@ -40,10 +40,10 @@ import io.reark.rxgithubapp.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.network.NetworkService;
 
-import com.tehmou.appshared.network.GitHubService;
-import com.tehmou.appshared.pojo.GitHubRepository;
-import com.tehmou.appshared.pojo.GitHubRepositorySearch;
-import com.tehmou.appshared.pojo.UserSettings;
+import io.reark.rxgithubapp.shared.network.GitHubService;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
+import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
 
 public class DataLayer extends DataLayerBase {

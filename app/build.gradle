@@ -105,7 +105,7 @@ dependencies {
 // Get the path to ADB.  Required when running tests directly from Android Studio.
 // Source: http://stackoverflow.com/a/26771087/112705
 def adb = android.getAdbExe().toString()
-def packageName = 'io.reark.rxgithubapp'
+def packageName = 'io.reark.rxgithubapp.advanced'
 def command = "$adb shell pm grant $packageName android.permission.SET_ANIMATION_SCALE".split(' ')
 
 task grantAnimationPermission(type: Exec, dependsOn: 'installDebug') {

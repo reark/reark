@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.network.fetchers;
+package io.reark.rxgithubapp.shared.network.fetchers;
 
 import android.support.annotation.NonNull;
 

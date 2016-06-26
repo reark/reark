@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.network.fetchers;
+package io.reark.rxgithubapp.shared.network.fetchers;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -36,11 +36,9 @@ import java.util.List;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositorySearchStore;
-import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
-import io.reark.rxgithubapp.shared.network.NetworkApi;
-
+import io.reark.rxgithubapp.shared.data.StoreInterface;
 import io.reark.rxgithubapp.shared.network.GitHubService;
+import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import rx.Observable;
@@ -51,13 +49,13 @@ import rx.schedulers.Schedulers;
 public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
-    private final GitHubRepositoryStore gitHubRepositoryStore;
-    private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    private final StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore;
+    private final StoreInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore;
 
     public GitHubRepositorySearchFetcher(@NonNull NetworkApi networkApi,
                                          @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                         @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                                         @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+                                         @NonNull StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore,
+                                         @NonNull StoreInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");

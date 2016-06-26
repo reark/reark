@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.network.fetchers;
+package io.reark.rxgithubapp.advanced.network;
 
 import java.util.Arrays;
 
@@ -38,6 +38,8 @@ import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.network.NetworkModule;
+import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositoryFetcher;
+import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 
 @Module(includes = NetworkModule.class)
 public final class FetcherModule {

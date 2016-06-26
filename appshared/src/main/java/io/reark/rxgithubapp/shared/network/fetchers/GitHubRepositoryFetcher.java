@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.network.fetchers;
+package io.reark.rxgithubapp.shared.network.fetchers;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -32,10 +32,9 @@ import android.support.annotation.NonNull;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
-import io.reark.rxgithubapp.shared.network.NetworkApi;
-
+import io.reark.rxgithubapp.shared.data.StoreInterface;
 import io.reark.rxgithubapp.shared.network.GitHubService;
+import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import rx.Observable;
 import rx.Subscription;
@@ -46,11 +45,11 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
     @NonNull
-    private final GitHubRepositoryStore gitHubRepositoryStore;
+    private final StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(@NonNull NetworkApi networkApi,
                                    @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                   @NonNull GitHubRepositoryStore gitHubRepositoryStore) {
+                                   @NonNull StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");

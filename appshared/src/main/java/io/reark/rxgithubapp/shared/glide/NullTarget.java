@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.glide;
+package io.reark.rxgithubapp.shared.glide;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;

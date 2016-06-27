@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.reark.rxgithubapp.advanced.view.RepositoryView xmlns:android="http://schemas.android.com/apk/res/android"
+<io.reark.rxgithubapp.shared.view.RepositoryView xmlns:android="http://schemas.android.com/apk/res/android"
                                           android:id="@+id/repository_view"
                                           android:layout_width="match_parent"
                                           android:layout_height="match_parent">
@@ -21,4 +21,4 @@
                 android:layout_gravity="bottom"
                 android:text="@string/repository_fragment_change"/>
     </LinearLayout>
-</io.reark.rxgithubapp.advanced.view.RepositoryView>
+</io.reark.rxgithubapp.shared.view.RepositoryView>

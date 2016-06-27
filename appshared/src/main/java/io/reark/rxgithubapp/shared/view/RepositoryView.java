@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.view;
+package io.reark.rxgithubapp.shared.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -34,12 +34,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import io.reark.rxgithubapp.shared.R;
 
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
-import io.reark.rxgithubapp.R;
+import io.reark.rxgithubapp.shared.glide.SerialTarget;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import io.reark.rxgithubapp.advanced.glide.SerialTarget;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;

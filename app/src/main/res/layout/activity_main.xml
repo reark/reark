@@ -3,5 +3,5 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.reark.rxgithubapp.activities.MainActivity"
+    tools:context=".advanced.activities.MainActivity"
     tools:ignore="MergeRootFrame" />

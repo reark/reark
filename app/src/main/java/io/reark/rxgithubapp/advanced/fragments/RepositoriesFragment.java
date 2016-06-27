@@ -37,7 +37,7 @@ import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.advanced.RxGitHubApp;
 import io.reark.rxgithubapp.advanced.activities.ChooseRepositoryActivity;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
-import io.reark.rxgithubapp.advanced.view.RepositoriesView;
+import io.reark.rxgithubapp.shared.view.RepositoriesView;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel;
 
 public class RepositoriesFragment extends Fragment {

@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.viewmodels;
+package io.reark.rxgithubapp.shared.viewmodels;
 
 import dagger.Module;
 import dagger.Provides;

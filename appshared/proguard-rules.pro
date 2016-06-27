@@ -15,3 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Remove logging
+-assumenosideeffects class io.reark.reark.utils.Log { *; }
+-assumenosideeffects class android.util.Log { *; }

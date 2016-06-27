@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.viewmodels;
+package io.reark.rxgithubapp.shared.viewmodels;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +41,10 @@ import rx.observers.TestSubscriber;
 import static io.reark.reark.data.DataStreamNotification.fetchingError;
 import static io.reark.reark.data.DataStreamNotification.fetchingStart;
 import static io.reark.reark.data.DataStreamNotification.onNext;
-import static io.reark.rxgithubapp.advanced.viewmodels.RepositoriesViewModel.ProgressStatus.ERROR;
-import static io.reark.rxgithubapp.advanced.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
-import static io.reark.rxgithubapp.advanced.viewmodels.RepositoriesViewModel.ProgressStatus.LOADING;
-import static io.reark.rxgithubapp.advanced.viewmodels.RepositoriesViewModel.toProgressStatus;
+import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.ERROR;
+import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
+import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.LOADING;
+import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.toProgressStatus;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 

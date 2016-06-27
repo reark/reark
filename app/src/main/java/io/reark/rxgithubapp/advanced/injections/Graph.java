@@ -37,9 +37,9 @@ import io.reark.rxgithubapp.advanced.fragments.RepositoriesFragment;
 import io.reark.rxgithubapp.advanced.fragments.RepositoryFragment;
 import io.reark.rxgithubapp.advanced.network.NetworkService;
 import io.reark.rxgithubapp.shared.injections.InstrumentationModule;
-import io.reark.rxgithubapp.advanced.viewmodels.RepositoriesViewModel;
-import io.reark.rxgithubapp.advanced.viewmodels.RepositoryViewModel;
-import io.reark.rxgithubapp.advanced.viewmodels.ViewModelModule;
+import io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel;
+import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
+import io.reark.rxgithubapp.shared.viewmodels.ViewModelModule;
 import io.reark.rxgithubapp.advanced.widget.WidgetService;
 
 @Singleton

@@ -40,7 +40,7 @@ import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.advanced.glide.SerialTarget;
-import io.reark.rxgithubapp.advanced.viewmodels.RepositoryViewModel;
+import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 

@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.viewmodels;
+package io.reark.rxgithubapp.shared.viewmodels;
 
 import android.support.annotation.NonNull;
 
@@ -35,7 +35,6 @@ import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxUtils;
 import io.reark.reark.viewmodels.AbstractViewModel;
-import io.reark.rxgithubapp.advanced.data.DataLayer;
 import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;

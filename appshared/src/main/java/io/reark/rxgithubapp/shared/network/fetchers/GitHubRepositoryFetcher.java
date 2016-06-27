@@ -46,11 +46,11 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
     @NonNull
-    private final StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore;
+    private final StorePutInterface<GitHubRepository> gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(@NonNull NetworkApi networkApi,
                                    @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                   @NonNull StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore) {
+                                   @NonNull StorePutInterface<GitHubRepository> gitHubRepositoryStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");

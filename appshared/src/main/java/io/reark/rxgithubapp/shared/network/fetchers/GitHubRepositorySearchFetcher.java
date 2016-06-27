@@ -49,13 +49,13 @@ import rx.schedulers.Schedulers;
 public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
-    private final StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore;
-    private final StorePutInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore;
+    private final StorePutInterface<GitHubRepository> gitHubRepositoryStore;
+    private final StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore;
 
     public GitHubRepositorySearchFetcher(@NonNull NetworkApi networkApi,
                                          @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                         @NonNull StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore,
-                                         @NonNull StorePutInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore) {
+                                         @NonNull StorePutInterface<GitHubRepository> gitHubRepositoryStore,
+                                         @NonNull StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");

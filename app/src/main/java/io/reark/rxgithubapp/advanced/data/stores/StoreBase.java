@@ -35,7 +35,7 @@ import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.data.StorePutInterface;
 
 public abstract class StoreBase<T, U> extends SingleItemContentProviderStore<T, U>
-        implements StorePutInterface<T, U> {
+        implements StorePutInterface<T> {
 
     private final Gson gson;
 

@@ -36,7 +36,7 @@ import java.util.List;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.shared.data.StoreInterface;
+import io.reark.rxgithubapp.shared.data.StorePutInterface;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -49,13 +49,13 @@ import rx.schedulers.Schedulers;
 public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
-    private final StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore;
-    private final StoreInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore;
+    private final StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore;
+    private final StorePutInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore;
 
     public GitHubRepositorySearchFetcher(@NonNull NetworkApi networkApi,
                                          @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                         @NonNull StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore,
-                                         @NonNull StoreInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore) {
+                                         @NonNull StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore,
+                                         @NonNull StorePutInterface<GitHubRepositorySearch, String> gitHubRepositorySearchStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");

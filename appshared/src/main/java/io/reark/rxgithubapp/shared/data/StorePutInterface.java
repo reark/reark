@@ -8,7 +8,7 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 /**
  * Created by ttuo on 26/06/16.
  */
-public interface StoreInterface <T, U> {
+public interface StorePutInterface<T, U> {
     Uri getUriForId(U id);
     void put(T item);
 }

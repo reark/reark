@@ -32,7 +32,7 @@ import android.support.annotation.NonNull;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.shared.data.StoreInterface;
+import io.reark.rxgithubapp.shared.data.StorePutInterface;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -45,11 +45,11 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
     @NonNull
-    private final StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore;
+    private final StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(@NonNull NetworkApi networkApi,
                                    @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                   @NonNull StoreInterface<GitHubRepository, Integer> gitHubRepositoryStore) {
+                                   @NonNull StorePutInterface<GitHubRepository, Integer> gitHubRepositoryStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");

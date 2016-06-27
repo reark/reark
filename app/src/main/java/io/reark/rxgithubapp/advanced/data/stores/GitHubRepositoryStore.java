@@ -37,7 +37,6 @@ import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
-import io.reark.rxgithubapp.shared.data.StoreInterface;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
 public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> {

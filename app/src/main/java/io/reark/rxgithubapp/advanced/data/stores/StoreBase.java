@@ -32,10 +32,10 @@ import com.google.gson.Gson;
 
 import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.shared.data.StoreInterface;
+import io.reark.rxgithubapp.shared.data.StorePutInterface;
 
 public abstract class StoreBase<T, U> extends SingleItemContentProviderStore<T, U>
-        implements StoreInterface<T, U> {
+        implements StorePutInterface<T, U> {
 
     private final Gson gson;
 

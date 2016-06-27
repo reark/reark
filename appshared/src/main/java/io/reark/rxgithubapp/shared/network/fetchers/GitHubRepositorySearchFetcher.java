@@ -85,7 +85,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
             return;
         }
-        final String uri = gitHubRepositorySearchStore.getUriForId(searchString).toString();
+        final String uri = getUniqueId(searchString);
         Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {
@@ -115,5 +115,10 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     @Override
     public Uri getServiceUri() {
         return GitHubService.REPOSITORY_SEARCH;
+    }
+
+    @NonNull
+    public static String getUniqueId(String search) {
+        return GitHubRepository.class + "/" + search;
     }
 }

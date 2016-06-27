@@ -27,7 +27,6 @@ package io.reark.rxgithubapp.advanced.data;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import io.reark.reark.data.DataStreamNotification;
@@ -39,8 +38,8 @@ import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.advanced.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.advanced.network.NetworkService;
-
 import io.reark.rxgithubapp.shared.network.GitHubService;
+import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
@@ -70,9 +69,9 @@ public class DataLayer extends DataLayerBase {
     public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
         Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
 
-        final Uri uri = gitHubRepositorySearchStore.getUriForId(searchString);
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
-                networkRequestStatusStore.getStream(uri.toString().hashCode());
+                networkRequestStatusStore.getStream(
+                        GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode());
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
                 gitHubRepositorySearchStore.getStream(searchString);
         return DataLayerUtils.createDataStreamNotificationObservable(

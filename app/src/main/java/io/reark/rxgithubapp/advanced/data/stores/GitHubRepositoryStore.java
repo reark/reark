@@ -85,7 +85,7 @@ public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> 
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull Integer id) {
+    protected Uri getUriForId(@NonNull Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositories.withId(id);

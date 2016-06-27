@@ -36,6 +36,7 @@ import io.reark.rxgithubapp.shared.data.StorePutInterface;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.view.RepositoryView;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -76,7 +77,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
             Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
             return;
         }
-        final String uri = gitHubRepositoryStore.getUriForId(repositoryId).toString();
+        final String uri = getUniqueId(repositoryId);
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
                 .doOnError(doOnError(uri))
@@ -96,5 +97,10 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     @Override
     public Uri getServiceUri() {
         return GitHubService.REPOSITORY;
+    }
+
+    @NonNull
+    public static String getUniqueId(int repositoryId) {
+        return GitHubRepository.class + "/" + repositoryId;
     }
 }

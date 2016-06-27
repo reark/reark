@@ -145,7 +145,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      * Returns unique Uri for the given id in the content provider of this store.
      */
     @NonNull
-    public abstract Uri getUriForId(@NonNull U id);
+    protected abstract Uri getUriForId(@NonNull U id);
 
     @NonNull
     private Observable<T> getItemObservable(@NonNull U id) {

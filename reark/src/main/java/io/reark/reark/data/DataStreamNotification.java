@@ -106,4 +106,9 @@ public class DataStreamNotification<T> {
     public boolean isFetchingError() {
         return type.equals(Type.FETCHING_ERROR);
     }
+
+    @Override
+    public String toString() {
+        return "DataStreamNotification(" + type + ", " + value + ")";
+    }
 }

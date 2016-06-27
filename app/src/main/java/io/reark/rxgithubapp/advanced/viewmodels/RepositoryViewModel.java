@@ -31,6 +31,7 @@ import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.viewmodels.AbstractViewModel;
 import io.reark.rxgithubapp.advanced.data.DataLayer;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
@@ -40,13 +41,13 @@ import rx.subscriptions.CompositeSubscription;
 public class RepositoryViewModel extends AbstractViewModel {
     private static final String TAG = RepositoryViewModel.class.getSimpleName();
 
-    private final DataLayer.GetUserSettings getUserSettings;
-    private final DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
+    private final DataFunctions.GetUserSettings getUserSettings;
+    private final DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
     final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
-    public RepositoryViewModel(@NonNull DataLayer.GetUserSettings getUserSettings,
-                               @NonNull DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
+    public RepositoryViewModel(@NonNull DataFunctions.GetUserSettings getUserSettings,
+                               @NonNull DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
         Preconditions.checkNotNull(getUserSettings, "Gey User Settings cannot be null.");
         Preconditions.checkNotNull(fetchAndGetGitHubRepository,
                                    "Fetch And Get GitHub Repository cannot be null.");

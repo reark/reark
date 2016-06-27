@@ -27,23 +27,20 @@ package io.reark.rxgithubapp.advanced.viewmodels;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reark.rxgithubapp.advanced.data.DataLayer.FetchAndGetGitHubRepository;
-import io.reark.rxgithubapp.advanced.data.DataLayer.GetGitHubRepository;
-import io.reark.rxgithubapp.advanced.data.DataLayer.GetGitHubRepositorySearch;
-import io.reark.rxgithubapp.advanced.data.DataLayer.GetUserSettings;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
 
 @Module
 public class ViewModelModule {
 
     @Provides
-    public RepositoriesViewModel provideRepositoriesViewModel(GetGitHubRepositorySearch repositorySearch,
-                                                              GetGitHubRepository repositoryRepository) {
+    public RepositoriesViewModel provideRepositoriesViewModel(DataFunctions.GetGitHubRepositorySearch repositorySearch,
+                                                              DataFunctions.GetGitHubRepository repositoryRepository) {
         return new RepositoriesViewModel(repositorySearch, repositoryRepository);
     }
 
     @Provides
-    public RepositoryViewModel provideRepositoryViewModel(GetUserSettings getUserSettings,
-                                                          FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
+    public RepositoryViewModel provideRepositoryViewModel(DataFunctions.GetUserSettings getUserSettings,
+                                                          DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
         return new RepositoryViewModel(getUserSettings, fetchAndGetGitHubRepository);
     }
 

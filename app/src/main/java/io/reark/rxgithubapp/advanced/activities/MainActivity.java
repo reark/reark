@@ -34,15 +34,15 @@ import javax.inject.Inject;
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.advanced.RxGitHubApp;
-import io.reark.rxgithubapp.advanced.data.DataLayer;
 import io.reark.rxgithubapp.advanced.fragments.RepositoryFragment;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Inject
-    DataLayer.SetUserSettings setUserSettings;
+    DataFunctions.SetUserSettings setUserSettings;
 
     public MainActivity() {
         RxGitHubApp.getInstance().getGraph().inject(this);

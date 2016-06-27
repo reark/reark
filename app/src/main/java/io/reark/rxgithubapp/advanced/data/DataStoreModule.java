@@ -37,6 +37,7 @@ import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.advanced.data.stores.StoreModule;
 import io.reark.rxgithubapp.advanced.data.stores.UserSettingsStore;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.injections.ForApplication;
 import io.reark.rxgithubapp.advanced.network.ServiceDataLayer;
 import io.reark.rxgithubapp.advanced.network.FetcherModule;
@@ -45,27 +46,27 @@ import io.reark.rxgithubapp.advanced.network.FetcherModule;
 public final class DataStoreModule {
 
     @Provides
-    public DataLayer.GetUserSettings provideGetUserSettings(DataLayer dataLayer) {
+    public DataFunctions.GetUserSettings provideGetUserSettings(DataLayer dataLayer) {
         return dataLayer::getUserSettings;
     }
 
     @Provides
-    public DataLayer.SetUserSettings provideSetUserSettings(DataLayer dataLayer) {
+    public DataFunctions.SetUserSettings provideSetUserSettings(DataLayer dataLayer) {
         return dataLayer::setUserSettings;
     }
 
     @Provides
-    public DataLayer.FetchAndGetGitHubRepository provideFetchAndGetGitHubRepository(DataLayer dataLayer) {
+    public DataFunctions.FetchAndGetGitHubRepository provideFetchAndGetGitHubRepository(DataLayer dataLayer) {
         return dataLayer::fetchAndGetGitHubRepository;
     }
 
     @Provides
-    public DataLayer.GetGitHubRepositorySearch provideGetGitHubRepositorySearch(DataLayer dataLayer) {
+    public DataFunctions.GetGitHubRepositorySearch provideGetGitHubRepositorySearch(DataLayer dataLayer) {
         return dataLayer::fetchAndGetGitHubRepositorySearch;
     }
 
     @Provides
-    public DataLayer.GetGitHubRepository provideGetGitHubRepository(DataLayer dataLayer) {
+    public DataFunctions.GetGitHubRepository provideGetGitHubRepository(DataLayer dataLayer) {
         return dataLayer::getGitHubRepository;
     }
 

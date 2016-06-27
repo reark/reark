@@ -31,8 +31,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import io.reark.rxgithubapp.advanced.data.DataLayer;
-import io.reark.rxgithubapp.advanced.data.DataLayer.GetGitHubRepositorySearch;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
+import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import rx.Observable;
@@ -131,7 +131,7 @@ public class RepositoriesViewModelTest {
     @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionConstructedWithNullRepositorySearch() {
         //noinspection ConstantConditions
-        new RepositoriesViewModel(null, mock(DataLayer.GetGitHubRepository.class));
+        new RepositoriesViewModel(null, mock(DataFunctions.GetGitHubRepository.class));
     }
 
     @Test(expected = NullPointerException.class)

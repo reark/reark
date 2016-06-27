@@ -36,6 +36,7 @@ import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxUtils;
 import io.reark.reark.viewmodels.AbstractViewModel;
 import io.reark.rxgithubapp.advanced.data.DataLayer;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import rx.Observable;
@@ -56,10 +57,10 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private static final int SEARCH_INPUT_DELAY = 500;
 
     @NonNull
-    private final DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch;
+    private final DataFunctions.GetGitHubRepositorySearch getGitHubRepositorySearch;
 
     @NonNull
-    private final DataLayer.GetGitHubRepository getGitHubRepository;
+    private final DataFunctions.GetGitHubRepository getGitHubRepository;
 
     private final PublishSubject<String> searchString = PublishSubject.create();
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
@@ -67,8 +68,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private final BehaviorSubject<List<GitHubRepository>> repositories = BehaviorSubject.create();
     private final BehaviorSubject<ProgressStatus> networkRequestStatusText = BehaviorSubject.create();
 
-    public RepositoriesViewModel(@NonNull DataLayer.GetGitHubRepositorySearch getGitHubRepositorySearch,
-                                 @NonNull DataLayer.GetGitHubRepository getGitHubRepository) {
+    public RepositoriesViewModel(@NonNull DataFunctions.GetGitHubRepositorySearch getGitHubRepositorySearch,
+                                 @NonNull DataFunctions.GetGitHubRepository getGitHubRepository) {
         Preconditions.checkNotNull(getGitHubRepositorySearch,
                                    "GetGitHubRepositorySearch cannot be null.");
         Preconditions.checkNotNull(getGitHubRepository,

@@ -40,6 +40,7 @@ import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.advanced.RxGitHubApp;
 import io.reark.rxgithubapp.advanced.data.DataLayer;
+import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -49,10 +50,10 @@ public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
 
     @Inject
-    DataLayer.GetUserSettings getUserSettings;
+    DataFunctions.GetUserSettings getUserSettings;
 
     @Inject
-    DataLayer.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
+    DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
     private final CompositeSubscription subscriptions = new CompositeSubscription();
 

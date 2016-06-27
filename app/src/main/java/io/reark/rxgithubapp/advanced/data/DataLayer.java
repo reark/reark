@@ -130,27 +130,4 @@ public class DataLayer extends DataLayerBase {
 
         userSettingsStore.put(userSettings);
     }
-
-    public interface GetUserSettings {
-        @NonNull
-        Observable<UserSettings> call();
-    }
-
-    public interface SetUserSettings {
-        void call(@NonNull UserSettings userSettings);
-    }
-
-    public interface GetGitHubRepository {
-        @NonNull
-        Observable<GitHubRepository> call(int repositoryId);
-    }
-
-    public interface FetchAndGetGitHubRepository extends GetGitHubRepository {
-
-    }
-
-    public interface GetGitHubRepositorySearch {
-        @NonNull
-        Observable<DataStreamNotification<GitHubRepositorySearch>> call(@NonNull String search);
-    }
 }

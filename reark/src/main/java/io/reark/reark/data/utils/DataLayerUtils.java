@@ -43,25 +43,26 @@ public class DataLayerUtils {
 
         final Observable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable
-                        .map(new Func1<NetworkRequestStatus, DataStreamNotification<T>>() {
-                            @Override
-                            public DataStreamNotification<T> call(NetworkRequestStatus networkRequestStatus) {
-                                if (networkRequestStatus.isOngoing()) {
-                                    return DataStreamNotification.fetchingStart();
-                                } else if (networkRequestStatus.isCompleted()) {
-                                    return DataStreamNotification.fetchingCompleted();
-                                } else if (networkRequestStatus.isError()) {
-                                    return DataStreamNotification.fetchingError();
-                                } else {
-                                    return null;
-                                }
-                            }
-                        })
+                        .map(DataLayerUtils.<T>fromNetworkRequestStatus())
                         .filter(dataStreamNotification -> dataStreamNotification != null);
 
         final Observable<DataStreamNotification<T>> valueStream =
                 valueObservable.map(DataStreamNotification::onNext);
 
         return Observable.merge(networkStatusStream, valueStream);
+    }
+
+    public static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
+        return networkRequestStatus -> {
+            if (networkRequestStatus.isOngoing()) {
+                return DataStreamNotification.fetchingStart();
+            } else if (networkRequestStatus.isCompleted()) {
+                return DataStreamNotification.fetchingCompleted();
+            } else if (networkRequestStatus.isError()) {
+                return DataStreamNotification.fetchingError();
+            } else {
+                return null;
+            }
+        };
     }
 }

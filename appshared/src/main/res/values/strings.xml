@@ -1,3 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="app_name">RxGitHubApp</string>
+    <string name="action_settings">Settings</string>
+    <string name="repository_fragment_intro">Add the widget to home screen to monitor a repository. Changing the repository with search will update the widget through the ContentProvider.</string>
+    <string name="repository_fragment_change">Change</string>
 
 </resources>

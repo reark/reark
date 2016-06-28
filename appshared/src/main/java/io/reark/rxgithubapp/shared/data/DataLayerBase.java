@@ -27,6 +27,7 @@ package io.reark.rxgithubapp.shared.data;
 
 import android.support.annotation.NonNull;
 
+import io.reark.reark.data.stores.StoreInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;

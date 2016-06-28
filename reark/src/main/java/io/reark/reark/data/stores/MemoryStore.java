@@ -1,8 +1,6 @@
-package io.reark.rxgithubapp.basic.data.stores;
+package io.reark.reark.data.stores;
 
-import io.reark.rxgithubapp.shared.data.StoreInterface;
 import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * Created by ttuo on 27/06/16.

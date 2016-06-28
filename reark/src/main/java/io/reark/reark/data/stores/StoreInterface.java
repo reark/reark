@@ -1,4 +1,4 @@
-package io.reark.rxgithubapp.shared.data;
+package io.reark.reark.data.stores;
 
 /**
  * Created by ttuo on 27/06/16.

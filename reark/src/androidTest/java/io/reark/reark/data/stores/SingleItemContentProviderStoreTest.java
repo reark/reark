@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reark.reark.data.store.SingleItemContentProviderStore;
 import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;

@@ -1,4 +1,4 @@
-package io.reark.rxgithubapp.basic.data.stores;
+package io.reark.reark.data.stores;
 
 import android.support.v4.util.Pair;
 

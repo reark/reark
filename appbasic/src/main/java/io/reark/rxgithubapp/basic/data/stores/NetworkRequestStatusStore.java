@@ -1,5 +1,6 @@
 package io.reark.rxgithubapp.basic.data.stores;
 
+import io.reark.reark.data.stores.MemoryStore;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import rx.Observable;

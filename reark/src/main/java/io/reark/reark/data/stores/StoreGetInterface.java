@@ -1,4 +1,4 @@
-package io.reark.rxgithubapp.shared.data;
+package io.reark.reark.data.stores;
 
 import rx.Observable;
 

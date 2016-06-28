@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.store;
+package io.reark.reark.data.stores;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

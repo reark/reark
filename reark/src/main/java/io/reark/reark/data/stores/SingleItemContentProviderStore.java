@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.store;
+package io.reark.reark.data.stores;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
@@ -52,7 +52,8 @@ import static rx.Observable.concat;
  * @param <T> Type of the data this store contains.
  * @param <U> Type of the id used in this store.
  */
-public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T> {
+public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T>
+        implements StoreInterface<U, T> {
     private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 
     @NonNull

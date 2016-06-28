@@ -3,6 +3,7 @@ package io.reark.rxgithubapp.shared.data;
 import android.support.annotation.NonNull;
 
 import io.reark.reark.data.DataStreamNotification;
+import io.reark.reark.data.stores.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;

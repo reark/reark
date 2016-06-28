@@ -1,5 +1,6 @@
 package io.reark.rxgithubapp.basic.data.stores;
 
+import io.reark.reark.data.stores.MemoryStore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
 /**

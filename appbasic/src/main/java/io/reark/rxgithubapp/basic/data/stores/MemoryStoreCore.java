@@ -14,30 +14,22 @@ import rx.subjects.Subject;
  * Created by ttuo on 27/06/16.
  */
 public class MemoryStoreCore<T, U> {
-    private final Map<Integer, T> cache = new ConcurrentHashMap<>();
-    private final Subject<Pair<U, T>, Pair<U, T>> subject = PublishSubject.create();
-    private final ConcurrentMap<Integer, Subject<T, T>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
+    private final Map<Integer, U> cache = new ConcurrentHashMap<>();
+    private final Subject<Pair<T, U>, Pair<T, U>> subject = PublishSubject.create();
+    private final ConcurrentMap<Integer, Subject<U, U>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
 
-    protected Observable<Pair<U, T>> getStreamWithIds() {
-        return subject
-                .asObservable()
-                .onBackpressureBuffer();
+    protected Observable<Pair<T, U>> getStream() {
+        return subject.asObservable();
     }
 
-    protected Observable<T> getStream() {
-        return subject
-                .asObservable()
-                .map(pair -> pair.second)
-                .onBackpressureBuffer();
-    }
-
-    protected Observable<T> getStream(U id) {
+    protected Observable<U> getStream(T id) {
         int hash = getHashCodeForId(id);
-        subjectCache.putIfAbsent(hash, PublishSubject.<T>create());
-        return subjectCache.get(hash);
+        subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
+        return subjectCache.get(hash)
+                .asObservable();
     }
 
-    protected void put(U id, T item) {
+    protected void put(T id, U item) {
         int hash = getHashCodeForId(id);
         cache.put(hash, item);
         subject.onNext(new Pair<>(id, item));
@@ -46,15 +38,15 @@ public class MemoryStoreCore<T, U> {
         }
     }
 
-    protected T get(U id) {
+    protected U get(T id) {
         return cache.get(getHashCodeForId(id));
     }
 
-    protected boolean contains(U id) {
+    protected boolean contains(T id) {
         return cache.containsKey(getHashCodeForId(id));
     }
 
-    protected int getHashCodeForId(U id) {
+    protected int getHashCodeForId(T id) {
         return id.hashCode();
     }
 }

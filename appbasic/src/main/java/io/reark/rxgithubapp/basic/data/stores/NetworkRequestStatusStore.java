@@ -7,7 +7,7 @@ import rx.Observable;
 /**
  * Created by ttuo on 27/06/16.
  */
-public class NetworkRequestStatusStore extends MemoryStore<NetworkRequestStatus, Integer> {
+public class NetworkRequestStatusStore extends MemoryStore<Integer, NetworkRequestStatus> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
     public NetworkRequestStatusStore() {

@@ -17,12 +17,12 @@ public class MemoryStore<T, U> implements StoreInterface<T, U> {
     }
 
     @Override
-    public void put(T item) {
+    public void put(U item) {
         core.put(getIdForItem.call(item), item);
     }
 
     @Override
-    public Observable<T> getStream(U id) {
+    public Observable<U> getStream(T id) {
         if (core.contains(id)) {
             return core.getStream(id).startWith(core.get(id));
         }
@@ -30,6 +30,6 @@ public class MemoryStore<T, U> implements StoreInterface<T, U> {
     }
 
     public interface GetIdForItem<T, U> {
-        U call(T item);
+        T call(U item);
     }
 }

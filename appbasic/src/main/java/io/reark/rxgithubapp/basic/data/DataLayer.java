@@ -13,6 +13,7 @@ import io.reark.rxgithubapp.basic.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.basic.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.basic.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.basic.data.stores.UserSettingsStore;
+import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -23,14 +24,10 @@ import rx.Observable;
 /**
  * Created by ttuo on 27/06/16.
  */
-public class DataLayer {
+public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
 
     private final UriFetcherManager fetcherManager;
-    private final NetworkRequestStatusStore networkRequestStatusStore;
-    private final GitHubRepositoryStore gitHubRepositoryStore;
-    private final GitHubRepositorySearchStore gitHubRepositorySearchStore;
-    private final UserSettingsStore userSettingsStore;
     public static final int DEFAULT_USER_ID = 0;
 
     public DataLayer(UriFetcherManager fetcherManager,
@@ -38,11 +35,12 @@ public class DataLayer {
                      GitHubRepositoryStore gitHubRepositoryStore,
                      GitHubRepositorySearchStore gitHubRepositorySearchStore,
                      UserSettingsStore userSettingsStore) {
+        super(networkRequestStatusStore,
+                gitHubRepositoryStore,
+                gitHubRepositorySearchStore,
+                userSettingsStore);
+
         this.fetcherManager = fetcherManager;
-        this.networkRequestStatusStore = networkRequestStatusStore;
-        this.gitHubRepositoryStore = gitHubRepositoryStore;
-        this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
-        this.userSettingsStore = userSettingsStore;
     }
 
     public Observable<GitHubRepository> fetchAndGetGitHubRepository(int repositoryId) {

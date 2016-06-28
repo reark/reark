@@ -38,6 +38,7 @@ import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.advanced.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.advanced.network.NetworkService;
+import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -45,10 +46,9 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
 
-public class DataLayer extends DataLayerBase {
+public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
     private final Context context;
-    protected final UserSettingsStore userSettingsStore;
     public static final int DEFAULT_USER_ID = 0;
 
     public DataLayer(@NonNull Context context,
@@ -56,13 +56,15 @@ public class DataLayer extends DataLayerBase {
                      @NonNull NetworkRequestStatusStore networkRequestStatusStore,
                      @NonNull GitHubRepositoryStore gitHubRepositoryStore,
                      @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
-        super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
+        super(networkRequestStatusStore,
+                gitHubRepositoryStore,
+                gitHubRepositorySearchStore,
+                userSettingsStore);
 
         Preconditions.checkNotNull(context, "Context cannot be null.");
         Preconditions.checkNotNull(userSettingsStore, "User Settings Store cannot be null.");
 
         this.context = context;
-        this.userSettingsStore = userSettingsStore;
     }
 
     @NonNull

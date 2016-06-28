@@ -23,23 +23,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.data;
+package io.reark.rxgithubapp.shared.data;
 
 import android.support.annotation.NonNull;
 
+import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositorySearchStore;
-import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
-import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
 abstract public class DataLayerBase {
-    protected final NetworkRequestStatusStore networkRequestStatusStore;
-    protected final GitHubRepositoryStore gitHubRepositoryStore;
-    protected final GitHubRepositorySearchStore gitHubRepositorySearchStore;
+    protected final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore;
+    protected final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore;
+    protected final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore;
 
-    public DataLayerBase(@NonNull NetworkRequestStatusStore networkRequestStatusStore,
-                         @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                         @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public DataLayerBase(@NonNull StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
+                         @NonNull StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
+                         @NonNull StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore) {
         Preconditions.checkNotNull(networkRequestStatusStore,
                                    "Network Request Status Store cannot be null.");
         Preconditions.checkNotNull(gitHubRepositoryStore,

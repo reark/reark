@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import rx.Observable;
-import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -34,13 +33,7 @@ public class MemoryStoreCore<T, U> {
 
     protected Observable<T> getStream(U id) {
         int hash = getHashCodeForId(id);
-        if (!subjectCache.containsKey(hash)) {
-            if (cache.containsKey(hash)) {
-                subjectCache.put(hash, BehaviorSubject.create(cache.get(hash)));
-            } else {
-                subjectCache.put(hash, BehaviorSubject.create());
-            }
-        }
+        subjectCache.putIfAbsent(hash, PublishSubject.<T>create());
         return subjectCache.get(hash);
     }
 

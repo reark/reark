@@ -87,9 +87,9 @@ public class DataLayer {
         Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
 
         Log.d(TAG, "fetchAndGetGitHubRepositorySearch(" + searchString + ")");
+        fetchGitHubRepositorySearch(searchString);
         final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositoryStream =
                 getGitHubRepositorySearch(searchString);
-        fetchGitHubRepositorySearch(searchString);
         return gitHubRepositoryStream;
     }
 

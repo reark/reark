@@ -23,6 +23,9 @@ public class MemoryStore<T, U> implements StoreInterface<T, U> {
 
     @Override
     public Observable<T> getStream(U id) {
+        if (core.contains(id)) {
+            return core.getStream(id).startWith(core.get(id));
+        }
         return core.getStream(id);
     }
 

@@ -49,18 +49,13 @@ public class MemoryStoreTest {
 
     @Test
     public void testIdenticalValues() {
-        // In the default store implementation there is no distinctUntilChanged to filter
-        // duplicates.
+        // In the default store implementation identical values are filtered out.
 
         memoryStore.getStream(100).subscribe(testSubscriber);
         memoryStore.put(new Pair<>(100, "test string"));
         memoryStore.put(new Pair<>(100, "test string"));
 
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        new Pair<>(100, "test string"),
-                        new Pair<>(100, "test string")
-                ));
+        testSubscriber.assertValue(new Pair<>(100, "test string"));
     }
 
     @Test

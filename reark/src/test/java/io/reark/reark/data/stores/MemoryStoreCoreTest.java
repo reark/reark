@@ -1,7 +1,5 @@
 package io.reark.reark.data.stores;
 
-import android.support.v4.util.Pair;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +39,7 @@ public class MemoryStoreCoreTest {
     @Test
     public void testStream() {
         // Stream just gives all values the store receives.
-        TestSubscriber<Pair<Integer, String>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
 
         memoryStoreCore.getStream().subscribe(testSubscriber);
         memoryStoreCore.put(100, "test value 1");
@@ -49,15 +47,15 @@ public class MemoryStoreCoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
-                        new Pair<>(100, "test value 1"),
-                        new Pair<>(200, "test value 2")
+                        new StoreItem<>(100, "test value 1"),
+                        new StoreItem<>(200, "test value 2")
                 ));
     }
 
     @Test
     public void testStreamNoInitialValue() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<Pair<Integer, String>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
 
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.getStream().subscribe(testSubscriber);
@@ -66,17 +64,17 @@ public class MemoryStoreCoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
-                        new Pair<>(200, "test value 2"),
-                        new Pair<>(300, "test value 3")
+                        new StoreItem<>(200, "test value 2"),
+                        new StoreItem<>(300, "test value 3")
                 ));
     }
 
     @Test
     public void testStreamNoValuesBeforeSubscribing() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<Pair<Integer, String>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
 
-        Observable<Pair<Integer, String>> stream = memoryStoreCore.getStream();
+        Observable<StoreItem<Integer, String>> stream = memoryStoreCore.getStream();
         memoryStoreCore.put(100, "test value 1");
         stream.subscribe(testSubscriber);
         memoryStoreCore.put(200, "test value 2");
@@ -84,8 +82,8 @@ public class MemoryStoreCoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
-                        new Pair<>(200, "test value 2"),
-                        new Pair<>(300, "test value 3")
+                        new StoreItem<>(200, "test value 2"),
+                        new StoreItem<>(300, "test value 3")
                 ));
     }
 

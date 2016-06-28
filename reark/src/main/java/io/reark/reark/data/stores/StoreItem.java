@@ -31,15 +31,15 @@ import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
-class StoreItem<T> {
+class StoreItem<T, U> {
 
     @NonNull
-    private final Uri uri;
+    private final T uri;
 
     @Nullable
-    private final T item;
+    private final U item;
 
-    StoreItem(@NonNull final Uri uri, @Nullable final T item) {
+    StoreItem(@NonNull final T uri, @Nullable final U item) {
         Preconditions.checkNotNull(uri, "uri cannot be null.");
 
         this.uri = uri;
@@ -47,12 +47,12 @@ class StoreItem<T> {
     }
 
     @NonNull
-    public Uri uri() {
+    public T uri() {
         return uri;
     }
 
     @Nullable
-    public T item() {
+    public U item() {
         return item;
     }
 
@@ -65,7 +65,7 @@ class StoreItem<T> {
             return false;
         }
 
-        final StoreItem<?> storeItem = (StoreItem<?>) o;
+        final StoreItem<?, ?> storeItem = (StoreItem<?, ?>) o;
 
         return uri.equals(storeItem.uri)
                && (item != null ? item.equals(storeItem.item) : storeItem.item == null);

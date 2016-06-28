@@ -1,7 +1,5 @@
 package io.reark.reark.data.stores;
 
-import android.support.v4.util.Pair;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,10 +13,10 @@ import rx.subjects.Subject;
  */
 public class MemoryStoreCore<T, U> {
     private final Map<Integer, U> cache = new ConcurrentHashMap<>();
-    private final Subject<Pair<T, U>, Pair<T, U>> subject = PublishSubject.create();
+    private final Subject<StoreItem<T, U>, StoreItem<T, U>> subject = PublishSubject.create();
     private final ConcurrentMap<Integer, Subject<U, U>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
 
-    protected Observable<Pair<T, U>> getStream() {
+    protected Observable<StoreItem<T, U>> getStream() {
         return subject.asObservable();
     }
 
@@ -32,7 +30,7 @@ public class MemoryStoreCore<T, U> {
     protected void put(T id, U item) {
         int hash = getHashCodeForId(id);
         cache.put(hash, item);
-        subject.onNext(new Pair<>(id, item));
+        subject.onNext(new StoreItem<>(id, item));
         if (subjectCache.containsKey(hash)) {
             subjectCache.get(hash).onNext(item);
         }

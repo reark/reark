@@ -57,7 +57,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 
     @NonNull
-    private final PublishSubject<StoreItem<T>> subjectCache = PublishSubject.create();
+    private final PublishSubject<StoreItem<Uri, T>> subjectCache = PublishSubject.create();
 
     protected SingleItemContentProviderStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);

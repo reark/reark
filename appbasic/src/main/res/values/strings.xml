@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Basic GitHub App</string>
+    <string name="repository_fragment_intro">Choose the selected repository. Unlike in the main example, the selection or fetched repositories are not persisted anywhere.</string>
 </resources>

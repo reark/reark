@@ -25,13 +25,12 @@
  */
 package io.reark.reark.data.stores;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
-class StoreItem<T, U> {
+public class StoreItem<T, U> {
 
     @NonNull
     private final T uri;
@@ -39,15 +38,15 @@ class StoreItem<T, U> {
     @Nullable
     private final U item;
 
-    StoreItem(@NonNull final T uri, @Nullable final U item) {
-        Preconditions.checkNotNull(uri, "uri cannot be null.");
+    public StoreItem(@NonNull final T uri, @Nullable final U item) {
+        Preconditions.checkNotNull(uri, "id cannot be null.");
 
         this.uri = uri;
         this.item = item;
     }
 
     @NonNull
-    public T uri() {
+    public T id() {
         return uri;
     }
 
@@ -81,7 +80,7 @@ class StoreItem<T, U> {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("StoreItem{");
-        sb.append("uri=").append(uri);
+        sb.append("id=").append(uri);
         sb.append(", item=").append(item);
         sb.append('}');
         return sb.toString();

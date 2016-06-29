@@ -1,9 +1,10 @@
-package io.reark.reark.data.stores;
+package io.reark.reark.data.stores.cores;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.utils.Log;
 import rx.Observable;
 import rx.functions.Func2;
@@ -13,7 +14,7 @@ import rx.subjects.Subject;
 /**
  * Created by ttuo on 27/06/16.
  */
-public class MemoryStoreCore<T, U> {
+public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     private static final String TAG = MemoryStoreCore.class.getSimpleName();
 
     private final Func2<U, U, U> putMergeFunction;
@@ -33,14 +34,14 @@ public class MemoryStoreCore<T, U> {
         return subject.asObservable();
     }
 
-    protected Observable<U> getStream(T id) {
+    public Observable<U> getStream(T id) {
         int hash = getHashCodeForId(id);
         subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
         return subjectCache.get(hash)
                 .asObservable();
     }
 
-    protected void put(T id, U item) {
+    public void put(T id, U item) {
         final int hash = getHashCodeForId(id);
         boolean valuesEqual = false;
 
@@ -68,12 +69,8 @@ public class MemoryStoreCore<T, U> {
         }
     }
 
-    protected U get(T id) {
-        return cache.get(getHashCodeForId(id));
-    }
-
-    protected boolean contains(T id) {
-        return cache.containsKey(getHashCodeForId(id));
+    public Observable<U> getCached(T id) {
+        return Observable.just(cache.get(getHashCodeForId(id)));
     }
 
     protected int getHashCodeForId(T id) {

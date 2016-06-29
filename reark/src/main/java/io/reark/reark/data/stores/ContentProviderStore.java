@@ -167,7 +167,7 @@ public abstract class ContentProviderStore<T> {
             cursor.close();
         }
         if (list.size() == 0) {
-            Log.v(TAG, "Could not find with uri: " + uri);
+            Log.v(TAG, "Could not find with id: " + uri);
         }
         return list;
     }

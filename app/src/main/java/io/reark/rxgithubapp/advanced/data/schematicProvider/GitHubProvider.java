@@ -67,6 +67,10 @@ public class GitHubProvider {
         public static Uri withId(long id) {
             return buildUri(GitHubDatabase.GITHUB_REPOSITORIES, String.valueOf(id));
         }
+
+        public static long fromUri(Uri uri) {
+            return Long.valueOf(uri.getLastPathSegment());
+        }
     }
 
     @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORY_SEARCHES) public static class GitHubRepositorySearches {

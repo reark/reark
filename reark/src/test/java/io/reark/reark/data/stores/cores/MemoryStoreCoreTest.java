@@ -1,11 +1,11 @@
-package io.reark.reark.data.stores;
+package io.reark.reark.data.stores.cores;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 
+import io.reark.reark.data.stores.StoreItem;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
@@ -24,7 +24,9 @@ public class MemoryStoreCoreTest {
     public void testPut() {
         memoryStoreCore.put(100, "test value");
 
-        Assert.assertEquals("test value", memoryStoreCore.get(100));
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        memoryStoreCore.getCached(100).subscribe(testSubscriber);
+        testSubscriber.assertValue("test value");
     }
 
     @Test
@@ -32,8 +34,12 @@ public class MemoryStoreCoreTest {
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.put(200, "test value 2");
 
-        Assert.assertEquals("test value 1", memoryStoreCore.get(100));
-        Assert.assertEquals("test value 2", memoryStoreCore.get(200));
+        TestSubscriber<String> testSubscriber1 = new TestSubscriber<>();
+        TestSubscriber<String> testSubscriber2 = new TestSubscriber<>();
+        memoryStoreCore.getCached(100).subscribe(testSubscriber1);
+        memoryStoreCore.getCached(200).subscribe(testSubscriber2);
+        testSubscriber1.assertValue("test value 1");
+        testSubscriber2.assertValue("test value 2");
     }
 
     @Test

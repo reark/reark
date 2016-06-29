@@ -23,23 +23,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores;
+package io.reark.reark.data.stores.cores;
 
 import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
+import io.reark.reark.data.stores.ContentProviderStore;
+import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static java.lang.String.format;
-import static rx.Observable.concat;
 
 /**
  * SingleItemContentProviderStore is a convenience implementation of ContentProviderStore for
@@ -52,14 +50,14 @@ import static rx.Observable.concat;
  * @param <T> Type of the data this store contains.
  * @param <U> Type of the id used in this store.
  */
-public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T>
-        implements StoreInterface<U, T> {
-    private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
+public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStore<U>
+        implements StoreCoreInterface<T, U> {
+    private static final String TAG = ContentProviderStoreCore.class.getSimpleName();
 
     @NonNull
-    private final PublishSubject<StoreItem<Uri, T>> subjectCache = PublishSubject.create();
+    private final PublishSubject<StoreItem<T, U>> subjectCache = PublishSubject.create();
 
-    protected SingleItemContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStoreCore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
     }
 
@@ -73,7 +71,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
 
                 getOne(uri)
                         .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
-                        .map(item -> new StoreItem<>(uri, item))
+                        .map(item -> new StoreItem<>(getIdForUri(uri), item))
                         .subscribe(subjectCache::onNext,
                                    error -> Log.e(TAG, "Cannot retrieve the item: " + uri, error));
             }
@@ -86,24 +84,10 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      *
      * Any open stream Observables for the item's id will emit this new value.
      */
-    public void put(@NonNull T item) {
+    public void put(@NonNull T id, @NonNull U item) {
         Preconditions.checkNotNull(item, "Item cannot be null.");
 
-        put(item, getUriForItem(item));
-    }
-
-    /**
-     * Returns a completing Observable of all items matching the id.
-     *
-     * This method can for example be used to request all the contents of this store
-     * by providing an empty id.
-     */
-    @NonNull
-    public Observable<List<T>> get(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
-
-        final Uri uri = getUriForId(id);
-        return get(uri);
+        put(item, getUriForId(id));
     }
 
     /**
@@ -111,7 +95,8 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      * matching the id, or emits null if the store does not contain the requested id.
      */
     @NonNull
-    public Observable<T> getOne(@NonNull U id) {
+    @Override
+    public Observable<U> getCached(@NonNull T id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         final Uri uri = getUriForId(id);
@@ -122,50 +107,34 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      * Returns a non-completing Observable of all new and updated items.
      */
     @NonNull
-    public Observable<T> getStream() {
+    public Observable<StoreItem<T, U>> getStream() {
         Log.v(TAG, "getStream()");
 
-        return subjectCache.map(StoreItem::item);
+        return subjectCache.asObservable();
     }
 
-    /**
-     * Returns a non-completing Observable of items matching the id. The Observable emits the first
-     * matching item existing in the store, if any, and continues to emit all new matching items.
-     */
     @NonNull
-    public Observable<T> getStream(@NonNull U id) {
+    @Override
+    public Observable<U> getStream(@NonNull T id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
-        Log.v(TAG, "getStream(" + id + ")");
 
-        return concat(getOne(id).filter(item -> item != null),
-                      getItemObservable(id))
-                .subscribeOn(Schedulers.computation());
+        return subjectCache
+                .filter(item -> item.id().equals(id))
+                .doOnNext(item -> Log.v(TAG, "getItemObservable(" + item + ')'))
+                .map(StoreItem::item)
+                .asObservable();
     }
 
     /**
      * Returns unique Uri for the given id in the content provider of this store.
      */
     @NonNull
-    protected abstract Uri getUriForId(@NonNull U id);
+    protected abstract Uri getUriForId(@NonNull T id);
 
+    /**
+     * Returns id for the unique Uri in the content provider of this store.
+     */
     @NonNull
-    private Observable<T> getItemObservable(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
-
-        return subjectCache
-                .filter(item -> item.id().equals(getUriForId(id)))
-                .doOnNext(item -> Log.v(TAG, "getItemObservable(" + item + ')'))
-                .map(StoreItem::item);
-    }
-
-    @NonNull
-    private Uri getUriForItem(@NonNull T item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
-
-        return getUriForId(getIdFor(item));
-    }
-
-    @NonNull
-    protected abstract U getIdFor(@NonNull T item);
+    protected abstract T getIdForUri(@NonNull Uri uri);
 
 }

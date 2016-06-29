@@ -23,41 +23,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.advanced.data.stores;
+package io.reark.rxgithubapp.advanced.data.stores.cores;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.stores.DefaultStore;
+import io.reark.reark.data.stores.SingleItemContentProviderStore;
+import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
-import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositoryStoreCore;
-import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
-public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepository> {
-    private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
+public abstract class GsonStoreCoreBase<T, U> extends ContentProviderStoreCore<T, U> {
 
-    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
-        super(new GitHubRepositoryStoreCore(contentResolver, gson),
-                GitHubRepositoryStore::getIdFor);
+    private final Gson gson;
+
+    public GsonStoreCoreBase(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+        super(contentResolver);
+
+        Preconditions.checkNotNull(gson, "Gson cannot be null.");
+
+        this.gson = gson;
     }
 
-    @NonNull
-    protected static Integer getIdFor(@NonNull GitHubRepository item) {
-        Preconditions.checkNotNull(item, "GitHub Repository cannot be null.");
-
-        return item.getId();
-    }
-
-    @Override
-    public void put(GitHubRepository item) {
-        super.put(item);
+    protected Gson getGson() {
+        return gson;
     }
 }

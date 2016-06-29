@@ -1,6 +1,7 @@
 package io.reark.reark.data.stores;
 
 import rx.Observable;
+import rx.functions.Func2;
 
 /**
  * Created by ttuo on 27/06/16.
@@ -11,6 +12,12 @@ public class MemoryStore<T, U> implements StoreInterface<T, U> {
 
     public MemoryStore(GetIdForItem<T, U> getIdForItem) {
         core = new MemoryStoreCore<>();
+        this.getIdForItem = getIdForItem;
+    }
+
+    public MemoryStore(GetIdForItem<T, U> getIdForItem,
+                       Func2<U, U, U> putMergeFunction) {
+        core = new MemoryStoreCore<>(putMergeFunction);
         this.getIdForItem = getIdForItem;
     }
 

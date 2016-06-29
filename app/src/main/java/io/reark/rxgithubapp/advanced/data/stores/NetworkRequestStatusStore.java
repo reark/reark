@@ -40,7 +40,7 @@ import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 
-public class NetworkRequestStatusStore extends StoreBase<NetworkRequestStatus, Integer> {
+public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
     public NetworkRequestStatusStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {

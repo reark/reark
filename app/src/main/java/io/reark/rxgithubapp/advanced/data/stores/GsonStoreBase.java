@@ -33,11 +33,11 @@ import com.google.gson.Gson;
 import io.reark.reark.data.stores.SingleItemContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 
-public abstract class StoreBase<T, U> extends SingleItemContentProviderStore<T, U> {
+public abstract class GsonStoreBase<T, U> extends SingleItemContentProviderStore<T, U> {
 
     private final Gson gson;
 
-    public StoreBase(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public GsonStoreBase(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
         super(contentResolver);
 
         Preconditions.checkNotNull(gson, "Gson cannot be null.");

@@ -39,7 +39,7 @@ import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
-public class GitHubRepositoryStore extends StoreBase<GitHubRepository, Integer> {
+public class GitHubRepositoryStore extends GsonStoreBase<GitHubRepository, Integer> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {

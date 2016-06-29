@@ -32,6 +32,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reark.reark.data.stores.cores.ContentProviderStoreCoreBase;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
@@ -42,7 +43,7 @@ import static java.lang.String.format;
 import static rx.Observable.concat;
 
 /**
- * SingleItemContentProviderStore is a convenience implementation of ContentProviderStore for
+ * SingleItemContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for
  * uniquely identifiable data types. The class provides a high-level API with id based get/put
  * semantics and access to the content provider updates via a non-completing Observable.
  *
@@ -52,7 +53,7 @@ import static rx.Observable.concat;
  * @param <T> Type of the data this store contains.
  * @param <U> Type of the id used in this store.
  */
-public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStore<T>
+public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStoreCoreBase<T>
         implements StoreInterface<U, T> {
     private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
 

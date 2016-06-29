@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores;
+package io.reark.reark.data.stores.cores;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -45,7 +45,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 /**
- * ContentProviderStore implements an Observable based item store that uses a content provider as
+ * ContentProviderStoreCoreBase implements an Observable based item store that uses a content provider as
  * its data backing store.
  *
  * All content provider operations are threaded. The store executes put operations in order, but
@@ -56,8 +56,8 @@ import rx.subjects.PublishSubject;
  *
  * @param <T> Type of the data this store contains.
  */
-public abstract class ContentProviderStore<T> {
-    private static final String TAG = ContentProviderStore.class.getSimpleName();
+public abstract class ContentProviderStoreCoreBase<T> {
+    private static final String TAG = ContentProviderStoreCoreBase.class.getSimpleName();
 
     @NonNull
     private final ContentResolver contentResolver;
@@ -68,7 +68,7 @@ public abstract class ContentProviderStore<T> {
     @NonNull
     private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
-    protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStoreCoreBase(@NonNull ContentResolver contentResolver) {
         Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
 
         this.contentResolver = contentResolver;
@@ -82,7 +82,7 @@ public abstract class ContentProviderStore<T> {
                 });
     }
 
-    private static <T> void updateIfValueChanged(ContentProviderStore<T> store, Pair<T, Uri> pair) {
+    private static <T> void updateIfValueChanged(ContentProviderStoreCoreBase<T> store, Pair<T, Uri> pair) {
         final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
         T newItem = pair.first;
         boolean valuesEqual = false;

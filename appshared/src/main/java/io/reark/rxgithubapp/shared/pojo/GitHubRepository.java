@@ -62,6 +62,14 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
         this.owner = owner;
     }
 
+    public GitHubRepository(GitHubRepository gitHubRepository) {
+        this(gitHubRepository.getId(),
+             gitHubRepository.getName(),
+             gitHubRepository.getStargazersCount(),
+             gitHubRepository.getForksCount(),
+             gitHubRepository.getOwner());
+    }
+
     @NonNull
     @Override
     protected Class<GitHubRepository> getTypeParameterClass() {

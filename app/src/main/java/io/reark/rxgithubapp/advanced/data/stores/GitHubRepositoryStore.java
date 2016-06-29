@@ -95,12 +95,7 @@ public class GitHubRepositoryStore extends GsonStoreBase<GitHubRepository, Integ
     @Override
     protected GitHubRepository mergeValues(@NonNull GitHubRepository v1, @NonNull GitHubRepository v2) {
         // Creating a new object to avoid overwriting the passed argument
-        GitHubRepository newValue = new GitHubRepository(
-                v1.getId(),
-                v1.getName(),
-                v1.getStargazersCount(),
-                v1.getForksCount(),
-                v1.getOwner());
+        GitHubRepository newValue = new GitHubRepository(v1);
 
         return newValue.overwrite(v2);
     }

@@ -21,15 +21,18 @@ public class DataLayer extends ClientDataLayerBase {
 
     private final UriFetcherManager fetcherManager;
 
-    public DataLayer(UriFetcherManager fetcherManager,
-                     NetworkRequestStatusStore networkRequestStatusStore,
-                     GitHubRepositoryStore gitHubRepositoryStore,
-                     GitHubRepositorySearchStore gitHubRepositorySearchStore,
-                     UserSettingsStore userSettingsStore) {
+    public DataLayer(@NonNull UriFetcherManager fetcherManager,
+                     @NonNull NetworkRequestStatusStore networkRequestStatusStore,
+                     @NonNull GitHubRepositoryStore gitHubRepositoryStore,
+                     @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore,
+                     @NonNull UserSettingsStore userSettingsStore) {
         super(networkRequestStatusStore,
                 gitHubRepositoryStore,
                 gitHubRepositorySearchStore,
                 userSettingsStore);
+
+        Preconditions.checkNotNull(fetcherManager, "Context cannot be null.");
+        Preconditions.checkNotNull(userSettingsStore, "User Settings Store cannot be null.");
 
         this.fetcherManager = fetcherManager;
     }

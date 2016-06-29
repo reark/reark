@@ -71,7 +71,7 @@ public class MemoryStoreTest {
         // This behavior is a little surprising, but it is because we cannot guarantee that the
         // observable that is produced as the stream will keep its first (cached) value up to date.
         // The only ways to around this would be custom subscribe function or converting the
-        // source observable into a behavior, but these would significantly increate the
+        // source observable into a behavior, but these would significantly increase the
         // complexity and are hard to implement in other kinds of store (such as content providers).
 
         // Put initial value.

@@ -39,21 +39,21 @@ import io.reark.reark.utils.Preconditions;
 public class StoreItem<T, U> {
 
     @NonNull
-    private final T uri;
+    private final T id;
 
     @Nullable
     private final U item;
 
-    public StoreItem(@NonNull final T uri, @Nullable final U item) {
-        Preconditions.checkNotNull(uri, "id cannot be null.");
+    public StoreItem(@NonNull final T id, @Nullable final U item) {
+        Preconditions.checkNotNull(id, "id cannot be null.");
 
-        this.uri = uri;
+        this.id = id;
         this.item = item;
     }
 
     @NonNull
     public T id() {
-        return uri;
+        return id;
     }
 
     @Nullable
@@ -72,13 +72,13 @@ public class StoreItem<T, U> {
 
         final StoreItem<?, ?> storeItem = (StoreItem<?, ?>) o;
 
-        return uri.equals(storeItem.uri)
+        return id.equals(storeItem.id)
                && (item != null ? item.equals(storeItem.item) : storeItem.item == null);
     }
 
     @Override
     public int hashCode() {
-        int result = uri.hashCode();
+        int result = id.hashCode();
         result = 31 * result + (item != null ? item.hashCode() : 0);
         return result;
     }
@@ -86,7 +86,7 @@ public class StoreItem<T, U> {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("StoreItem{");
-        sb.append("id=").append(uri);
+        sb.append("id=").append(id);
         sb.append(", item=").append(item);
         sb.append('}');
         return sb.toString();

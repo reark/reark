@@ -54,7 +54,7 @@ import rx.subjects.PublishSubject;
  * This in an abstract class that implements the content provider access and expects extending
  * classes to implement data type specific methods.
  *
- * @param <T> Type of the data this store contains.
+ * @param <T> Type of the data this store core contains.
  */
 public abstract class ContentProviderStoreCoreBase<T> {
     private static final String TAG = ContentProviderStoreCoreBase.class.getSimpleName();

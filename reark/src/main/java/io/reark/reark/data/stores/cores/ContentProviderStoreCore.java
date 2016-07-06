@@ -46,8 +46,8 @@ import static java.lang.String.format;
  * Data stores should extend this abstract class to provide type specific data serialization,
  * comparison, id mapping, and content provider projection.
  *
- * @param <T> Type of the data this store contains.
- * @param <U> Type of the id used in this store.
+ * @param <T> Type of the id used in this store core.
+ * @param <U> Type of the data this store core contains.
  */
 public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStoreCoreBase<U>
         implements StoreCoreInterface<T, U> {

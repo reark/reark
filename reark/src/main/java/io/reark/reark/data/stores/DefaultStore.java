@@ -4,7 +4,14 @@ import io.reark.reark.data.stores.cores.StoreCoreInterface;
 import rx.Observable;
 
 /**
- * Created by ttuo on 29/06/16.
+ * DefaultStore is a simple implementation of store logic. It can be used with any data types by
+ * providing a function for deducing the id of an item. This could be done, for instance, with
+ * T getId(U item).
+ *
+ * The DefaultStore works with any StoreCore instance.
+ *
+ * @param <T> Type of the id used in this store.
+ * @param <U> Type of the data this store contains.
  */
 public class DefaultStore<T, U> implements StoreInterface<T, U> {
     private final StoreCoreInterface<T, U> core;

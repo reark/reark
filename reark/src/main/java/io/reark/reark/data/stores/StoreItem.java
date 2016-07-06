@@ -30,6 +30,12 @@ import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
+/**
+ * A class used internally in stores. It behaves much like a Pair.
+ *
+ * @param <T> Type of the identifiers.
+ * @param <U> Type of the data items.
+ */
 public class StoreItem<T, U> {
 
     @NonNull

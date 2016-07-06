@@ -124,7 +124,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      */
     @NonNull
     public Observable<T> getStream() {
-        Log.v(TAG, "getStream()");
+        Log.v(TAG, "getFutureStream()");
 
         return subjectCache.map(StoreItem::item);
     }
@@ -136,7 +136,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
     @NonNull
     public Observable<T> getStream(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
-        Log.v(TAG, "getStream(" + id + ")");
+        Log.v(TAG, "getFutureStream(" + id + ")");
 
         return concat(getOne(id).filter(item -> item != null),
                       getItemObservable(id))

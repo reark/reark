@@ -99,8 +99,8 @@ public class MemoryStoreCoreTest {
         TestSubscriber<String> testSubscriber1 = new TestSubscriber<>();
         TestSubscriber<String> testSubscriber2 = new TestSubscriber<>();
 
-        memoryStoreCore.getStream(100).subscribe(testSubscriber1);
-        memoryStoreCore.getStream(200).subscribe(testSubscriber2);
+        memoryStoreCore.getFutureStream(100).subscribe(testSubscriber1);
+        memoryStoreCore.getFutureStream(200).subscribe(testSubscriber2);
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.put(200, "test value 2");
 
@@ -114,7 +114,7 @@ public class MemoryStoreCoreTest {
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
 
         memoryStoreCore.put(100, "test value 1");
-        memoryStoreCore.getStream(100).subscribe(testSubscriber);
+        memoryStoreCore.getFutureStream(100).subscribe(testSubscriber);
         memoryStoreCore.put(100, "test value 2");
 
         testSubscriber.assertValue("test value 2");

@@ -40,7 +40,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         return subject.asObservable();
     }
 
-    public Observable<U> getStream(T id) {
+    public Observable<U> getFutureStream(T id) {
         int hash = getHashCodeForId(id);
         subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
         return subjectCache.get(hash)

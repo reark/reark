@@ -41,7 +41,7 @@ public interface StoreCoreInterface<T, U> {
 
     /**
      * Takes an identifier and returns an observable that emits all _future_ items that are put into
-     * the core. Unlike most store getStream equivalents, the StoreCore getStream does not attempt
+     * the core. Unlike most store getFutureStream equivalents, the StoreCore getFutureStream does not attempt
      * to insert the last cached value into the stream. This is simply a stream for all future data
      * items.
      *
@@ -49,5 +49,5 @@ public interface StoreCoreInterface<T, U> {
      * @return An observable that does not immediately return anything, but emits all future items
      * that are put into the core.
      */
-    Observable<U> getStream(T id);
+    Observable<U> getFutureStream(T id);
 }

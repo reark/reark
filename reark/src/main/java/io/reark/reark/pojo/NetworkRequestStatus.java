@@ -121,9 +121,6 @@ public final class NetworkRequestStatus {
         return status == NETWORK_STATUS_NONE;
     }
 
-    public boolean isOngoing() {
-        return status == NETWORK_STATUS_ONGOING;
-    }
 
     public boolean isError() {
         return status == NETWORK_STATUS_ERROR;

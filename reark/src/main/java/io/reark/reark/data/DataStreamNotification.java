@@ -32,6 +32,8 @@ import io.reark.reark.utils.Preconditions;
 
 public class DataStreamNotification<T> {
 
+    public static final int DEFAULT_CODE = 0;
+
     public enum Type {
         FETCHING_START,
         FETCHING_COMPLETED,
@@ -47,6 +49,11 @@ public class DataStreamNotification<T> {
 
     @Nullable
     private final Throwable error;
+
+    private int httpCode = DEFAULT_CODE;
+
+    @Nullable
+    private String errorMessage = "";
 
     private DataStreamNotification(@NonNull Type type, @Nullable T value, @Nullable Throwable error) {
         Preconditions.checkNotNull(type, "Type cannot be null.");
@@ -71,24 +78,38 @@ public class DataStreamNotification<T> {
         return error;
     }
 
+    public int getHttpCode() {
+        return httpCode;
+    }
+
+    @Nullable
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     @NonNull
-    public static<T> DataStreamNotification<T> fetchingStart() {
+    public static <T> DataStreamNotification<T> fetchingStart() {
         return new DataStreamNotification<>(Type.FETCHING_START, null, null);
     }
 
     @NonNull
-    public static<T> DataStreamNotification<T> onNext(T value) {
-        return new DataStreamNotification<>(Type.ON_NEXT, value, null);
+    public static <T> DataStreamNotification<T> onNext(T value) {
+        DataStreamNotification<T> data = new DataStreamNotification<>(Type.ON_NEXT, value, null);
+        data.httpCode = 200;
+        return data;
     }
 
     @NonNull
-    public static<T> DataStreamNotification<T> fetchingCompleted() {
+    public static <T> DataStreamNotification<T> fetchingCompleted() {
         return new DataStreamNotification<>(Type.FETCHING_COMPLETED, null, null);
     }
 
     @NonNull
-    public static<T> DataStreamNotification<T> fetchingError() {
-        return new DataStreamNotification<>(Type.FETCHING_ERROR, null, null);
+    public static <T> DataStreamNotification<T> fetchingError(int errorCode, String errorMessage) {
+        DataStreamNotification<T> data = new DataStreamNotification<>(Type.FETCHING_ERROR, null, null);
+        data.httpCode = errorCode;
+        data.errorMessage = errorMessage;
+        return data;
     }
 
     public boolean isFetchingStart() {

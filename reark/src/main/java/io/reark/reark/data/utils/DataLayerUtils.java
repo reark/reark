@@ -43,18 +43,15 @@ public class DataLayerUtils {
 
         final Observable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable
-                        .map(new Func1<NetworkRequestStatus, DataStreamNotification<T>>() {
-                            @Override
-                            public DataStreamNotification<T> call(NetworkRequestStatus networkRequestStatus) {
-                                if (networkRequestStatus.isOngoing()) {
-                                    return DataStreamNotification.fetchingStart();
-                                } else if (networkRequestStatus.isCompleted()) {
-                                    return DataStreamNotification.fetchingCompleted();
-                                } else if (networkRequestStatus.isError()) {
-                                    return DataStreamNotification.fetchingError();
-                                } else {
-                                    return null;
-                                }
+                        .map((Func1<NetworkRequestStatus, DataStreamNotification<T>>) networkRequestStatus -> {
+                            if (networkRequestStatus.isOngoing()) {
+                                return DataStreamNotification.fetchingStart();
+                            } else if (networkRequestStatus.isCompleted()) {
+                                return DataStreamNotification.fetchingCompleted();
+                            } else if (networkRequestStatus.isError()) {
+                                return DataStreamNotification.fetchingError(networkRequestStatus.getErrorCode(), networkRequestStatus.getErrorMessage());
+                            } else {
+                                return null;
                             }
                         })
                         .filter(dataStreamNotification -> dataStreamNotification != null);

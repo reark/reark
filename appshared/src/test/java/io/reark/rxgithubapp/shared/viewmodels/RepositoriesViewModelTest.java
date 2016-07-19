@@ -67,7 +67,7 @@ public class RepositoriesViewModelTest {
 
     @Test
     public void testFetchingErrorReportedAsError() {
-        assertEquals(ERROR, toProgressStatus().call(fetchingError(401, "")));
+        assertEquals(ERROR, toProgressStatus().call(fetchingError(401, "", "")));
     }
 
     @Test

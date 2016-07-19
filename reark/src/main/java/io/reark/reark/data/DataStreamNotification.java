@@ -48,18 +48,18 @@ public final class DataStreamNotification<T> {
     private final T value;
 
     @Nullable
-    private final Throwable error;
+    private final String errorBody;
 
     private int httpCode = DEFAULT_CODE;
 
     @Nullable
     private String errorMessage = "";
 
-    private DataStreamNotification(@NonNull Type type, @Nullable T value, @Nullable Throwable error) {
+    private DataStreamNotification(@NonNull Type type, @Nullable T value, @Nullable String error) {
 
         this.type = get(type);
         this.value = value;
-        this.error = error;
+        this.errorBody = error;
     }
 
     @NonNull
@@ -73,8 +73,8 @@ public final class DataStreamNotification<T> {
     }
 
     @Nullable
-    public Throwable getError() {
-        return error;
+    public String getErrorBody() {
+        return errorBody;
     }
 
     public int getHttpCode() {
@@ -104,8 +104,8 @@ public final class DataStreamNotification<T> {
     }
 
     @NonNull
-    public static <T> DataStreamNotification<T> fetchingError(int errorCode, String errorMessage) {
-        DataStreamNotification<T> data = new DataStreamNotification<>(Type.FETCHING_ERROR, null, null);
+    public static <T> DataStreamNotification<T> fetchingError(int errorCode, String errorMessage, @Nullable String error) {
+        DataStreamNotification<T> data = new DataStreamNotification<>(Type.FETCHING_ERROR, null, error);
         data.httpCode = errorCode;
         data.errorMessage = errorMessage;
         return data;

@@ -28,12 +28,15 @@ package io.reark.reark.network.fetchers;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -63,11 +66,11 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
-    protected void errorRequest(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
-        checkNotNull(uri);
+    protected void errorRequest(@NonNull String uri, int errorCode, String errorMessage, String error) {
+        Preconditions.checkNotNull(uri, "URI cannot be null.");
 
         Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
+        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage, error));
     }
 
     protected void completeRequest(@NonNull final String uri) {
@@ -98,12 +101,17 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
             if (throwable instanceof HttpException) {
                 HttpException httpException = (HttpException) throwable;
                 int statusCode = httpException.code();
-                errorRequest(uri, statusCode, httpException.getMessage());
+                String errorBody = null;
+                try{
+                   errorBody = httpException.response().errorBody().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                errorRequest(uri, statusCode, httpException.getMessage(), errorBody);
             } else {
                 Log.e(TAG, "The error was not a RetroFitError");
-                errorRequest(uri, NO_ERROR_CODE, null);
+                errorRequest(uri, NO_ERROR_CODE, null, null);
             }
         };
     }
-
 }

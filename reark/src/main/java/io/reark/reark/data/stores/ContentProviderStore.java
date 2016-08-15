@@ -137,7 +137,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     @Override
-    public Observable<T> getOneAndStream(@NonNull U id) {
+    public Observable<T> getOnceAndStream(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
         Log.v(TAG, "getStream(" + id + ")");
 

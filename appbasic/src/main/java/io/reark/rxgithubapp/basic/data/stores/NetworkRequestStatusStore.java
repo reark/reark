@@ -44,8 +44,8 @@ public class NetworkRequestStatusStore extends MemoryStore<Integer, NetworkReque
     }
 
     @Override
-    public Observable<NetworkRequestStatus> getOneAndStream(Integer id) {
+    public Observable<NetworkRequestStatus> getOnceAndStream(Integer id) {
         Log.d(TAG, "network get: " + id);
-        return super.getOneAndStream(id);
+        return super.getOnceAndStream(id);
     }
 }

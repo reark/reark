@@ -34,7 +34,7 @@ public class DefaultStore<T, U> implements StoreInterface<T, U> {
     }
 
     @Override
-    public Observable<U> getOneAndStream(T id) {
+    public Observable<U> getOnceAndStream(T id) {
         return Observable.concat(
                 getOnce(id),
                 core.getStream(id));

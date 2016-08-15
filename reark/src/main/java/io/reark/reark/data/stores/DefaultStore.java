@@ -29,14 +29,14 @@ public class DefaultStore<T, U> implements StoreInterface<T, U> {
     }
 
     @Override
-    public Observable<U> getOne(T id) {
+    public Observable<U> getOnce(T id) {
         return core.getCached(id).filter(item -> item != null);
     }
 
     @Override
     public Observable<U> getOneAndStream(T id) {
         return Observable.concat(
-                getOne(id),
+                getOnce(id),
                 core.getStream(id));
     }
 

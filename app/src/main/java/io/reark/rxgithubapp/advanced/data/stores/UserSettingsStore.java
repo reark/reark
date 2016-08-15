@@ -64,7 +64,7 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
     }
 
     private void initUserSettings() {
-        getOne(DataLayer.DEFAULT_USER_ID)
+        getOnce(DataLayer.DEFAULT_USER_ID)
                 .first()
                 .filter(userSettings -> userSettings == null)
                 .subscribe(userSettings -> {

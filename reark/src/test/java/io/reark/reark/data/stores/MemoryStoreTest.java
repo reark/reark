@@ -47,10 +47,10 @@ public class MemoryStoreTest {
 
     @Test
     public void testGetOne() {
-        // getOne is expected to return a observable that emits the value and then completes.
+        // getOnce is expected to return a observable that emits the value and then completes.
         memoryStore.put(new Pair<>(100, "test string 1"));
 
-        memoryStore.getOne(100).subscribe(testSubscriber);
+        memoryStore.getOnce(100).subscribe(testSubscriber);
 
         testSubscriber.assertValue(new Pair<>(100, "test string 1"));
         testSubscriber.assertCompleted();
@@ -58,8 +58,8 @@ public class MemoryStoreTest {
 
     @Test
     public void testGetOneEmpty() {
-        // getOne is expected to return an empty observable in case it does not have the value.
-        memoryStore.getOne(100).subscribe(testSubscriber);
+        // getOnce is expected to return an empty observable in case it does not have the value.
+        memoryStore.getOnce(100).subscribe(testSubscriber);
 
         testSubscriber.assertNoValues();
         testSubscriber.assertCompleted();

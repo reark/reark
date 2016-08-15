@@ -19,7 +19,7 @@ public interface StoreGetInterface<T, U> {
      * @return An observable that either returns the latest item with the requested id and
      * completes, or in case no item is found, just an empty completing observable.
      */
-    Observable<U> getOne(T id);
+    Observable<U> getOnce(T id);
 
     /**
      * Get a full stream of items with the specified identifier. Whenever a store receives a new

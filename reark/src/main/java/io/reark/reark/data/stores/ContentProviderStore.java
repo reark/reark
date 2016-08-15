@@ -114,7 +114,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     @Override
-    public Observable<T> getOne(@NonNull U id) {
+    public Observable<T> getOnce(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         final Uri uri = getUriForId(id);
@@ -141,7 +141,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
         Preconditions.checkNotNull(id, "Id cannot be null.");
         Log.v(TAG, "getStream(" + id + ")");
 
-        return concat(getOne(id).filter(item -> item != null),
+        return concat(getOnce(id).filter(item -> item != null),
                       getItemObservable(id))
                 .subscribeOn(Schedulers.computation());
     }

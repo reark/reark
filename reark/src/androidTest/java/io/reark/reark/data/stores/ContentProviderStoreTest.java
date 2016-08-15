@@ -77,7 +77,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         List<String> expected = new ArrayList<String>(){{ add("parsnip"); }};
 
         // ACT
-        store.getOne(store.getIdFor("parsnip")).subscribe(testSubscriber);
+        store.getOnce(store.getIdFor("parsnip")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -92,7 +92,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         List<String> expected = new ArrayList<String>(){{ add(null); }};
 
         // ACT
-        store.getOne(store.getIdFor("bacon")).subscribe(testSubscriber);
+        store.getOnce(store.getIdFor("bacon")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();

@@ -30,10 +30,10 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.stores.SingleItemContentProviderStore;
+import io.reark.reark.data.stores.ContentProviderStore;
 import io.reark.reark.utils.Preconditions;
 
-public abstract class GsonStoreBase<T, U> extends SingleItemContentProviderStore<T, U> {
+public abstract class GsonStoreBase<T, U> extends ContentProviderStore<T, U> {
 
     private final Gson gson;
 

@@ -43,7 +43,7 @@ import static java.lang.String.format;
 import static rx.Observable.concat;
 
 /**
- * SingleItemContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for
+ * ContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for
  * uniquely identifiable data types. The class provides a high-level API with id based get/put
  * semantics and access to the content provider updates via a non-completing Observable.
  *
@@ -53,14 +53,14 @@ import static rx.Observable.concat;
  * @param <T> Type of the data this store contains.
  * @param <U> Type of the id used in this store.
  */
-public abstract class SingleItemContentProviderStore<T, U> extends ContentProviderStoreCoreBase<T>
+public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCoreBase<T>
         implements StoreInterface<U, T> {
-    private static final String TAG = SingleItemContentProviderStore.class.getSimpleName();
+    private static final String TAG = ContentProviderStore.class.getSimpleName();
 
     @NonNull
     private final PublishSubject<StoreItem<Uri, T>> subjectCache = PublishSubject.create();
 
-    protected SingleItemContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
         super(contentResolver);
     }
 

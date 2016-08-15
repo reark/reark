@@ -39,7 +39,7 @@ import rx.subjects.PublishSubject;
 import static java.lang.String.format;
 
 /**
- * SingleItemContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for
+ * ContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for
  * uniquely identifiable data types. The class provides a high-level API with id based get/put
  * semantics and access to the content provider updates via a non-completing Observable.
  *

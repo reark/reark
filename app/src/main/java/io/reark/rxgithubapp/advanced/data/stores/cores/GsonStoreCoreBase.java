@@ -30,7 +30,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.data.stores.SingleItemContentProviderStore;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.utils.Preconditions;
 

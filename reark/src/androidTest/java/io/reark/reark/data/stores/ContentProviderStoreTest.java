@@ -40,7 +40,7 @@ import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
-public class SingleItemContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
+public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
 
     private static final String AUTHORITY = "test.authority";
     private static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
@@ -49,7 +49,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
 
     private TestStore store;
 
-    public SingleItemContentProviderStoreTest() {
+    public ContentProviderStoreTest() {
         super(SimpleMockContentProvider.class, AUTHORITY);
     }
 
@@ -174,7 +174,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
     /**
      * A simple store containing String values tracked with Integer keys.
      */
-    public class TestStore extends SingleItemContentProviderStore<String, Integer> {
+    public class TestStore extends ContentProviderStore<String, Integer> {
 
         public TestStore(@NonNull ContentResolver contentResolver) {
             super(contentResolver);

@@ -13,13 +13,10 @@ import rx.functions.Func2;
  */
 public class MemoryStore<T, U> extends DefaultStore<T, U> {
     public MemoryStore(GetIdForItem<T, U> getIdForItem) {
-        super(new MemoryStoreCore<>(),
-                getIdForItem);
+        super(new MemoryStoreCore<>(), getIdForItem);
     }
 
-    public MemoryStore(GetIdForItem<T, U> getIdForItem,
-                       Func2<U, U, U> putMergeFunction) {
-        super(new MemoryStoreCore<>(putMergeFunction),
-                getIdForItem);
+    public MemoryStore(GetIdForItem<T, U> getIdForItem, Func2<U, U, U> putMergeFunction) {
+        super(new MemoryStoreCore<>(putMergeFunction), getIdForItem);
     }
 }

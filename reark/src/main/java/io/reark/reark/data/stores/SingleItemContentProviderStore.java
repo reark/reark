@@ -87,6 +87,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      *
      * Any open stream Observables for the item's id will emit this new value.
      */
+    @Override
     public void put(@NonNull T item) {
         Preconditions.checkNotNull(item, "Item cannot be null.");
 
@@ -112,6 +113,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      * matching the id, or emits null if the store does not contain the requested id.
      */
     @NonNull
+    @Override
     public Observable<T> getOne(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
@@ -124,7 +126,7 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      */
     @NonNull
     public Observable<T> getStream() {
-        Log.v(TAG, "getFutureStream()");
+        Log.v(TAG, "getStream()");
 
         return subjectCache.map(StoreItem::item);
     }
@@ -134,9 +136,10 @@ public abstract class SingleItemContentProviderStore<T, U> extends ContentProvid
      * matching item existing in the store, if any, and continues to emit all new matching items.
      */
     @NonNull
+    @Override
     public Observable<T> getStream(@NonNull U id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
-        Log.v(TAG, "getFutureStream(" + id + ")");
+        Log.v(TAG, "getStream(" + id + ")");
 
         return concat(getOne(id).filter(item -> item != null),
                       getItemObservable(id))

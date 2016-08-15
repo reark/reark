@@ -13,7 +13,7 @@ import rx.Observable;
 public interface StoreGetInterface<T, U> {
     /**
      * Get the latest item in the store with a specific identifier. The returned observable always
-     * completes, unlike in its sibling getFutureStream.
+     * completes, unlike in its sibling getOneAndStream.
      *
      * @param id The identifier of the requested object, as defined by the store.
      * @return An observable that either returns the latest item with the requested id and

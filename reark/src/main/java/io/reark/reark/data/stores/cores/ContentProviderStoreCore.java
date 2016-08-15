@@ -107,14 +107,14 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
      */
     @NonNull
     public Observable<StoreItem<T, U>> getStream() {
-        Log.v(TAG, "getFutureStream()");
+        Log.v(TAG, "getStream()");
 
         return subjectCache.asObservable();
     }
 
     @NonNull
     @Override
-    public Observable<U> getFutureStream(@NonNull T id) {
+    public Observable<U> getStream(@NonNull T id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return subjectCache

@@ -37,7 +37,7 @@ public class DefaultStore<T, U> implements StoreInterface<T, U> {
     public Observable<U> getOneAndStream(T id) {
         return Observable.concat(
                 getOne(id),
-                core.getFutureStream(id));
+                core.getStream(id));
     }
 
     public interface GetIdForItem<T, U> {

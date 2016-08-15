@@ -142,13 +142,13 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetStream() {
+    public void testGetOneAndStream() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = new ArrayList<String>(){{ add("spinach"); }};
 
         // ACT
-        store.getStream(store.getIdFor("spinach")).subscribe(testSubscriber);
+        store.getOneAndStream(store.getIdFor("spinach")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
@@ -162,7 +162,7 @@ public class SingleItemContentProviderStoreTest extends ProviderTestCase2<Simple
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
 
         // ACT
-        store.getStream(store.getIdFor("bacon")).subscribe(testSubscriber);
+        store.getOneAndStream(store.getIdFor("bacon")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);

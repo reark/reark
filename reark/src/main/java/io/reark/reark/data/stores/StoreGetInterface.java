@@ -34,5 +34,5 @@ public interface StoreGetInterface<T, U> {
      * first item of the observable, and then emits all further items with the same id as they are
      * inserted into the store.
      */
-    Observable<U> getStream(T id);
+    Observable<U> getOneAndStream(T id);
 }

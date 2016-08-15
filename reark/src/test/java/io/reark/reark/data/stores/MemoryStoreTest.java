@@ -44,8 +44,8 @@ public class MemoryStoreTest {
     }
 
     @Test
-    public void testGetStream() {
-        memoryStore.getStream(100).subscribe(testSubscriber);
+    public void testGetOneAndStream() {
+        memoryStore.getOneAndStream(100).subscribe(testSubscriber);
         memoryStore.put(new Pair<>(100, "test string 1"));
         memoryStore.put(new Pair<>(200, "test string 2"));
 
@@ -54,7 +54,7 @@ public class MemoryStoreTest {
 
     @Test
     public void testMultipleValues() {
-        memoryStore.getStream(100).subscribe(testSubscriber);
+        memoryStore.getOneAndStream(100).subscribe(testSubscriber);
         memoryStore.put(new Pair<>(100, "test string 1"));
         memoryStore.put(new Pair<>(100, "test string 2"));
         memoryStore.put(new Pair<>(100, "test string 3"));
@@ -71,7 +71,7 @@ public class MemoryStoreTest {
     public void testIdenticalValues() {
         // In the default store implementation identical values are filtered out.
 
-        memoryStore.getStream(100).subscribe(testSubscriber);
+        memoryStore.getOneAndStream(100).subscribe(testSubscriber);
         memoryStore.put(new Pair<>(100, "test string"));
         memoryStore.put(new Pair<>(100, "test string"));
 
@@ -79,15 +79,15 @@ public class MemoryStoreTest {
     }
 
     @Test
-    public void testGetStreamWithInitialValue() {
+    public void testGetOneAndStreamWithInitialValue() {
         memoryStore.put(new Pair<>(100, "test string 1"));
-        memoryStore.getStream(100).subscribe(testSubscriber);
+        memoryStore.getOneAndStream(100).subscribe(testSubscriber);
 
         testSubscriber.assertValue(new Pair<>(100, "test string 1"));
     }
 
     @Test
-    public void testGetStreamWithInitialValueDelayedSubscription() {
+    public void testGetOneAndStreamWithInitialValueDelayedSubscription() {
         // This behavior is a little surprising, but it is because we cannot guarantee that the
         // observable that is produced as the stream will keep its first (cached) value up to date.
         // The only ways to around this would be custom subscribe function or converting the
@@ -98,7 +98,7 @@ public class MemoryStoreTest {
         memoryStore.put(new Pair<>(100, "test string 1"));
 
         // Create the stream observable but do not subscribe immediately.
-        Observable<Pair<Integer, String>> stream = memoryStore.getStream(100);
+        Observable<Pair<Integer, String>> stream = memoryStore.getOneAndStream(100);
 
         // Put new value into the store.
         memoryStore.put(new Pair<>(100, "test string 2"));

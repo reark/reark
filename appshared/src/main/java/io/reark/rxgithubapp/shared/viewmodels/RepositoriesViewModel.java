@@ -133,14 +133,12 @@ public class RepositoriesViewModel extends AbstractViewModel {
                         .publish();
 
         compositeSubscription.add(repositorySearchSource
-                .doOnNext(notification -> Log.d(TAG, "status: " + notification))
                 .map(toProgressStatus())
                 .doOnNext(progressStatus -> Log.d(TAG, "Progress status: " + progressStatus.name()))
                 .subscribe(this::setNetworkStatusText));
 
         compositeSubscription.add(repositorySearchSource
                 .filter(DataStreamNotification::isOnNext)
-                .doOnNext(notification -> Log.d(TAG, "Processing search results"))
                 .map(DataStreamNotification::getValue)
                 .map(GitHubRepositorySearch::getItems)
                 .flatMap(toGitHubRepositoryList())

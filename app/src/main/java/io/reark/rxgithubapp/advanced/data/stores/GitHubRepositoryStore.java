@@ -55,9 +55,4 @@ public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepositor
 
         return item.getId();
     }
-
-    @Override
-    public void put(GitHubRepository item) {
-        super.put(item);
-    }
 }

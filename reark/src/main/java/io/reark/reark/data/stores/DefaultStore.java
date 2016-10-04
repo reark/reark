@@ -30,7 +30,7 @@ public class DefaultStore<T, U> implements StoreInterface<T, U> {
 
     @Override
     public Observable<U> getOnce(T id) {
-        return core.getCached(id).filter(item -> item != null);
+        return core.getCached(id);
     }
 
     @Override

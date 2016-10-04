@@ -65,7 +65,8 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
                 networkRequestStatusStore.getOnceAndStream(
                         GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode());
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
-                gitHubRepositorySearchStore.getOnceAndStream(searchString);
+                gitHubRepositorySearchStore.getOnceAndStream(searchString)
+                        .filter(value -> value != null);
         return DataLayerUtils.createDataStreamNotificationObservable(
                 networkRequestStatusObservable, gitHubRepositorySearchObservable);
     }
@@ -87,7 +88,8 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     public Observable<GitHubRepository> getGitHubRepository(@NonNull Integer repositoryId) {
         Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
 
-        return gitHubRepositoryStore.getOnceAndStream(repositoryId);
+        return gitHubRepositoryStore.getOnceAndStream(repositoryId)
+                .filter(value -> value != null);
     }
 
     @NonNull
@@ -102,7 +104,8 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {
-        return userSettingsStore.getOnceAndStream(DEFAULT_USER_ID);
+        return userSettingsStore.getOnceAndStream(DEFAULT_USER_ID)
+                .filter(value -> value != null);
     }
 
     public void setUserSettings(@NonNull UserSettings userSettings) {

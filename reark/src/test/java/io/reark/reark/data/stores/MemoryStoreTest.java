@@ -58,10 +58,10 @@ public class MemoryStoreTest {
 
     @Test
     public void testGetOneEmpty() {
-        // getOnce is expected to return an empty observable in case it does not have the value.
+        // getOnce is expected to return null observable in case it does not have the value.
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.assertNoValues();
+        testSubscriber.assertValue(null);
         testSubscriber.assertCompleted();
     }
 
@@ -71,7 +71,11 @@ public class MemoryStoreTest {
         memoryStore.put(new Pair<>(100, "test string 1"));
         memoryStore.put(new Pair<>(200, "test string 2"));
 
-        testSubscriber.assertValue(new Pair<>(100, "test string 1"));
+        testSubscriber.assertReceivedOnNext(
+                Arrays.asList(
+                        null,
+                        new Pair<>(100, "test string 1")
+                ));
     }
 
     @Test
@@ -83,6 +87,7 @@ public class MemoryStoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
+                        null,
                         new Pair<>(100, "test string 1"),
                         new Pair<>(100, "test string 2"),
                         new Pair<>(100, "test string 3")
@@ -97,7 +102,11 @@ public class MemoryStoreTest {
         memoryStore.put(new Pair<>(100, "test string"));
         memoryStore.put(new Pair<>(100, "test string"));
 
-        testSubscriber.assertValue(new Pair<>(100, "test string"));
+        testSubscriber.assertReceivedOnNext(
+                Arrays.asList(
+                        null,
+                        new Pair<>(100, "test string")
+                ));
     }
 
     @Test

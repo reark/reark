@@ -32,7 +32,7 @@ import io.reark.reark.pojo.NetworkRequestStatus;
 import rx.Observable;
 import rx.functions.Func1;
 
-public class DataLayerUtils {
+public final class DataLayerUtils {
     private DataLayerUtils() {
     }
 
@@ -52,17 +52,18 @@ public class DataLayerUtils {
         return Observable.merge(networkStatusStream, valueStream);
     }
 
-    public static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
+    private static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
         return networkRequestStatus -> {
-            if (networkRequestStatus.isOngoing()) {
-                return DataStreamNotification.fetchingStart();
-            } else if (networkRequestStatus.isCompleted()) {
-                return DataStreamNotification.fetchingCompleted();
-            } else if (networkRequestStatus.isError()) {
-                return DataStreamNotification.fetchingError();
-            } else {
-                return null;
+            switch (networkRequestStatus.getStatus()) {
+                case NETWORK_STATUS_ONGOING:
+                    return DataStreamNotification.fetchingStart();
+                case NETWORK_STATUS_COMPLETED:
+                    return DataStreamNotification.fetchingCompleted();
+                case NETWORK_STATUS_ERROR:
+                    return DataStreamNotification.fetchingError();
             }
+
+            throw new IllegalStateException("Unexpected network status " + networkRequestStatus);
         };
     }
 }

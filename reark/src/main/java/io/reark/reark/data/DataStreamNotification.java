@@ -30,7 +30,7 @@ import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
-public class DataStreamNotification<T> {
+public final class DataStreamNotification<T> {
 
     public enum Type {
         FETCHING_START,
@@ -92,19 +92,19 @@ public class DataStreamNotification<T> {
     }
 
     public boolean isFetchingStart() {
-        return type.equals(Type.FETCHING_START);
+        return type == Type.FETCHING_START;
     }
 
     public boolean isOnNext() {
-        return type.equals(Type.ON_NEXT);
+        return type == Type.ON_NEXT;
     }
 
     public boolean isFetchingCompleted() {
-        return type.equals(Type.FETCHING_COMPLETED);
+        return type == Type.FETCHING_COMPLETED;
     }
 
     public boolean isFetchingError() {
-        return type.equals(Type.FETCHING_ERROR);
+        return type == Type.FETCHING_ERROR;
     }
 
     @Override

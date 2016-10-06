@@ -37,6 +37,8 @@ import retrofit.RetrofitError;
 import rx.Subscription;
 import rx.functions.Action1;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 abstract public class FetcherBase implements Fetcher {
     private static final String TAG = FetcherBase.class.getSimpleName();
 
@@ -46,27 +48,27 @@ abstract public class FetcherBase implements Fetcher {
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
     public FetcherBase(@NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
-        Preconditions.checkNotNull(updateNetworkRequestStatus, "Update Network Status cannot be null.");
+        checkNotNull(updateNetworkRequestStatus);
 
         this.updateNetworkRequestStatus = updateNetworkRequestStatus;
     }
 
     protected void startRequest(@NonNull String uri) {
-        Preconditions.checkNotNull(uri, "URI cannot be null.");
+        checkNotNull(uri);
 
         Log.v(TAG, "startRequest(" + uri + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
     protected void errorRequest(@NonNull String uri, int errorCode, String errorMessage) {
-        Preconditions.checkNotNull(uri, "URI cannot be null.");
+        checkNotNull(uri);
 
         Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
     }
 
     protected void completeRequest(@NonNull String uri) {
-        Preconditions.checkNotNull(uri, "URI cannot be null.");
+        checkNotNull(uri);
 
         Log.v(TAG, "completeRequest(" + uri + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
@@ -74,7 +76,7 @@ abstract public class FetcherBase implements Fetcher {
 
     @NonNull
     public Action1<Throwable> doOnError(@NonNull final String uri) {
-        Preconditions.checkNotNull(uri, "URI cannot be null.");
+        checkNotNull(uri);
 
         return throwable -> {
             if (throwable instanceof RetrofitError) {

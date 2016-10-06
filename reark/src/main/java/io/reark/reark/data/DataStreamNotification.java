@@ -30,6 +30,9 @@ import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Preconditions;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public final class DataStreamNotification<T> {
 
     public enum Type {
@@ -49,9 +52,7 @@ public final class DataStreamNotification<T> {
     private final Throwable error;
 
     private DataStreamNotification(@NonNull Type type, @Nullable T value, @Nullable Throwable error) {
-        Preconditions.checkNotNull(type, "Type cannot be null.");
-
-        this.type = type;
+        this.type = get(type);
         this.value = value;
         this.error = error;
     }

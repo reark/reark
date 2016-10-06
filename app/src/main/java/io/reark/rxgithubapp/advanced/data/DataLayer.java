@@ -29,7 +29,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
@@ -37,6 +36,9 @@ import io.reark.rxgithubapp.advanced.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.advanced.network.NetworkService;
 import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
@@ -52,8 +54,8 @@ public class DataLayer extends ClientDataLayerBase {
                 gitHubRepositorySearchStore,
                 userSettingsStore);
 
-        Preconditions.checkNotNull(context, "Context cannot be null.");
-        Preconditions.checkNotNull(userSettingsStore, "User Settings Store cannot be null.");
+        checkNotNull(context);
+        checkNotNull(userSettingsStore);
 
         this.context = context;
     }
@@ -62,17 +64,15 @@ public class DataLayer extends ClientDataLayerBase {
     protected void fetchGitHubRepository(@NonNull Integer repositoryId) {
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
-        intent.putExtra("id", repositoryId);
+        intent.putExtra("id", get(repositoryId));
         context.startService(intent);
     }
 
     @Override
     protected void fetchGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
-
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
-        intent.putExtra("searchString", searchString);
+        intent.putExtra("searchString", get(searchString));
         context.startService(intent);
     }
 }

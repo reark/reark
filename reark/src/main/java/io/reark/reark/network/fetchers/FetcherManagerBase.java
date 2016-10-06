@@ -33,19 +33,21 @@ import java.util.Collection;
 
 import io.reark.reark.utils.Preconditions;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class FetcherManagerBase<T> {
     @NonNull
     private final Collection<Fetcher<T>> fetchers;
 
     protected FetcherManagerBase(@NonNull Collection<Fetcher<T>> fetchers) {
-        Preconditions.checkNotNull(fetchers, "fetchers cannot be null.");
+        checkNotNull(fetchers);
 
         this.fetchers = new ArrayList<>(fetchers);
     }
 
     @Nullable
     public Fetcher<T> findFetcher(@NonNull T serviceUri) {
-        Preconditions.checkNotNull(serviceUri, "Service URI cannot be null.");
+        checkNotNull(serviceUri);
 
         for (Fetcher<T> fetcher : fetchers) {
             if (fetcher.getServiceUri().equals(serviceUri)) {

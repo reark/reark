@@ -33,6 +33,8 @@ import java.lang.reflect.Modifier;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 /**
  * Pojo base class that supports overwriting the fields with fields from
  * another instance of the same class.
@@ -46,7 +48,7 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
     @NonNull
     @SuppressWarnings("unchecked")
     public T overwrite(@NonNull T other) {
-        Preconditions.checkNotNull(other, "Can't overwrite with null value");
+        checkNotNull(other, "Can't overwrite with null value");
 
         if (equals(other)) {
             return (T) this;

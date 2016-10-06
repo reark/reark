@@ -44,6 +44,8 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 /**
  * ContentProviderStoreCoreBase implements an Observable based item store that uses a content provider as
  * its data backing store.
@@ -69,9 +71,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
     protected ContentProviderStoreCoreBase(@NonNull ContentResolver contentResolver) {
-        Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
-
-        this.contentResolver = contentResolver;
+        this.contentResolver = Preconditions.get(contentResolver);
         this.contentResolver.registerContentObserver(getContentUri(), true, contentObserver);
 
         updateSubject
@@ -123,22 +123,20 @@ public abstract class ContentProviderStoreCoreBase<T> {
         return new Handler(handlerThread.getLooper());
     }
 
-    protected void put(T item, Uri uri) {
-        Preconditions.checkNotNull(item, "Item to be inserted cannot be null");
-
-        updateSubject.onNext(new Pair<>(item, uri));
+    protected void put(@NonNull T item, @NonNull Uri uri) {
+        updateSubject.onNext(new Pair<>(Preconditions.get(item), Preconditions.get(uri)));
     }
 
     @NonNull
-    protected Observable<List<T>> get(Uri uri) {
-        return Observable.just(uri)
+    protected Observable<List<T>> get(@NonNull Uri uri) {
+        return Observable.just(Preconditions.get(uri))
                 .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
 
     @NonNull
-    protected Observable<T> getOne(Uri uri) {
-        return get(uri)
+    protected Observable<T> getOne(@NonNull Uri uri) {
+        return get(Preconditions.get(uri))
                 .map(queryResults -> {
                     if (queryResults.size() == 0) {
                         return null;
@@ -151,9 +149,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    private List<T> queryList(Uri uri) {
-        Preconditions.checkNotNull(uri, "Uri cannot be null.");
-
+    private List<T> queryList(@NonNull Uri uri) {
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
         List<T> list = new ArrayList<>();
 

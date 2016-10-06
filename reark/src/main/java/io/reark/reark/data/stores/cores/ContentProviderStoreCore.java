@@ -36,6 +36,7 @@ import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 /**
@@ -85,9 +86,9 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
      */
     @Override
     public void put(@NonNull T id, @NonNull U item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
+        checkNotNull(id);
 
-        put(item, getUriForId(id));
+        put(Preconditions.get(item), getUriForId(id));
     }
 
     /**
@@ -97,7 +98,7 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
     @NonNull
     @Override
     public Observable<U> getCached(@NonNull T id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
         final Uri uri = getUriForId(id);
         return getOne(uri);
@@ -116,7 +117,7 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
     @NonNull
     @Override
     public Observable<U> getStream(@NonNull T id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
         return subjectCache
                 .filter(item -> item.id().equals(id))

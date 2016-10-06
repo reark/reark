@@ -39,6 +39,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static rx.Observable.concat;
 
@@ -89,7 +90,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @Override
     public void put(@NonNull T item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
+        checkNotNull(item);
 
         put(item, getUriForItem(item));
     }
@@ -102,7 +103,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     public Observable<List<T>> get(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
         final Uri uri = getUriForId(id);
         return get(uri);
@@ -115,7 +116,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     @NonNull
     @Override
     public Observable<T> getOnce(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
         final Uri uri = getUriForId(id);
         return getOne(uri);
@@ -138,7 +139,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     @NonNull
     @Override
     public Observable<T> getOnceAndStream(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
         Log.v(TAG, "getStream(" + id + ")");
 
         return concat(getOnce(id).filter(item -> item != null),
@@ -154,7 +155,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
 
     @NonNull
     private Observable<T> getItemObservable(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
         return subjectCache
                 .filter(item -> item.id().equals(getUriForId(id)))
@@ -164,8 +165,6 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
 
     @NonNull
     private Uri getUriForItem(@NonNull T item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
-
         return getUriForId(getIdFor(item));
     }
 

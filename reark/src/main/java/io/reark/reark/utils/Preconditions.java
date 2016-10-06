@@ -13,26 +13,33 @@
  */
 package io.reark.reark.utils;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 public final class Preconditions {
+    
     private Preconditions() {
-        throw new AssertionError("No instances");
     }
 
-    public static <T> T checkNotNull(T value, String message) {
-        if (value == null) {
+    public static void checkNotNull(@Nullable final Object object, @NonNull final String message) {
+        if (object == null) {
             throw new NullPointerException(message);
         }
-        return value;
     }
 
-    public static void checkArgument(boolean check, String message) {
-        if (!check) {
-            throw new IllegalArgumentException(message);
-        }
+    public static void checkNotNull(@Nullable final Object object) {
+        checkNotNull(object, "Object cannot be null.");
     }
 
-    public static void checkState(boolean check, String message) {
-        if (!check) {
+    @NonNull
+    public static <T> T get(@Nullable final T object) {
+        checkNotNull(object);
+
+        return object;
+    }
+
+    public static void checkState(boolean precondition, @NonNull final String message) {
+        if (!precondition) {
             throw new IllegalStateException(message);
         }
     }

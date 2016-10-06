@@ -32,6 +32,9 @@ import java.util.List;
 
 import rx.Observable;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public final class RxUtils {
 
     private RxUtils() {
@@ -40,15 +43,13 @@ public final class RxUtils {
 
     @NonNull
     public static <T> Observable<List<T>> toObservableList(@NonNull List<Observable<T>> observables) {
-        Preconditions.checkNotNull(observables, "Observable List cannot be null.");
-
-        return Observable.combineLatest(observables, RxUtils::toList);
+        return Observable.combineLatest(get(observables), RxUtils::toList);
     }
 
     @NonNull
     @SuppressWarnings("unchecked")
     static <T> List<T> toList(@NonNull Object... args) {
-        Preconditions.checkNotNull(args, "Arguments cannot be null.");
+        checkNotNull(args);
 
         final List<T> list = new ArrayList<>();
         for (Object item : args) {
@@ -56,5 +57,4 @@ public final class RxUtils {
         }
         return list;
     }
-
 }

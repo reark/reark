@@ -49,8 +49,7 @@ public class ServiceDataLayer extends DataLayerBase {
                             @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
-        Preconditions.checkNotNull(fetcherManager,
-                "FetcherManager cannot be null.");
+        Preconditions.checkNotNull(fetcherManager, "FetcherManager cannot be null.");
         this.fetcherManager = fetcherManager;
     }
 
@@ -60,7 +59,7 @@ public class ServiceDataLayer extends DataLayerBase {
         final String serviceUriString = intent.getStringExtra("serviceUriString");
         if (serviceUriString != null) {
             final Uri serviceUri = Uri.parse(serviceUriString);
-            Fetcher matchingFetcher = fetcherManager.findFetcher(serviceUri);
+            Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
             if (matchingFetcher != null) {
                 Log.v(TAG, "Fetcher found for " + serviceUri);
                 matchingFetcher.fetch(intent);

@@ -80,7 +80,9 @@ public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatu
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(NetworkRequestStatus item) {
+    protected ContentValues getContentValuesForItem(@NonNull final NetworkRequestStatus item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, item.getUri().hashCode());
         contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));

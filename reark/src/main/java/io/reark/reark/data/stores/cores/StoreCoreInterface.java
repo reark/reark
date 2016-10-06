@@ -25,6 +25,8 @@
  */
 package io.reark.reark.data.stores.cores;
 
+import android.support.annotation.NonNull;
+
 import rx.Observable;
 
 /**
@@ -47,10 +49,10 @@ public interface StoreCoreInterface<T, U> {
      * This might be useful, for instance, if one wanted to make a store that contains data of type
      * List, in which there is no concept of an identifier.
      *
-     * @param id
-     * @param item
+     * @param id Id of the persisted item.
+     * @param item The persisted item.
      */
-    void put(T id, U item);
+    void put(@NonNull final T id, @NonNull final U item);
 
     /**
      * Takes an identifier and returns an observable that emits that item as soon as it is read from
@@ -62,7 +64,8 @@ public interface StoreCoreInterface<T, U> {
      * @return An observable that emits the data item for the given id and completes, or, in case no
      * data item is in the cache, it simply completes without emitting any items.
      */
-    Observable<U> getCached(T id);
+    @NonNull
+    Observable<U> getCached(@NonNull T id);
 
     /**
      * Takes an identifier and returns an observable that emits all _future_ items that are put into
@@ -74,5 +77,6 @@ public interface StoreCoreInterface<T, U> {
      * @return An observable that does not immediately return anything, but emits all future items
      * that are put into the core.
      */
-    Observable<U> getStream(T id);
+    @NonNull
+    Observable<U> getStream(@NonNull T id);
 }

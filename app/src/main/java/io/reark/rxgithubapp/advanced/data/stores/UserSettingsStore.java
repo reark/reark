@@ -43,7 +43,6 @@ import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
-    private static final String TAG = UserSettingsStore.class.getSimpleName();
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 

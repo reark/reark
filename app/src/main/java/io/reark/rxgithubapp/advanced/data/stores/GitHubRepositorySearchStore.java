@@ -69,7 +69,9 @@ public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositoryS
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(GitHubRepositorySearch item) {
+    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepositorySearch item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
         contentValues.put(GitHubRepositorySearchColumns.JSON, getGson().toJson(item));
@@ -78,7 +80,9 @@ public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositoryS
 
     @NonNull
     @Override
-    protected GitHubRepositorySearch read(@NonNull Cursor cursor) {
+    protected GitHubRepositorySearch read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
         return getGson().fromJson(json, GitHubRepositorySearch.class);
     }

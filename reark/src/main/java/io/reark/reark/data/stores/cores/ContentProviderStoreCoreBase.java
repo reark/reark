@@ -45,6 +45,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 /**
  * ContentProviderStoreCoreBase implements an Observable based item store that uses a content provider as
@@ -117,19 +118,26 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    protected static Handler createHandler(String name) {
+    protected static Handler createHandler(@NonNull final String name) {
+        checkNotNull(name);
+
         HandlerThread handlerThread = new HandlerThread(name);
         handlerThread.start();
         return new Handler(handlerThread.getLooper());
     }
 
     protected void put(@NonNull final T item, @NonNull final Uri uri) {
-        updateSubject.onNext(new Pair<>(Preconditions.get(item), Preconditions.get(uri)));
+        checkNotNull(item);
+        checkNotNull(uri);
+
+        updateSubject.onNext(new Pair<>(item, uri));
     }
 
     @NonNull
     protected Observable<List<T>> get(@NonNull final Uri uri) {
-        return Observable.just(Preconditions.get(uri))
+        checkNotNull(uri);
+
+        return Observable.just(uri)
                 .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
@@ -138,10 +146,10 @@ public abstract class ContentProviderStoreCoreBase<T> {
     protected Observable<T> getOne(@NonNull final Uri uri) {
         return get(Preconditions.get(uri))
                 .map(queryResults -> {
-                    if (queryResults.size() == 0) {
+                    if (queryResults.isEmpty()) {
                         return null;
                     } else if (queryResults.size() > 1) {
-                        Log.w(TAG, "Multiple items found in a get for a single item:" + queryResults.size());
+                        Log.w(TAG, String.format("%s items found in a get for a single item", queryResults.size()));
                     }
 
                     return queryResults.get(0);
@@ -151,7 +159,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     @NonNull
     private List<T> queryList(@NonNull final Uri uri) {
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
-        List<T> list = new ArrayList<>();
+        List<T> list = new ArrayList<>(10);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -162,7 +170,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
             }
             cursor.close();
         }
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             Log.v(TAG, "Could not find with id: " + uri);
         }
         return list;
@@ -186,7 +194,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     protected abstract T read(@NonNull final Cursor cursor);
 
     @NonNull
-    protected abstract ContentValues getContentValuesForItem(T item);
+    protected abstract ContentValues getContentValuesForItem(@NonNull final T item);
 
     @NonNull
     protected T mergeValues(@NonNull final T v1, @NonNull final T v2) {

@@ -38,19 +38,21 @@ import rx.Subscription;
 import rx.functions.Action1;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
-abstract public class FetcherBase implements Fetcher {
+public abstract class FetcherBase implements Fetcher {
     private static final String TAG = FetcherBase.class.getSimpleName();
 
     public static final int NO_ERROR_CODE = -1;
 
+    @NonNull
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
+
+    @NonNull
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
-    public FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
-        checkNotNull(updateNetworkRequestStatus);
-
-        this.updateNetworkRequestStatus = updateNetworkRequestStatus;
+    protected FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+        this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
     }
 
     protected void startRequest(@NonNull final String uri) {

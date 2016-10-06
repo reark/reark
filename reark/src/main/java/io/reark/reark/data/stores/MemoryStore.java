@@ -25,6 +25,8 @@
  */
 package io.reark.reark.data.stores;
 
+import android.support.annotation.NonNull;
+
 import io.reark.reark.data.stores.cores.MemoryStoreCore;
 import rx.functions.Func2;
 
@@ -41,7 +43,8 @@ public class MemoryStore<T, U> extends DefaultStore<T, U> {
         super(new MemoryStoreCore<>(), getIdForItem);
     }
 
-    public MemoryStore(GetIdForItem<T, U> getIdForItem, Func2<U, U, U> putMergeFunction) {
+    public MemoryStore(@NonNull final GetIdForItem<T, U> getIdForItem,
+                       @NonNull final Func2<U, U, U> putMergeFunction) {
         super(new MemoryStoreCore<>(putMergeFunction), getIdForItem);
     }
 }

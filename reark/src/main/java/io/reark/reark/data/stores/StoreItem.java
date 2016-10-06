@@ -49,7 +49,7 @@ public class StoreItem<T, U> {
 
     public StoreItem(@NonNull final T id, @Nullable final U item) {
         this.id = get(id);
-        this.item = item;
+        this.item = get(item);
     }
 
     @NonNull

@@ -200,13 +200,13 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
 
         @NonNull
         @Override
-        protected String read(@NonNull Cursor cursor) {
+        protected String read(@NonNull final Cursor cursor) {
             return cursor.getString(cursor.getColumnIndex(DataColumns.VALUE));
         }
 
         @NonNull
         @Override
-        protected ContentValues getContentValuesForItem(String item) {
+        protected ContentValues getContentValuesForItem(@NonNull final String item) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DataColumns.KEY, getIdFor(item));
             contentValues.put(DataColumns.VALUE, item);

@@ -62,7 +62,9 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(GitHubRepository item) {
+    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepository item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, item.getId());
         contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
@@ -71,7 +73,9 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected GitHubRepository read(@NonNull Cursor cursor) {
+    protected GitHubRepository read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
         return getGson().fromJson(json, GitHubRepository.class);
     }
@@ -79,6 +83,9 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
     @NonNull
     @Override
     protected GitHubRepository mergeValues(@NonNull final GitHubRepository v1, @NonNull final GitHubRepository v2) {
+        checkNotNull(v1);
+        checkNotNull(v2);
+
         // Creating a new object to avoid overwriting the passed argument
         GitHubRepository newValue = new GitHubRepository(v1);
 

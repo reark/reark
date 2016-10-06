@@ -39,7 +39,7 @@ import static io.reark.reark.utils.Preconditions.checkNotNull;
  * Pojo base class that supports overwriting the fields with fields from
  * another instance of the same class.
  */
-public abstract class OverwritablePojo<T extends OverwritablePojo> {
+public abstract class OverwritablePojo<T extends OverwritablePojo<T>> {
     private static final String TAG = OverwritablePojo.class.getSimpleName();
 
     @NonNull
@@ -59,7 +59,9 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
 
             if (hasIllegalAccessModifiers(modifiers)) {
                 continue;
-            } else if (!Modifier.isPublic(modifiers)) {
+            }
+
+            if (!Modifier.isPublic(modifiers)) {
                 // We want to overwrite also protected and private fields. This allows field access
                 // for this instance of the field. The actual field of the class isn't modified.
                 field.setAccessible(true);
@@ -83,7 +85,7 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
                 || Modifier.isTransient(modifiers);
     }
 
-    protected boolean isEmpty(Field field, OverwritablePojo pojo) {
+    protected boolean isEmpty(Field field, OverwritablePojo<T> pojo) {
         try {
             Object value = field.get(pojo);
             if (value == null) {

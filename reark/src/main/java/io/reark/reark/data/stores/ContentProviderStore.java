@@ -105,8 +105,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     public Observable<List<T>> get(@NonNull final U id) {
         checkNotNull(id);
 
-        final Uri uri = getUriForId(id);
-        return get(uri);
+        return get(getUriForId(id));
     }
 
     /**

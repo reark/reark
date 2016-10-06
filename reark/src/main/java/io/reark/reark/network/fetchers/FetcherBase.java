@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import retrofit.RetrofitError;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -40,7 +39,7 @@ import rx.functions.Action1;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
-public abstract class FetcherBase implements Fetcher {
+public abstract class FetcherBase<T> implements Fetcher<T> {
     private static final String TAG = FetcherBase.class.getSimpleName();
 
     public static final int NO_ERROR_CODE = -1;
@@ -49,7 +48,7 @@ public abstract class FetcherBase implements Fetcher {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
     protected FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
@@ -76,6 +75,19 @@ public abstract class FetcherBase implements Fetcher {
         updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
     }
 
+    protected boolean isOngoingRequest(int requestId) {
+        Log.v(TAG, "isOngoingRequest(" + requestId + ")");
+
+        return requestMap.containsKey(requestId)
+                && !requestMap.get(requestId).isUnsubscribed();
+    }
+
+    protected void addRequest(int requestId, Subscription subscription) {
+        Log.v(TAG, "addRequest(" + requestId + ")");
+
+        requestMap.put(requestId, subscription);
+    }
+
     @NonNull
     public Action1<Throwable> doOnError(@NonNull final String uri) {
         checkNotNull(uri);
@@ -83,13 +95,17 @@ public abstract class FetcherBase implements Fetcher {
         return throwable -> {
             if (throwable instanceof RetrofitError) {
                 RetrofitError retrofitError = (RetrofitError) throwable;
-                int statusCode = retrofitError.getResponse() != null ?
-                        retrofitError.getResponse().getStatus() : NO_ERROR_CODE;
-                errorRequest(uri, statusCode, retrofitError.getMessage());
+                errorRequest(uri, getStatusCode(retrofitError), retrofitError.getMessage());
             } else {
                 Log.e(TAG, "The error was not a RetroFitError");
                 errorRequest(uri, NO_ERROR_CODE, null);
             }
         };
+    }
+
+    private static int getStatusCode(@NonNull final RetrofitError retrofitError) {
+        return retrofitError.getResponse() != null
+                ? retrofitError.getResponse().getStatus()
+                : NO_ERROR_CODE;
     }
 }

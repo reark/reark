@@ -60,17 +60,20 @@ public class ServiceDataLayer extends DataLayerBase {
         checkNotNull(intent);
 
         final String serviceUriString = intent.getStringExtra("serviceUriString");
-        if (serviceUriString != null) {
-            final Uri serviceUri = Uri.parse(serviceUriString);
-            Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
-            if (matchingFetcher != null) {
-                Log.v(TAG, "Fetcher found for " + serviceUri);
-                matchingFetcher.fetch(intent);
-            } else {
-                Log.e(TAG, "Unknown Uri " + serviceUri);
-            }
-        } else {
+
+        if (serviceUriString == null) {
             Log.e(TAG, "No Uri defined");
+            return;
+        }
+
+        final Uri serviceUri = Uri.parse(serviceUriString);
+        final Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
+
+        if (matchingFetcher != null) {
+            Log.v(TAG, "Fetcher found for " + serviceUri);
+            matchingFetcher.fetch(intent);
+        } else {
+            Log.e(TAG, "Unknown Uri " + serviceUri);
         }
     }
 }

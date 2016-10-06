@@ -36,7 +36,6 @@ import java.util.List;
 import io.reark.reark.data.stores.StorePutInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -49,7 +48,7 @@ import rx.schedulers.Schedulers;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
-public class GitHubRepositorySearchFetcher extends AppFetcherBase {
+public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
     @NonNull
@@ -82,9 +81,11 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     }
 
     private void fetchGitHubSearch(@NonNull final String searchString) {
+        checkNotNull(searchString);
+
         Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
-        if (requestMap.containsKey(searchString.hashCode()) &&
-                !requestMap.get(searchString.hashCode()).isUnsubscribed()) {
+
+        if (isOngoingRequest(searchString.hashCode())) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
             return;
         }
@@ -107,14 +108,12 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
 
-        requestMap.put(searchString.hashCode(), subscription);
+        addRequest(searchString.hashCode(), subscription);
     }
 
     @NonNull
     private Observable<List<GitHubRepository>> createNetworkObservable(@NonNull final String searchString) {
-        checkNotNull(searchString);
-
-        return networkApi.search(Collections.singletonMap("q", searchString));
+        return getNetworkApi().search(Collections.singletonMap("q", searchString));
     }
 
     @NonNull

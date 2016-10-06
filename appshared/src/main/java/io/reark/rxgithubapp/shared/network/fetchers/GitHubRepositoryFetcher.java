@@ -32,7 +32,6 @@ import android.support.annotation.NonNull;
 import io.reark.reark.data.stores.StorePutInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -43,7 +42,7 @@ import rx.schedulers.Schedulers;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-public class GitHubRepositoryFetcher extends AppFetcherBase {
+public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
     @NonNull
@@ -65,7 +64,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
 
         final int repositoryId = intent.getIntExtra("id", -1);
 
-        if (repositoryId != -1) {
+        if (repositoryId > -1) {
             fetchGitHubRepository(repositoryId);
         } else {
             Log.e(TAG, "No repositoryId provided in the intent extras");
@@ -75,8 +74,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     private void fetchGitHubRepository(final int repositoryId) {
         Log.d(TAG, "fetchGitHubRepository(" + repositoryId + ")");
 
-        if (requestMap.containsKey(repositoryId) &&
-                !requestMap.get(repositoryId).isUnsubscribed()) {
+        if (isOngoingRequest(repositoryId)) {
             Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
             return;
         }
@@ -91,12 +89,12 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
 
-        requestMap.put(repositoryId, subscription);
+        addRequest(repositoryId, subscription);
     }
 
     @NonNull
     private Observable<GitHubRepository> createNetworkObservable(int repositoryId) {
-        return networkApi.getRepository(repositoryId);
+        return getNetworkApi().getRepository(repositoryId);
     }
 
     @NonNull

@@ -23,31 +23,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.shared.network.fetchers;
+package io.reark.rxgithubapp.shared.injections;
 
-import android.support.annotation.NonNull;
+import java.lang.annotation.Retention;
 
-import io.reark.reark.network.fetchers.FetcherBase;
-import io.reark.reark.pojo.NetworkRequestStatus;
-import io.reark.rxgithubapp.shared.network.NetworkApi;
-import rx.functions.Action1;
+import javax.inject.Qualifier;
 
-import static io.reark.reark.utils.Preconditions.get;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public abstract class AppFetcherBase<T> extends FetcherBase<T> {
+@Qualifier
+@Retention(RUNTIME)
+public @interface ForApplication {
 
-    @NonNull
-    private final NetworkApi networkApi;
-
-    protected AppFetcherBase(@NonNull final NetworkApi networkApi,
-                             @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
-        super(updateNetworkRequestStatus);
-
-        this.networkApi = get(networkApi);
-    }
-
-    @NonNull
-    public NetworkApi getNetworkApi() {
-        return networkApi;
-    }
 }

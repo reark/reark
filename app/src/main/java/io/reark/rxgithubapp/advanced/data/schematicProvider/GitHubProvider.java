@@ -41,7 +41,7 @@ public class GitHubProvider {
 
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    private static Uri buildUri(@NonNull String... paths) {
+    private static Uri buildUri(@NonNull final String... paths) {
         Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
         for (String path : paths) {
             builder.appendPath(path);

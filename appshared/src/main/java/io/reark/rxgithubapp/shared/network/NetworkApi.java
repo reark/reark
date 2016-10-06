@@ -41,7 +41,7 @@ public class NetworkApi {
 
     private final GitHubService gitHubService;
 
-    public NetworkApi(@NonNull Client client) {
+    public NetworkApi(@NonNull final Client client) {
         Preconditions.checkNotNull(client, "Client cannot be null.");
 
         RestAdapter restAdapter = new RestAdapter.Builder()

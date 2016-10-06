@@ -37,7 +37,7 @@ public abstract class GsonStoreCoreBase<T, U> extends ContentProviderStoreCore<T
 
     private final Gson gson;
 
-    public GsonStoreCoreBase(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public GsonStoreCoreBase(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver);
 
         Preconditions.checkNotNull(gson, "Gson cannot be null.");

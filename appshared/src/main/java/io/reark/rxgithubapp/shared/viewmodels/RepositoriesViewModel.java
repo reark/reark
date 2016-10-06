@@ -67,8 +67,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private final BehaviorSubject<List<GitHubRepository>> repositories = BehaviorSubject.create();
     private final BehaviorSubject<ProgressStatus> networkRequestStatusText = BehaviorSubject.create();
 
-    public RepositoriesViewModel(@NonNull DataFunctions.GetGitHubRepositorySearch getGitHubRepositorySearch,
-                                 @NonNull DataFunctions.GetGitHubRepository getGitHubRepository) {
+    public RepositoriesViewModel(@NonNull final DataFunctions.GetGitHubRepositorySearch getGitHubRepositorySearch,
+                                 @NonNull final DataFunctions.GetGitHubRepository getGitHubRepository) {
         Preconditions.checkNotNull(getGitHubRepositorySearch,
                                    "GetGitHubRepositorySearch cannot be null.");
         Preconditions.checkNotNull(getGitHubRepository,
@@ -94,13 +94,13 @@ public class RepositoriesViewModel extends AbstractViewModel {
         return networkRequestStatusText.asObservable();
     }
 
-    public void setSearchString(@NonNull String searchString) {
+    public void setSearchString(@NonNull final String searchString) {
         Preconditions.checkNotNull(searchString, "SearchString cannot be null.");
 
         this.searchString.onNext(searchString);
     }
 
-    public void selectRepository(@NonNull GitHubRepository repository) {
+    public void selectRepository(@NonNull final GitHubRepository repository) {
         Preconditions.checkNotNull(repository, "Repository cannot be null.");
 
         this.selectRepository.onNext(repository);
@@ -120,7 +120,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
+    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
         Log.v(TAG, "subscribeToDataStoreInternal");
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
@@ -158,7 +158,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @NonNull
-    Observable<GitHubRepository> getGitHubRepositoryObservable(@NonNull Integer repositoryId) {
+    Observable<GitHubRepository> getGitHubRepositoryObservable(@NonNull final Integer repositoryId) {
         Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
 
         return getGitHubRepository
@@ -166,7 +166,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
                 .doOnNext((repository) -> Log.v(TAG, "Received repository " + repository.getId()));
     }
 
-    void setNetworkStatusText(@NonNull ProgressStatus status) {
+    void setNetworkStatusText(@NonNull final ProgressStatus status) {
         Preconditions.checkNotNull(status, "ProgressStatus cannot be null.");
 
         networkRequestStatusText.onNext(status);

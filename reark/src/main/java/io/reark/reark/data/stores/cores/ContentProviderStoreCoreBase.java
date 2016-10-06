@@ -70,7 +70,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     @NonNull
     private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
-    protected ContentProviderStoreCoreBase(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
         this.contentResolver = Preconditions.get(contentResolver);
         this.contentResolver.registerContentObserver(getContentUri(), true, contentObserver);
 
@@ -123,19 +123,19 @@ public abstract class ContentProviderStoreCoreBase<T> {
         return new Handler(handlerThread.getLooper());
     }
 
-    protected void put(@NonNull T item, @NonNull Uri uri) {
+    protected void put(@NonNull final T item, @NonNull final Uri uri) {
         updateSubject.onNext(new Pair<>(Preconditions.get(item), Preconditions.get(uri)));
     }
 
     @NonNull
-    protected Observable<List<T>> get(@NonNull Uri uri) {
+    protected Observable<List<T>> get(@NonNull final Uri uri) {
         return Observable.just(Preconditions.get(uri))
                 .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
 
     @NonNull
-    protected Observable<T> getOne(@NonNull Uri uri) {
+    protected Observable<T> getOne(@NonNull final Uri uri) {
         return get(Preconditions.get(uri))
                 .map(queryResults -> {
                     if (queryResults.size() == 0) {
@@ -149,7 +149,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    private List<T> queryList(@NonNull Uri uri) {
+    private List<T> queryList(@NonNull final Uri uri) {
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
         List<T> list = new ArrayList<>();
 
@@ -189,7 +189,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     protected abstract ContentValues getContentValuesForItem(T item);
 
     @NonNull
-    protected T mergeValues(@NonNull T v1, @NonNull T v2) {
+    protected T mergeValues(@NonNull final T v1, @NonNull final T v2) {
         return v2; // Default behavior is new values overriding
     }
 }

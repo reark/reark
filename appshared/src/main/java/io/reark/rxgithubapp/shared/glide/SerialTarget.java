@@ -52,13 +52,13 @@ public class SerialTarget<T> implements Target<T> {
             target = t;
         }
 
-        State<T> set(@NonNull Target<T> t) {
+        State<T> set(@NonNull final Target<T> t) {
             return new State<>(t);
         }
 
     }
 
-    public void set(@NonNull Target<T> s) {
+    public void set(@NonNull final Target<T> s) {
         Preconditions.checkNotNull(s, "Target can not be null");
 
         State oldState;

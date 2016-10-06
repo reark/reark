@@ -48,7 +48,7 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     @NonNull
     private final Interceptor interceptor;
 
-    public StethoInstrumentation(@NonNull Context context, @NonNull Interceptor interceptor) {
+    public StethoInstrumentation(@NonNull final Context context, @NonNull final Interceptor interceptor) {
         Preconditions.checkNotNull(context, "Context cannot be null.");
         Preconditions.checkNotNull(interceptor, "Interceptor cannot be null.");
 
@@ -80,7 +80,7 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     }
 
     @VisibleForTesting
-    void addInterceptor(@NonNull OkHttpClient httpClient, @NonNull Interceptor interceptor) {
+    void addInterceptor(@NonNull final OkHttpClient httpClient, @NonNull final Interceptor interceptor) {
         Preconditions.checkNotNull(httpClient, "Http Client cannot be null.");
         Preconditions.checkNotNull(interceptor, "Interceptor cannot be null.");
 

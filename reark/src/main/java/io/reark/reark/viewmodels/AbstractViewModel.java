@@ -54,7 +54,7 @@ abstract public class AbstractViewModel {
         }
     }
 
-    public abstract void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription);
+    public abstract void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription);
 
     public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");

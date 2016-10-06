@@ -86,14 +86,14 @@ public class RepositoriesView extends FrameLayout {
         repositoriesListView.setAdapter(repositoriesAdapter);
     }
 
-    private void setRepositories(@NonNull List<GitHubRepository> repositories) {
+    private void setRepositories(@NonNull final List<GitHubRepository> repositories) {
         Preconditions.checkNotNull(repositories, "Repository List Text cannot be null.");
         Preconditions.checkState(repositoriesAdapter != null, "List Adapter should not be null.");
 
         repositoriesAdapter.set(repositories);
     }
 
-    private void setNetworkRequestStatus(@NonNull ProgressStatus networkRequestStatus) {
+    private void setNetworkRequestStatus(@NonNull final ProgressStatus networkRequestStatus) {
         Preconditions.checkNotNull(networkRequestStatus, "Network Request Status cannot be null.");
 
         setNetworkRequestStatusText(getLoadingStatusString(networkRequestStatus));
@@ -111,7 +111,7 @@ public class RepositoriesView extends FrameLayout {
         }
     }
 
-    private void setNetworkRequestStatusText(@NonNull String networkRequestStatusText) {
+    private void setNetworkRequestStatusText(@NonNull final String networkRequestStatusText) {
         Preconditions.checkNotNull(networkRequestStatusText, "Network Status Text cannot be null.");
         Preconditions.checkState(statusText != null, "Status Text View should not be null.");
 

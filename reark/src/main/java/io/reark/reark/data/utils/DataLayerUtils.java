@@ -38,8 +38,8 @@ public final class DataLayerUtils {
 
     @NonNull
     public static<T> Observable<DataStreamNotification<T>> createDataStreamNotificationObservable(
-            @NonNull Observable<NetworkRequestStatus> networkRequestStatusObservable,
-            @NonNull Observable<T> valueObservable) {
+            @NonNull final Observable<NetworkRequestStatus> networkRequestStatusObservable,
+            @NonNull final Observable<T> valueObservable) {
 
         final Observable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable

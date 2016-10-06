@@ -45,8 +45,8 @@ public class RepositoryViewModel extends AbstractViewModel {
 
     final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
-    public RepositoryViewModel(@NonNull DataFunctions.GetUserSettings getUserSettings,
-                               @NonNull DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
+    public RepositoryViewModel(@NonNull final DataFunctions.GetUserSettings getUserSettings,
+                               @NonNull final DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
         Preconditions.checkNotNull(getUserSettings, "Gey User Settings cannot be null.");
         Preconditions.checkNotNull(fetchAndGetGitHubRepository,
                                    "Fetch And Get GitHub Repository cannot be null.");
@@ -57,7 +57,7 @@ public class RepositoryViewModel extends AbstractViewModel {
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
+    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
         compositeSubscription.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)

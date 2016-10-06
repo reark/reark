@@ -70,7 +70,7 @@ public class RepositoryView extends FrameLayout {
         avatarImageView = (ImageView) findViewById(R.id.widget_avatar_image_view);
     }
 
-    private void setRepository(@NonNull GitHubRepository repository) {
+    private void setRepository(@NonNull final GitHubRepository repository) {
         Preconditions.checkNotNull(repository, "Repository cannot be null.");
 
         titleTextView.setText(repository.getName());
@@ -105,7 +105,7 @@ public class RepositoryView extends FrameLayout {
         }
 
         @Override
-        protected void bindInternal(@NonNull CompositeSubscription s) {
+        protected void bindInternal(@NonNull final CompositeSubscription s) {
             s.add(viewModel.getRepository()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setRepository));

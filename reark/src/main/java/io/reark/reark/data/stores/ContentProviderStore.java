@@ -61,7 +61,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     @NonNull
     private final PublishSubject<StoreItem<Uri, T>> subjectCache = PublishSubject.create();
 
-    protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStore(@NonNull final ContentResolver contentResolver) {
         super(contentResolver);
     }
 
@@ -89,7 +89,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      * Any open stream Observables for the item's id will emit this new value.
      */
     @Override
-    public void put(@NonNull T item) {
+    public void put(@NonNull final T item) {
         checkNotNull(item);
 
         put(item, getUriForItem(item));
@@ -102,7 +102,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      * by providing an empty id.
      */
     @NonNull
-    public Observable<List<T>> get(@NonNull U id) {
+    public Observable<List<T>> get(@NonNull final U id) {
         checkNotNull(id);
 
         final Uri uri = getUriForId(id);
@@ -115,7 +115,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     @Override
-    public Observable<T> getOnce(@NonNull U id) {
+    public Observable<T> getOnce(@NonNull final U id) {
         checkNotNull(id);
 
         final Uri uri = getUriForId(id);
@@ -138,7 +138,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     @Override
-    public Observable<T> getOnceAndStream(@NonNull U id) {
+    public Observable<T> getOnceAndStream(@NonNull final U id) {
         checkNotNull(id);
         Log.v(TAG, "getStream(" + id + ")");
 
@@ -151,10 +151,10 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      * Returns unique Uri for the given id in the content provider of this store.
      */
     @NonNull
-    protected abstract Uri getUriForId(@NonNull U id);
+    protected abstract Uri getUriForId(@NonNull final U id);
 
     @NonNull
-    private Observable<T> getItemObservable(@NonNull U id) {
+    private Observable<T> getItemObservable(@NonNull final U id) {
         checkNotNull(id);
 
         return subjectCache
@@ -164,11 +164,11 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     }
 
     @NonNull
-    private Uri getUriForItem(@NonNull T item) {
+    private Uri getUriForItem(@NonNull final T item) {
         return getUriForId(getIdFor(item));
     }
 
     @NonNull
-    protected abstract U getIdFor(@NonNull T item);
+    protected abstract U getIdFor(@NonNull final T item);
 
 }

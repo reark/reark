@@ -52,7 +52,7 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
                             String name,
                             int stargazersCount,
                             int forksCount,
-                            @NonNull GitHubOwner owner) {
+                            @NonNull final GitHubOwner owner) {
         Preconditions.checkNotNull(owner, "Owner cannot be null.");
 
         this.id = id;

@@ -39,14 +39,14 @@ public class FetcherManagerBase<T> {
     @NonNull
     private final Collection<Fetcher<T>> fetchers;
 
-    protected FetcherManagerBase(@NonNull Collection<Fetcher<T>> fetchers) {
+    protected FetcherManagerBase(@NonNull final Collection<Fetcher<T>> fetchers) {
         checkNotNull(fetchers);
 
         this.fetchers = new ArrayList<>(fetchers);
     }
 
     @Nullable
-    public Fetcher<T> findFetcher(@NonNull T serviceUri) {
+    public Fetcher<T> findFetcher(@NonNull final T serviceUri) {
         checkNotNull(serviceUri);
 
         for (Fetcher<T> fetcher : fetchers) {

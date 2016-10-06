@@ -47,7 +47,7 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
 
     @NonNull
     @SuppressWarnings("unchecked")
-    public T overwrite(@NonNull T other) {
+    public T overwrite(@NonNull final T other) {
         checkNotNull(other, "Can't overwrite with null value");
 
         if (equals(other)) {

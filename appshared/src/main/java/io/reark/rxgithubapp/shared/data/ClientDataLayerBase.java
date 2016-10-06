@@ -45,10 +45,10 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
     protected final StoreInterface<Integer, UserSettings> userSettingsStore;
 
-    public ClientDataLayerBase(@NonNull StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                               @NonNull StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                               @NonNull StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
-                               @NonNull StoreInterface<Integer, UserSettings> userSettingsStore) {
+    public ClientDataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
+                               @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
+                               @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
+                               @NonNull final StoreInterface<Integer, UserSettings> userSettingsStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
         Preconditions.checkNotNull(userSettingsStore,
                 "User Settings Store cannot be null.");
@@ -82,10 +82,10 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
         return gitHubRepositoryStream;
     }
 
-    protected abstract void fetchGitHubRepositorySearch(@NonNull String searchString);
+    protected abstract void fetchGitHubRepositorySearch(@NonNull final String searchString);
 
     @NonNull
-    public Observable<GitHubRepository> getGitHubRepository(@NonNull Integer repositoryId) {
+    public Observable<GitHubRepository> getGitHubRepository(@NonNull final Integer repositoryId) {
         Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
 
         return gitHubRepositoryStore.getOnceAndStream(repositoryId)
@@ -93,14 +93,14 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     }
 
     @NonNull
-    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull Integer repositoryId) {
+    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull final Integer repositoryId) {
         Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
 
         fetchGitHubRepository(repositoryId);
         return getGitHubRepository(repositoryId);
     }
 
-    protected abstract void fetchGitHubRepository(@NonNull Integer repositoryId);
+    protected abstract void fetchGitHubRepository(@NonNull final Integer repositoryId);
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {
@@ -108,7 +108,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
                 .filter(value -> value != null);
     }
 
-    public void setUserSettings(@NonNull UserSettings userSettings) {
+    public void setUserSettings(@NonNull final UserSettings userSettings) {
         Preconditions.checkNotNull(userSettings, "User Settings cannot be null.");
 
         userSettingsStore.put(userSettings);

@@ -38,8 +38,8 @@ public abstract class AppFetcherBase extends FetcherBase {
     @NonNull
     NetworkApi networkApi;
 
-    public AppFetcherBase(@NonNull NetworkApi networkApi,
-                          @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    public AppFetcherBase(@NonNull final NetworkApi networkApi,
+                          @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         super(updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(networkApi, "Network Api cannot be null.");

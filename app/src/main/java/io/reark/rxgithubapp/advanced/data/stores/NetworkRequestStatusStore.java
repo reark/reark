@@ -43,13 +43,13 @@ import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
-    public NetworkRequestStatusStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public NetworkRequestStatusStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
     }
 
     @NonNull
     @Override
-    protected Integer getIdFor(@NonNull NetworkRequestStatus item) {
+    protected Integer getIdFor(@NonNull final NetworkRequestStatus item) {
         Preconditions.checkNotNull(item, "Network Request Status cannot be null.");
         return item.getUri().hashCode();
     }
@@ -61,7 +61,7 @@ public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatu
     }
 
     @Override
-    public void put(@NonNull NetworkRequestStatus item) {
+    public void put(@NonNull final NetworkRequestStatus item) {
         Preconditions.checkNotNull(item, "Network Request Status cannot be null.");
 
         Log.v(TAG, "put(" + item.getStatus() + ", " + item.getUri() + ")");
@@ -93,7 +93,7 @@ public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatu
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull Integer id) {
+    public Uri getUriForId(@NonNull final Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.NetworkRequestStatuses.withId(id);

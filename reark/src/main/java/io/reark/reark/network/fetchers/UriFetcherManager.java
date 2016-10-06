@@ -43,7 +43,7 @@ public class UriFetcherManager extends FetcherManagerBase<Uri> {
 
         }
 
-        public Builder fetchers(@NonNull Collection<Fetcher<Uri>> fetchers) {
+        public Builder fetchers(@NonNull final Collection<Fetcher<Uri>> fetchers) {
             this.fetchers = fetchers;
             return this;
         }

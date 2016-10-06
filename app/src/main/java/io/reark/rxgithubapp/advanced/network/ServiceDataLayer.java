@@ -43,17 +43,17 @@ public class ServiceDataLayer extends DataLayerBase {
 
     final private UriFetcherManager fetcherManager;
 
-    public ServiceDataLayer(@NonNull UriFetcherManager fetcherManager,
-                            @NonNull NetworkRequestStatusStore networkRequestStatusStore,
-                            @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                            @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public ServiceDataLayer(@NonNull final UriFetcherManager fetcherManager,
+                            @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
+                            @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
+                            @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
         Preconditions.checkNotNull(fetcherManager, "FetcherManager cannot be null.");
         this.fetcherManager = fetcherManager;
     }
 
-    public void processIntent(@NonNull Intent intent) {
+    public void processIntent(@NonNull final Intent intent) {
         Preconditions.checkNotNull(intent, "Intent cannot be null.");
 
         final String serviceUriString = intent.getStringExtra("serviceUriString");

@@ -38,9 +38,9 @@ abstract public class DataLayerBase {
     protected final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore;
     protected final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore;
 
-    public DataLayerBase(@NonNull StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                         @NonNull StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                         @NonNull StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore) {
+    public DataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
+                         @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
+                         @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore) {
         Preconditions.checkNotNull(networkRequestStatusStore,
                                    "Network Request Status Store cannot be null.");
         Preconditions.checkNotNull(gitHubRepositoryStore,

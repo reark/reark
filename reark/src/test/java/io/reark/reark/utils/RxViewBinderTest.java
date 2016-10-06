@@ -68,7 +68,7 @@ public class RxViewBinderTest {
 
         binder = new RxViewBinder() {
             @Override
-            protected void bindInternal(@NonNull CompositeSubscription compositeSubscription) {
+            protected void bindInternal(@NonNull final CompositeSubscription compositeSubscription) {
                 assertNull(testSubscriber);
 
                 // It is not possible to subscribe multiple with the same subscriber.

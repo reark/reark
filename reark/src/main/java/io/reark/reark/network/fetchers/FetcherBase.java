@@ -47,27 +47,27 @@ abstract public class FetcherBase implements Fetcher {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
     protected final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
 
-    public FetcherBase(@NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    public FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         checkNotNull(updateNetworkRequestStatus);
 
         this.updateNetworkRequestStatus = updateNetworkRequestStatus;
     }
 
-    protected void startRequest(@NonNull String uri) {
+    protected void startRequest(@NonNull final String uri) {
         checkNotNull(uri);
 
         Log.v(TAG, "startRequest(" + uri + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
-    protected void errorRequest(@NonNull String uri, int errorCode, String errorMessage) {
+    protected void errorRequest(@NonNull final String uri, int errorCode, String errorMessage) {
         checkNotNull(uri);
 
         Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
         updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
     }
 
-    protected void completeRequest(@NonNull String uri) {
+    protected void completeRequest(@NonNull final String uri) {
         checkNotNull(uri);
 
         Log.v(TAG, "completeRequest(" + uri + ")");

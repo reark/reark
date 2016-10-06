@@ -176,19 +176,19 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
      */
     public class TestStore extends ContentProviderStore<String, Integer> {
 
-        public TestStore(@NonNull ContentResolver contentResolver) {
+        public TestStore(@NonNull final ContentResolver contentResolver) {
             super(contentResolver);
         }
 
         @NonNull
         @Override
-        public Uri getUriForId(@NonNull Integer id) {
+        public Uri getUriForId(@NonNull final Integer id) {
             return Uri.withAppendedPath(getContentUri(), String.valueOf(id));
         }
 
         @NonNull
         @Override
-        protected Integer getIdFor(@NonNull String item) {
+        protected Integer getIdFor(@NonNull final String item) {
             return item.hashCode();
         }
 

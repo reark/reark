@@ -52,10 +52,10 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     private final StorePutInterface<GitHubRepository> gitHubRepositoryStore;
     private final StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore;
 
-    public GitHubRepositorySearchFetcher(@NonNull NetworkApi networkApi,
-                                         @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                         @NonNull StorePutInterface<GitHubRepository> gitHubRepositoryStore,
-                                         @NonNull StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore) {
+    public GitHubRepositorySearchFetcher(@NonNull final NetworkApi networkApi,
+                                         @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus,
+                                         @NonNull final StorePutInterface<GitHubRepository> gitHubRepositoryStore,
+                                         @NonNull final StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");
@@ -67,7 +67,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     }
 
     @Override
-    public void fetch(@NonNull Intent intent) {
+    public void fetch(@NonNull final Intent intent) {
         final String searchString = intent.getStringExtra("searchString");
         if (searchString != null) {
             fetchGitHubSearch(searchString);

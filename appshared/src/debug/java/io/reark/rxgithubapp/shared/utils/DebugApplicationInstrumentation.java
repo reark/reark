@@ -36,8 +36,8 @@ public class DebugApplicationInstrumentation implements ApplicationInstrumentati
     @NonNull
     private final Instrumentation instrumentation;
 
-    public DebugApplicationInstrumentation(@NonNull LeakTracing leakTracing,
-                                           @NonNull Instrumentation instrumentation) {
+    public DebugApplicationInstrumentation(@NonNull final LeakTracing leakTracing,
+                                           @NonNull final Instrumentation instrumentation) {
 
         Preconditions.checkNotNull(leakTracing, "Leak Tracing cannot be null.");
         Preconditions.checkNotNull(instrumentation, "Instrumentation cannot be null.");

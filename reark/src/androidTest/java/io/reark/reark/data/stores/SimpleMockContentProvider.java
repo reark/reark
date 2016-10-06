@@ -67,7 +67,7 @@ public class SimpleMockContentProvider extends MockContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(@NonNull final Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder, CancellationSignal cancellationSignal) {
         return getCursor(uri, projection);
     }

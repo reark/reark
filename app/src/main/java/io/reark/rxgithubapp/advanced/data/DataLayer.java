@@ -44,11 +44,11 @@ public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
     private final Context context;
 
-    public DataLayer(@NonNull Context context,
-                     @NonNull UserSettingsStore userSettingsStore,
-                     @NonNull NetworkRequestStatusStore networkRequestStatusStore,
-                     @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                     @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public DataLayer(@NonNull final Context context,
+                     @NonNull final UserSettingsStore userSettingsStore,
+                     @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
+                     @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
+                     @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore,
                 gitHubRepositoryStore,
                 gitHubRepositorySearchStore,
@@ -61,7 +61,7 @@ public class DataLayer extends ClientDataLayerBase {
     }
 
     @Override
-    protected void fetchGitHubRepository(@NonNull Integer repositoryId) {
+    protected void fetchGitHubRepository(@NonNull final Integer repositoryId) {
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
         intent.putExtra("id", get(repositoryId));

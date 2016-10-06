@@ -45,7 +45,7 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
-    public UserSettingsStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public UserSettingsStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
 
         initUserSettings();
@@ -53,7 +53,7 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    protected Integer getIdFor(@NonNull UserSettings item) {
+    protected Integer getIdFor(@NonNull final UserSettings item) {
         return DataLayer.DEFAULT_USER_ID;
     }
 
@@ -97,7 +97,7 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull Integer id) {
+    public Uri getUriForId(@NonNull final Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.UserSettings.withId(id);

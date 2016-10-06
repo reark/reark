@@ -34,7 +34,7 @@ import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
 public class NullNetworkInstrumentation implements NetworkInstrumentation<OkHttpClient> {
     @NonNull
     @Override
-    public OkHttpClient decorateNetwork(@NonNull OkHttpClient httpClient) {
+    public OkHttpClient decorateNetwork(@NonNull final OkHttpClient httpClient) {
         return httpClient;
     }
 

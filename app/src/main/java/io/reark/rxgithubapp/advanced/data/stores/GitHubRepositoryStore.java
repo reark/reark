@@ -38,13 +38,13 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepository> {
     private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
-    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public GitHubRepositoryStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(new GitHubRepositoryStoreCore(contentResolver, gson),
                 GitHubRepositoryStore::getIdFor);
     }
 
     @NonNull
-    protected static Integer getIdFor(@NonNull GitHubRepository item) {
+    protected static Integer getIdFor(@NonNull final GitHubRepository item) {
         Preconditions.checkNotNull(item, "GitHub Repository cannot be null.");
 
         return item.getId();

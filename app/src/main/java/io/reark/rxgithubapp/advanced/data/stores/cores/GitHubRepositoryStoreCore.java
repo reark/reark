@@ -42,7 +42,7 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHubRepository> {
     private static final String TAG = GitHubRepositoryStoreCore.class.getSimpleName();
 
-    public GitHubRepositoryStoreCore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public GitHubRepositoryStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
     }
 
@@ -77,7 +77,7 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected GitHubRepository mergeValues(@NonNull GitHubRepository v1, @NonNull GitHubRepository v2) {
+    protected GitHubRepository mergeValues(@NonNull final GitHubRepository v1, @NonNull final GitHubRepository v2) {
         // Creating a new object to avoid overwriting the passed argument
         GitHubRepository newValue = new GitHubRepository(v1);
 
@@ -86,7 +86,7 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected Uri getUriForId(@NonNull Integer id) {
+    protected Uri getUriForId(@NonNull final Integer id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositories.withId(id);
@@ -94,7 +94,7 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected Integer getIdForUri(@NonNull Uri uri) {
+    protected Integer getIdForUri(@NonNull final Uri uri) {
         Preconditions.checkNotNull(uri, "Uri cannot be null.");
 
         return (int) GitHubProvider.GitHubRepositories.fromUri(uri);

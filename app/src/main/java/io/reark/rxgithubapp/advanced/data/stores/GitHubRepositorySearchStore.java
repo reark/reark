@@ -41,13 +41,13 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositorySearch, String> {
     private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
 
-    public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public GitHubRepositorySearchStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
     }
 
     @NonNull
     @Override
-    protected String getIdFor(@NonNull GitHubRepositorySearch item) {
+    protected String getIdFor(@NonNull final GitHubRepositorySearch item) {
         Preconditions.checkNotNull(item, "GitHub Repository Search cannot be null.");
 
         return item.getSearch();
@@ -84,7 +84,7 @@ public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositoryS
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull String id) {
+    public Uri getUriForId(@NonNull final String id) {
         Preconditions.checkNotNull(id, "Id cannot be null.");
 
         return GitHubProvider.GitHubRepositorySearches.withSearch(id);

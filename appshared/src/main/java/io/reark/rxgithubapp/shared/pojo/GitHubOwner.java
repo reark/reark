@@ -39,7 +39,7 @@ public class GitHubOwner {
     final private String avatarUrl;
 
     @SuppressWarnings("NullableProblems")
-    public GitHubOwner(@NonNull String avatarUrl) {
+    public GitHubOwner(@NonNull final String avatarUrl) {
         Preconditions.checkNotNull(avatarUrl, "Avatar cannot be null");
 
         this.avatarUrl = avatarUrl;

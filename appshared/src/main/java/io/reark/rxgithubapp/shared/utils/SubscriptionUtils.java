@@ -45,7 +45,7 @@ public class SubscriptionUtils {
 
     static public Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
                                                      @NonNull final TextView textView,
-                                                     @NonNull Scheduler scheduler) {
+                                                     @NonNull final Scheduler scheduler) {
         Preconditions.checkNotNull(observable, "Observable cannot be null.");
         Preconditions.checkNotNull(textView, "TextView cannot be null.");
         Preconditions.checkNotNull(scheduler, "Scheduler cannot be null.");

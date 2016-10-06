@@ -47,9 +47,9 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     @NonNull
     private final StorePutInterface<GitHubRepository> gitHubRepositoryStore;
 
-    public GitHubRepositoryFetcher(@NonNull NetworkApi networkApi,
-                                   @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                   @NonNull StorePutInterface<GitHubRepository> gitHubRepositoryStore) {
+    public GitHubRepositoryFetcher(@NonNull final NetworkApi networkApi,
+                                   @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus,
+                                   @NonNull final StorePutInterface<GitHubRepository> gitHubRepositoryStore) {
         super(networkApi, updateNetworkRequestStatus);
 
         Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");
@@ -58,7 +58,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
     }
 
     @Override
-    public void fetch(@NonNull Intent intent) {
+    public void fetch(@NonNull final Intent intent) {
         Preconditions.checkNotNull(intent, "Fetch Intent cannot be null.");
 
         final int repositoryId = intent.getIntExtra("id", -1);

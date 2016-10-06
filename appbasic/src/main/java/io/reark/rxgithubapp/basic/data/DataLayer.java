@@ -45,11 +45,11 @@ public class DataLayer extends ClientDataLayerBase {
 
     private final UriFetcherManager fetcherManager;
 
-    public DataLayer(@NonNull UriFetcherManager fetcherManager,
-                     @NonNull NetworkRequestStatusStore networkRequestStatusStore,
-                     @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                     @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore,
-                     @NonNull UserSettingsStore userSettingsStore) {
+    public DataLayer(@NonNull final UriFetcherManager fetcherManager,
+                     @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
+                     @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
+                     @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore,
+                     @NonNull final UserSettingsStore userSettingsStore) {
         super(networkRequestStatusStore,
                 gitHubRepositoryStore,
                 gitHubRepositorySearchStore,
@@ -62,7 +62,7 @@ public class DataLayer extends ClientDataLayerBase {
     }
 
     @Override
-    protected void fetchGitHubRepository(@NonNull Integer repositoryId) {
+    protected void fetchGitHubRepository(@NonNull final Integer repositoryId) {
         Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
 
         Intent intent = new Intent();

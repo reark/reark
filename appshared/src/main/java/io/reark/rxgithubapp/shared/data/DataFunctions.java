@@ -40,7 +40,7 @@ public class DataFunctions {
     }
 
     public interface SetUserSettings {
-        void call(@NonNull UserSettings userSettings);
+        void call(@NonNull final UserSettings userSettings);
     }
 
     public interface GetGitHubRepository {
@@ -54,6 +54,6 @@ public class DataFunctions {
 
     public interface GetGitHubRepositorySearch {
         @NonNull
-        Observable<DataStreamNotification<GitHubRepositorySearch>> call(@NonNull String search);
+        Observable<DataStreamNotification<GitHubRepositorySearch>> call(@NonNull final String search);
     }
 }

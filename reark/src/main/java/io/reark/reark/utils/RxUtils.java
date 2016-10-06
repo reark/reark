@@ -42,13 +42,13 @@ public final class RxUtils {
     }
 
     @NonNull
-    public static <T> Observable<List<T>> toObservableList(@NonNull List<Observable<T>> observables) {
+    public static <T> Observable<List<T>> toObservableList(@NonNull final List<Observable<T>> observables) {
         return Observable.combineLatest(get(observables), RxUtils::toList);
     }
 
     @NonNull
     @SuppressWarnings("unchecked")
-    static <T> List<T> toList(@NonNull Object... args) {
+    static <T> List<T> toList(@NonNull final Object... args) {
         checkNotNull(args);
 
         final List<T> list = new ArrayList<>();

@@ -38,10 +38,12 @@ import io.reark.rxgithubapp.basic.activities.MainActivity;
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.shared.view.RepositoryView;
+import io.reark.rxgithubapp.shared.view.RepositoryView.ViewBinder;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
 
 public class RepositoryFragment extends Fragment {
-    private RepositoryView.ViewBinder repositoryViewBinder;
+
+    private ViewBinder repositoryViewBinder;
 
     @Inject
     RepositoryViewModel viewModel;
@@ -64,7 +66,7 @@ public class RepositoryFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        repositoryViewBinder = new RepositoryView.ViewBinder(
+        repositoryViewBinder = new ViewBinder(
                 (RepositoryView) view.findViewById(R.id.repository_view),
                 viewModel);
         viewModel.subscribeToDataStore();

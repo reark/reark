@@ -34,6 +34,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.test.mock.MockContentProvider;
 
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -42,7 +44,7 @@ import java.util.LinkedHashMap;
 public class SimpleMockContentProvider extends MockContentProvider {
 
     // LinkedHashMap keeps the insertion order for more straightforward testing
-    private LinkedHashMap<Uri, String> values = new LinkedHashMap<>();
+    private final AbstractMap<Uri, String> values = new LinkedHashMap<>(5);
 
     public interface DataColumns {
         String KEY = "key";

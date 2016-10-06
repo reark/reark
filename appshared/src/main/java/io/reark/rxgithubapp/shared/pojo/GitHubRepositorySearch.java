@@ -25,23 +25,35 @@
  */
 package io.reark.rxgithubapp.shared.pojo;
 
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class GitHubRepositorySearch {
-    final private String search;
-    final private List<Integer> items;
+import static io.reark.reark.utils.Preconditions.get;
 
-    public GitHubRepositorySearch(final String search, final List<Integer> items) {
-        this.search = search;
-        this.items = items;
+public class GitHubRepositorySearch {
+
+    @NonNull
+    private final String search;
+
+    @NonNull
+    private final List<Integer> items;
+
+    public GitHubRepositorySearch(@NonNull final String search, @NonNull final List<Integer> items) {
+        this.search = get(search);
+        this.items = new ArrayList<>(items);
     }
 
+    @NonNull
     public String getSearch() {
         return search;
     }
 
+    @NonNull
     public List<Integer> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     @Override
@@ -51,14 +63,15 @@ public class GitHubRepositorySearch {
 
         GitHubRepositorySearch that = (GitHubRepositorySearch) o;
 
-        if (search != null ? !search.equals(that.search) : that.search != null) return false;
-        return items != null ? items.equals(that.items) : that.items == null;
+        if (!search.equals(that.search)) return false;
+        return items.equals(that.items);
+
     }
 
     @Override
     public int hashCode() {
-        int result = search != null ? search.hashCode() : 0;
-        result = 31 * result + (items != null ? items.hashCode() : 0);
+        int result = search.hashCode();
+        result = 31 * result + items.hashCode();
         return result;
     }
 }

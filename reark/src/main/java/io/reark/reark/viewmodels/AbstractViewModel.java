@@ -26,18 +26,21 @@
 package io.reark.reark.viewmodels;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import io.reark.reark.utils.Log;
 import rx.subscriptions.CompositeSubscription;
 
-abstract public class AbstractViewModel {
+public abstract class AbstractViewModel {
     private static final String TAG = AbstractViewModel.class.getSimpleName();
+
+    @Nullable
     private CompositeSubscription compositeSubscription;
 
-    final public void subscribeToDataStore() {
+    public void subscribeToDataStore() {
         Log.v(TAG, "subscribeToDataStore");
 
-        if (compositeSubscription == null) {
+        if (!isSubscribed()) {
             compositeSubscription = new CompositeSubscription();
             subscribeToDataStoreInternal(compositeSubscription);
         }
@@ -46,7 +49,7 @@ abstract public class AbstractViewModel {
     public void dispose() {
         Log.v(TAG, "dispose");
 
-        if (compositeSubscription != null) {
+        if (isSubscribed()) {
             Log.e(TAG, "Disposing without calling unsubscribeFromDataStore first");
 
             // Unsubscribe in case we are still for some reason subscribed
@@ -59,9 +62,13 @@ abstract public class AbstractViewModel {
     public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");
 
-        if (compositeSubscription != null) {
+        if (isSubscribed()) {
             compositeSubscription.clear();
             compositeSubscription = null;
         }
+    }
+
+    private boolean isSubscribed() {
+        return compositeSubscription != null;
     }
 }

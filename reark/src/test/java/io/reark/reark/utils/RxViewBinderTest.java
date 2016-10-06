@@ -52,10 +52,11 @@ import static org.junit.Assert.assertTrue;
 @PrepareForTest(AndroidSchedulers.class)
 public class RxViewBinderTest {
 
-    RxViewBinder binder;
+    private RxViewBinder binder;
 
-    Subject<String, String> testSubject;
-    TestSubscriber<String> testSubscriber;
+    private Subject<String, String> testSubject;
+
+    private TestSubscriber<String> testSubscriber;
 
     @Before
     public void setUp() {

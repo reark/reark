@@ -38,10 +38,12 @@ import io.reark.rxgithubapp.advanced.RxGitHubApp;
 import io.reark.rxgithubapp.advanced.activities.MainActivity;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.shared.view.RepositoryView;
+import io.reark.rxgithubapp.shared.view.RepositoryView.ViewBinder;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
 
 public class RepositoryFragment extends Fragment {
-    private RepositoryView.ViewBinder repositoryViewBinder;
+
+    private ViewBinder repositoryViewBinder;
 
     @Inject
     RepositoryViewModel viewModel;

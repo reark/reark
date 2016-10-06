@@ -83,6 +83,7 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
      *
      * Any open stream Observables for the item's id will emit this new value.
      */
+    @Override
     public void put(@NonNull T id, @NonNull U item) {
         Preconditions.checkNotNull(item, "Item cannot be null.");
 

@@ -65,6 +65,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         return subject.asObservable();
     }
 
+    @Override
     public Observable<U> getStream(T id) {
         int hash = getHashCodeForId(id);
         subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
@@ -72,6 +73,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
                 .asObservable();
     }
 
+    @Override
     public void put(T id, U item) {
         final int hash = getHashCodeForId(id);
         boolean valuesEqual = false;
@@ -100,6 +102,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         }
     }
 
+    @Override
     public Observable<U> getCached(T id) {
         return Observable.just(cache.get(getHashCodeForId(id)));
     }

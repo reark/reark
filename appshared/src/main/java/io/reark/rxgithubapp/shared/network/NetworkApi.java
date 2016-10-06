@@ -27,13 +27,12 @@ package io.reark.rxgithubapp.shared.network;
 
 import android.support.annotation.NonNull;
 
-import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
-
 import java.util.List;
 import java.util.Map;
 
 import io.reark.reark.utils.Preconditions;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import rx.Observable;

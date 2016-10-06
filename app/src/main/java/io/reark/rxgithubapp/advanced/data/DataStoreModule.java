@@ -37,10 +37,10 @@ import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.advanced.data.stores.StoreModule;
 import io.reark.rxgithubapp.advanced.data.stores.UserSettingsStore;
+import io.reark.rxgithubapp.advanced.network.FetcherModule;
+import io.reark.rxgithubapp.advanced.network.ServiceDataLayer;
 import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.injections.ForApplication;
-import io.reark.rxgithubapp.advanced.network.ServiceDataLayer;
-import io.reark.rxgithubapp.advanced.network.FetcherModule;
 
 @Module(includes = { FetcherModule.class, StoreModule.class })
 public final class DataStoreModule {

@@ -26,7 +26,6 @@
 package io.reark.rxgithubapp.basic.data.stores;
 
 import io.reark.reark.data.stores.MemoryStore;
-import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
 public class GitHubRepositoryStore extends MemoryStore<Integer, GitHubRepository> {

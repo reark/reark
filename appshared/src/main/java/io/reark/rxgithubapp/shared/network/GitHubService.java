@@ -31,7 +31,6 @@ import java.util.Map;
 
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
-
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.QueryMap;

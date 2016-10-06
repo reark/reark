@@ -37,8 +37,8 @@ import javax.inject.Inject;
 
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.advanced.injections.Graph;
-import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.advanced.widget.WidgetProvider;
+import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 
 public class RxGitHubApp extends Application {
     private static final String TAG = RxGitHubApp.class.getSimpleName();

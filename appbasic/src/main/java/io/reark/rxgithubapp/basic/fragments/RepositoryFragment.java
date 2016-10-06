@@ -33,9 +33,9 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
-import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.basic.RxGitHubApp;
 import io.reark.rxgithubapp.basic.activities.MainActivity;
+import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.shared.view.RepositoryView;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;

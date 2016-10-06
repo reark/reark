@@ -30,7 +30,6 @@ import org.junit.Test;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 

@@ -25,8 +25,6 @@
  */
 package io.reark.rxgithubapp.basic.data;
 
-import android.content.Context;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -39,8 +37,6 @@ import io.reark.rxgithubapp.basic.data.stores.StoreModule;
 import io.reark.rxgithubapp.basic.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.basic.network.FetcherModule;
 import io.reark.rxgithubapp.shared.data.DataFunctions;
-import io.reark.rxgithubapp.shared.injections.ForApplication;
-import io.reark.rxgithubapp.shared.pojo.UserSettings;
 
 @Module(includes = { FetcherModule.class, StoreModule.class })
 public final class DataStoreModule {

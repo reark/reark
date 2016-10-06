@@ -40,6 +40,8 @@ import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
     private static final String TAG = UserSettingsStore.class.getSimpleName();
 
@@ -80,7 +82,9 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(UserSettings item) {
+    protected ContentValues getContentValuesForItem(@NonNull final UserSettings item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, DataLayer.DEFAULT_USER_ID);
         contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
@@ -89,16 +93,17 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    protected UserSettings read(Cursor cursor) {
+    protected UserSettings read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final UserSettings value = getGson().fromJson(json, UserSettings.class);
-        return value;
+        return getGson().fromJson(json, UserSettings.class);
     }
 
     @NonNull
     @Override
     public Uri getUriForId(@NonNull final Integer id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
         return GitHubProvider.UserSettings.withId(id);
     }

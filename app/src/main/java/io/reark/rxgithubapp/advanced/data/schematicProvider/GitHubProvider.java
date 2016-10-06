@@ -26,6 +26,7 @@
 package io.reark.rxgithubapp.advanced.data.schematicProvider;
 
 import android.net.Uri;
+import android.net.Uri.Builder;
 import android.support.annotation.NonNull;
 
 import net.simonvt.schematic.annotation.ContentProvider;
@@ -35,6 +36,8 @@ import net.simonvt.schematic.annotation.TableEndpoint;
 
 import io.reark.reark.utils.Preconditions;
 
+import static io.reark.reark.utils.Preconditions.get;
+
 @ContentProvider(authority = GitHubProvider.AUTHORITY, database = GitHubDatabase.class)
 public final class GitHubProvider {
     public static final String AUTHORITY = "io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider";
@@ -42,13 +45,12 @@ public final class GitHubProvider {
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     private static Uri buildUri(@NonNull final String... paths) {
-        Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+        Builder builder = BASE_CONTENT_URI.buildUpon();
         for (String path : paths) {
             builder.appendPath(path);
         }
-        Uri uri = builder.build();
-        Preconditions.checkNotNull(uri, "Uri cannot be null.");
-        return uri;
+
+        return get(builder.build());
     }
 
     @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORIES)

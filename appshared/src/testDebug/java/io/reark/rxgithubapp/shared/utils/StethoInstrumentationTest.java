@@ -76,6 +76,6 @@ public class StethoInstrumentationTest {
 
         instrumentation.decorateNetwork(okHttpClient);
 
-        verify(instrumentation).addInterceptor(eq(okHttpClient), eq(interceptor));
+        StethoInstrumentation.addInterceptor(eq(okHttpClient), eq(interceptor));
     }
 }

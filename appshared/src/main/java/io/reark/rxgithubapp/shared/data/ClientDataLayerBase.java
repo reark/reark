@@ -39,26 +39,28 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public abstract class ClientDataLayerBase extends DataLayerBase {
     private static final String TAG = ClientDataLayerBase.class.getSimpleName();
     public static final int DEFAULT_USER_ID = 0;
 
+    @NonNull
     protected final StoreInterface<Integer, UserSettings> userSettingsStore;
 
-    public ClientDataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                               @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                               @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
-                               @NonNull final StoreInterface<Integer, UserSettings> userSettingsStore) {
+    protected ClientDataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
+                                  @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
+                                  @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
+                                  @NonNull final StoreInterface<Integer, UserSettings> userSettingsStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
-        Preconditions.checkNotNull(userSettingsStore,
-                "User Settings Store cannot be null.");
 
-        this.userSettingsStore = userSettingsStore;
+        this.userSettingsStore = get(userSettingsStore);
     }
 
     @NonNull
     public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
+        checkNotNull(searchString);
 
         Log.d(TAG, "getGitHubRepositorySearch(" + searchString + ")");
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
@@ -73,28 +75,27 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
     @NonNull
     public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
-
+        checkNotNull(searchString);
         Log.d(TAG, "fetchAndGetGitHubRepositorySearch(" + searchString + ")");
+
         fetchGitHubRepositorySearch(searchString);
-        final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositoryStream =
-                getGitHubRepositorySearch(searchString);
-        return gitHubRepositoryStream;
+        return getGitHubRepositorySearch(searchString);
     }
 
     protected abstract void fetchGitHubRepositorySearch(@NonNull final String searchString);
 
     @NonNull
     public Observable<GitHubRepository> getGitHubRepository(@NonNull final Integer repositoryId) {
-        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+        checkNotNull(repositoryId);
 
-        return gitHubRepositoryStore.getOnceAndStream(repositoryId)
+        return gitHubRepositoryStore
+                .getOnceAndStream(repositoryId)
                 .filter(value -> value != null);
     }
 
     @NonNull
     public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull final Integer repositoryId) {
-        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+        checkNotNull(repositoryId);
 
         fetchGitHubRepository(repositoryId);
         return getGitHubRepository(repositoryId);
@@ -109,7 +110,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     }
 
     public void setUserSettings(@NonNull final UserSettings userSettings) {
-        Preconditions.checkNotNull(userSettings, "User Settings cannot be null.");
+        checkNotNull(userSettings);
 
         userSettingsStore.put(userSettings);
     }

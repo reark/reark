@@ -30,33 +30,40 @@ import android.support.annotation.NonNull;
 import java.util.List;
 import java.util.Map;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
 import retrofit.RestAdapter;
+import retrofit.RestAdapter.Builder;
+import retrofit.RestAdapter.LogLevel;
 import retrofit.client.Client;
 import rx.Observable;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class NetworkApi {
 
+    @NonNull
     private final GitHubService gitHubService;
 
     public NetworkApi(@NonNull final Client client) {
-        Preconditions.checkNotNull(client, "Client cannot be null.");
+        checkNotNull(client);
 
-        RestAdapter restAdapter = new RestAdapter.Builder()
+        RestAdapter restAdapter = new Builder()
                 .setClient(client)
                 .setEndpoint("https://api.github.com")
-                .setLogLevel(RestAdapter.LogLevel.NONE)
+                .setLogLevel(LogLevel.NONE)
                 .build();
+
         gitHubService = restAdapter.create(GitHubService.class);
     }
 
+    @NonNull
     public Observable<List<GitHubRepository>> search(Map<String, String> search) {
         return gitHubService.search(search)
                             .map(GitHubRepositorySearchResults::getItems);
     }
 
+    @NonNull
     public Observable<GitHubRepository> getRepository(int id) {
         return gitHubService.getRepository(id);
     }

@@ -33,15 +33,16 @@ import java.util.List;
 
 import io.reark.reark.utils.Preconditions;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public class GitHubRepositorySearchResults {
 
     @NonNull
     private final List<GitHubRepository> items;
 
     public GitHubRepositorySearchResults(@NonNull final List<GitHubRepository> items) {
-        Preconditions.checkNotNull(items, "GitHub Repository Items cannot be null.");
-
-        this.items = new ArrayList<>(items);
+        this.items = new ArrayList<>(get(items));
     }
 
     @NonNull

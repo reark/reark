@@ -35,16 +35,16 @@ import io.reark.reark.utils.Preconditions;
 
 public abstract class GsonStoreCoreBase<T, U> extends ContentProviderStoreCore<T, U> {
 
+    @NonNull
     private final Gson gson;
 
-    public GsonStoreCoreBase(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
+    protected GsonStoreCoreBase(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver);
 
-        Preconditions.checkNotNull(gson, "Gson cannot be null.");
-
-        this.gson = gson;
+        this.gson = Preconditions.get(gson);
     }
 
+    @NonNull
     protected Gson getGson() {
         return gson;
     }

@@ -35,20 +35,24 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class SubscriptionUtils {
-    private SubscriptionUtils() { }
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-    static public Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
+public final class SubscriptionUtils {
+
+    private SubscriptionUtils() {
+    }
+
+    public static Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
                                                      @NonNull final TextView textView) {
         return subscribeTextViewText(observable, textView, AndroidSchedulers.mainThread());
     }
 
-    static public Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
+    public static Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
                                                      @NonNull final TextView textView,
                                                      @NonNull final Scheduler scheduler) {
-        Preconditions.checkNotNull(observable, "Observable cannot be null.");
-        Preconditions.checkNotNull(textView, "TextView cannot be null.");
-        Preconditions.checkNotNull(scheduler, "Scheduler cannot be null.");
+        checkNotNull(observable);
+        checkNotNull(textView);
+        checkNotNull(scheduler);
 
         return observable
                 .observeOn(scheduler)

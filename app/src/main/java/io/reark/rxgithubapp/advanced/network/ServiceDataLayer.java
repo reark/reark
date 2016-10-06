@@ -38,10 +38,14 @@ import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.shared.data.DataLayerBase;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
 
-    final private UriFetcherManager fetcherManager;
+    @NonNull
+    private final UriFetcherManager fetcherManager;
 
     public ServiceDataLayer(@NonNull final UriFetcherManager fetcherManager,
                             @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
@@ -49,12 +53,11 @@ public class ServiceDataLayer extends DataLayerBase {
                             @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
-        Preconditions.checkNotNull(fetcherManager, "FetcherManager cannot be null.");
-        this.fetcherManager = fetcherManager;
+        this.fetcherManager = get(fetcherManager);
     }
 
     public void processIntent(@NonNull final Intent intent) {
-        Preconditions.checkNotNull(intent, "Intent cannot be null.");
+        checkNotNull(intent);
 
         final String serviceUriString = intent.getStringExtra("serviceUriString");
         if (serviceUriString != null) {

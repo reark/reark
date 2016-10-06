@@ -32,7 +32,10 @@ import io.reark.reark.pojo.NetworkRequestStatus;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public final class DataLayerUtils {
+
     private DataLayerUtils() {
     }
 
@@ -54,6 +57,8 @@ public final class DataLayerUtils {
 
     private static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
         return networkRequestStatus -> {
+            checkNotNull(networkRequestStatus);
+
             switch (networkRequestStatus.getStatus()) {
                 case NETWORK_STATUS_ONGOING:
                     return DataStreamNotification.fetchingStart();

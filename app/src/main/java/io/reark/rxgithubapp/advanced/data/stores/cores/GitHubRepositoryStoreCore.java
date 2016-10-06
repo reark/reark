@@ -35,12 +35,14 @@ import com.google.gson.Gson;
 
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHubRepository> {
-    private static final String TAG = GitHubRepositoryStoreCore.class.getSimpleName();
 
     public GitHubRepositoryStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
@@ -49,7 +51,7 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
+        return GitHubRepositories.GITHUB_REPOSITORIES;
     }
 
     @NonNull
@@ -69,10 +71,9 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected GitHubRepository read(Cursor cursor) {
+    protected GitHubRepository read(@NonNull Cursor cursor) {
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final GitHubRepository value = getGson().fromJson(json, GitHubRepository.class);
-        return value;
+        return getGson().fromJson(json, GitHubRepository.class);
     }
 
     @NonNull
@@ -87,16 +88,16 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
     @NonNull
     @Override
     protected Uri getUriForId(@NonNull final Integer id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+        checkNotNull(id);
 
-        return GitHubProvider.GitHubRepositories.withId(id);
+        return GitHubRepositories.withId(id);
     }
 
     @NonNull
     @Override
     protected Integer getIdForUri(@NonNull final Uri uri) {
-        Preconditions.checkNotNull(uri, "Uri cannot be null.");
+        checkNotNull(uri);
 
-        return (int) GitHubProvider.GitHubRepositories.fromUri(uri);
+        return (int) GitHubRepositories.fromUri(uri);
     }
 }

@@ -183,7 +183,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     protected abstract String[] getProjection();
 
     @NonNull
-    protected abstract T read(Cursor cursor);
+    protected abstract T read(@NonNull final Cursor cursor);
 
     @NonNull
     protected abstract ContentValues getContentValuesForItem(T item);

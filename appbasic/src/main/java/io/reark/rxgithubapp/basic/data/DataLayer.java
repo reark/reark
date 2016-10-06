@@ -40,6 +40,9 @@ import io.reark.rxgithubapp.basic.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
 
@@ -55,15 +58,12 @@ public class DataLayer extends ClientDataLayerBase {
                 gitHubRepositorySearchStore,
                 userSettingsStore);
 
-        Preconditions.checkNotNull(fetcherManager, "Context cannot be null.");
-        Preconditions.checkNotNull(userSettingsStore, "User Settings Store cannot be null.");
-
-        this.fetcherManager = fetcherManager;
+        this.fetcherManager = get(fetcherManager);
     }
 
     @Override
     protected void fetchGitHubRepository(@NonNull final Integer repositoryId) {
-        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+        checkNotNull(repositoryId);
 
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
@@ -78,7 +78,7 @@ public class DataLayer extends ClientDataLayerBase {
 
     @Override
     protected void fetchGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
+        checkNotNull(searchString);
 
         Log.d(TAG, "fetchGitHubRepositorySearch(" + searchString + ")");
         Intent intent = new Intent();

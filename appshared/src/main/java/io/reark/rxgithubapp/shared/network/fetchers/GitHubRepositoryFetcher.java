@@ -41,6 +41,8 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class GitHubRepositoryFetcher extends AppFetcherBase {
     private static final String TAG = GitHubRepositoryFetcher.class.getSimpleName();
 
@@ -52,16 +54,17 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
                                    @NonNull final StorePutInterface<GitHubRepository> gitHubRepositoryStore) {
         super(networkApi, updateNetworkRequestStatus);
 
-        Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");
+        checkNotNull(gitHubRepositoryStore);
 
         this.gitHubRepositoryStore = gitHubRepositoryStore;
     }
 
     @Override
     public void fetch(@NonNull final Intent intent) {
-        Preconditions.checkNotNull(intent, "Fetch Intent cannot be null.");
+        checkNotNull(intent);
 
         final int repositoryId = intent.getIntExtra("id", -1);
+
         if (repositoryId != -1) {
             fetchGitHubRepository(repositoryId);
         } else {
@@ -71,12 +74,15 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
 
     private void fetchGitHubRepository(final int repositoryId) {
         Log.d(TAG, "fetchGitHubRepository(" + repositoryId + ")");
+
         if (requestMap.containsKey(repositoryId) &&
                 !requestMap.get(repositoryId).isUnsubscribed()) {
             Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
             return;
         }
+
         final String uri = getUniqueId(repositoryId);
+
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
                 .doOnSubscribe(() -> startRequest(uri))
@@ -84,6 +90,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
                 .doOnCompleted(() -> completeRequest(uri))
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
+
         requestMap.put(repositoryId, subscription);
     }
 

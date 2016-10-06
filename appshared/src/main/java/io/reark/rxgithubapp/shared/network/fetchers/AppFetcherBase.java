@@ -33,17 +33,18 @@ import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import rx.functions.Action1;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public abstract class AppFetcherBase extends FetcherBase {
 
     @NonNull
-    NetworkApi networkApi;
+    final NetworkApi networkApi;
 
-    public AppFetcherBase(@NonNull final NetworkApi networkApi,
-                          @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    protected AppFetcherBase(@NonNull final NetworkApi networkApi,
+                             @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         super(updateNetworkRequestStatus);
 
-        Preconditions.checkNotNull(networkApi, "Network Api cannot be null.");
-
-        this.networkApi = networkApi;
+        this.networkApi = get(networkApi);
     }
 }

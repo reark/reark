@@ -35,8 +35,9 @@ import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositoryStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepository> {
-    private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
 
     public GitHubRepositoryStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(new GitHubRepositoryStoreCore(contentResolver, gson),
@@ -45,7 +46,7 @@ public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepositor
 
     @NonNull
     protected static Integer getIdFor(@NonNull final GitHubRepository item) {
-        Preconditions.checkNotNull(item, "GitHub Repository cannot be null.");
+        checkNotNull(item);
 
         return item.getId();
     }

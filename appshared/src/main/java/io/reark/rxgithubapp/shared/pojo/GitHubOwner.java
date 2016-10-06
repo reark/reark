@@ -34,15 +34,13 @@ import io.reark.reark.utils.Preconditions;
 
 public class GitHubOwner {
 
-    @Nullable
     @SerializedName("avatar_url")
-    final private String avatarUrl;
+    @NonNull
+    private final String avatarUrl;
 
     @SuppressWarnings("NullableProblems")
     public GitHubOwner(@NonNull final String avatarUrl) {
-        Preconditions.checkNotNull(avatarUrl, "Avatar cannot be null");
-
-        this.avatarUrl = avatarUrl;
+        this.avatarUrl = Preconditions.get(avatarUrl);
     }
 
     public GitHubOwner() {
@@ -51,34 +49,29 @@ public class GitHubOwner {
 
     @NonNull
     public String getAvatarUrl() {
-        return avatarUrl == null ? "" : avatarUrl;
+        return avatarUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "GitHubOwner{" +
+                "avatarUrl='" + avatarUrl + '\'' +
+                '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof GitHubOwner)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         GitHubOwner that = (GitHubOwner) o;
 
-        return !(avatarUrl != null ? !avatarUrl.equals(that.avatarUrl) : that.avatarUrl != null);
+        return avatarUrl.equals(that.avatarUrl);
 
     }
 
     @Override
     public int hashCode() {
-        return avatarUrl != null ? avatarUrl.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("GitHubOwner{");
-        sb.append("avatarUrl='").append(avatarUrl).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return avatarUrl.hashCode();
     }
 }

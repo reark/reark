@@ -32,10 +32,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxUtils;
 import io.reark.reark.viewmodels.AbstractViewModel;
-import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepository;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;

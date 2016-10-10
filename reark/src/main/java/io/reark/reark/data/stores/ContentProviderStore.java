@@ -34,7 +34,6 @@ import java.util.List;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCoreBase;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;

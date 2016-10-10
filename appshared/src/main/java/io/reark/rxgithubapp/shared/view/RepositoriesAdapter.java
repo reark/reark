@@ -25,7 +25,6 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -43,7 +42,7 @@ import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.view.RepositoriesAdapter.RepositoryViewHolder;
 
-import static android.view.View.*;
+import static android.view.View.OnClickListener;
 
 public class RepositoriesAdapter extends Adapter<RepositoryViewHolder> {
 

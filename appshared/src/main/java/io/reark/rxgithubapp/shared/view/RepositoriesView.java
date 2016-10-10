@@ -40,7 +40,6 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import java.util.Collections;
 import java.util.List;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;

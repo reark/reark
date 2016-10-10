@@ -31,8 +31,6 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import io.reark.reark.utils.Preconditions;
-
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 public class FetcherManagerBase<T> {

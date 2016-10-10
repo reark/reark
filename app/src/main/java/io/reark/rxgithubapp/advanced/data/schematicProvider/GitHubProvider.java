@@ -34,8 +34,6 @@ import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
 import net.simonvt.schematic.annotation.TableEndpoint;
 
-import io.reark.reark.utils.Preconditions;
-
 import static io.reark.reark.utils.Preconditions.get;
 
 @ContentProvider(authority = GitHubProvider.AUTHORITY, database = GitHubDatabase.class)

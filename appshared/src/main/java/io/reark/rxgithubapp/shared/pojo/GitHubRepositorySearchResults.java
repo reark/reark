@@ -31,9 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.reark.reark.utils.Preconditions;
-
-import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubRepositorySearchResults {

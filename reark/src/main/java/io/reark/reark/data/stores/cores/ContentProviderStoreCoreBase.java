@@ -45,7 +45,6 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
-import static io.reark.reark.utils.Preconditions.get;
 
 /**
  * ContentProviderStoreCoreBase implements an Observable based item store that uses a content provider as

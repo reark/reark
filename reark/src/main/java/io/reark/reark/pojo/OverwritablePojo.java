@@ -31,7 +31,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 

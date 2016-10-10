@@ -35,7 +35,6 @@ import android.support.annotation.Nullable;
 import android.test.mock.MockContentProvider;
 
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**

@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;

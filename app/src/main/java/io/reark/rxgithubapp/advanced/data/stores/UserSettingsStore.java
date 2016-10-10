@@ -33,7 +33,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.DataLayer;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;

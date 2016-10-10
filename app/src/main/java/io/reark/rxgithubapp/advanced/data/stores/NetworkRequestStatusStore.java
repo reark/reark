@@ -35,8 +35,6 @@ import com.google.gson.Gson;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;

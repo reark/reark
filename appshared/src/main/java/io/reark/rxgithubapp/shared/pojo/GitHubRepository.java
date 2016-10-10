@@ -26,12 +26,10 @@
 package io.reark.rxgithubapp.shared.pojo;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 import io.reark.reark.pojo.OverwritablePojo;
-import io.reark.reark.utils.Preconditions;
 
 import static io.reark.reark.utils.Preconditions.get;
 

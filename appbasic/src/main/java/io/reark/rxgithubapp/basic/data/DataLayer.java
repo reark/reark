@@ -32,7 +32,6 @@ import android.support.annotation.NonNull;
 import io.reark.reark.network.fetchers.Fetcher;
 import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.basic.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.basic.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.basic.data.stores.NetworkRequestStatusStore;

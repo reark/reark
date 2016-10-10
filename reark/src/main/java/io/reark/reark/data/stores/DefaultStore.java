@@ -28,7 +28,6 @@ package io.reark.reark.data.stores;
 import android.support.annotation.NonNull;
 
 import io.reark.reark.data.stores.cores.StoreCoreInterface;
-import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;

@@ -32,7 +32,6 @@ import io.reark.reark.data.stores.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;

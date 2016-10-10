@@ -27,9 +27,6 @@ package io.reark.rxgithubapp.shared.utils;
 
 import android.support.annotation.NonNull;
 
-import io.reark.reark.utils.Preconditions;
-
-import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
 public class DebugApplicationInstrumentation implements ApplicationInstrumentation {

@@ -29,7 +29,6 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.widget.TextView;
 
-import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;

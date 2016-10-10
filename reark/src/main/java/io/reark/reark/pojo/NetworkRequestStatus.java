@@ -25,45 +25,43 @@
  */
 package io.reark.reark.pojo;
 
-public class NetworkRequestStatus {
-    private static final String NETWORK_STATUS_ONGOING = "networkStatusOngoing";
-    private static final String NETWORK_STATUS_ERROR = "networkStatusError";
-    private static final String NETWORK_STATUS_COMPLETED = "networkStatusCompleted";
+import android.support.annotation.NonNull;
+
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_COMPLETED;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ERROR;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ONGOING;
+
+public final class NetworkRequestStatus {
 
     private final String uri;
-    private final String status;
+    private final Status status;
     private final int errorCode;
     private final String errorMessage;
 
+    public enum Status {
+        NETWORK_STATUS_ONGOING("networkStatusOngoing"),
+        NETWORK_STATUS_COMPLETED("networkStatusCompleted"),
+        NETWORK_STATUS_ERROR("networkStatusError");
+
+        private final String status;
+
+        Status(@NonNull final String value) {
+            status = value;
+        }
+
+        String getStatus() {
+            return status;
+        }
+    }
+
     private NetworkRequestStatus(String uri,
-                                 String status,
+                                 Status status,
                                  int errorCode,
                                  String errorMessage) {
         this.uri = uri;
         this.status = status;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    @Override
-    public String toString() {
-        return "NetworkRequestStatus(" + uri + ", " + status + ")";
     }
 
     public static NetworkRequestStatus ongoing(String uri) {
@@ -78,15 +76,36 @@ public class NetworkRequestStatus {
         return new NetworkRequestStatus(uri, NETWORK_STATUS_COMPLETED, 0, null);
     }
 
+    public String getUri() {
+        return uri;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public boolean isOngoing() {
-        return status.equals(NETWORK_STATUS_ONGOING);
+        return status == NETWORK_STATUS_ONGOING;
     }
 
     public boolean isError() {
-        return status.equals(NETWORK_STATUS_ERROR);
+        return status == NETWORK_STATUS_ERROR;
     }
 
     public boolean isCompleted() {
-        return status.equals(NETWORK_STATUS_COMPLETED);
+        return status == NETWORK_STATUS_COMPLETED;
+    }
+
+    @Override
+    public String toString() {
+        return "NetworkRequestStatus(" + uri + ", " + status + ")";
     }
 }

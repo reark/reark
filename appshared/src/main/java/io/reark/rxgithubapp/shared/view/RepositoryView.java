@@ -34,10 +34,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import io.reark.rxgithubapp.shared.R;
 
 import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
+import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.glide.SerialTarget;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;

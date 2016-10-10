@@ -26,8 +26,10 @@
 package io.reark.rxgithubapp.basic.data;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import io.reark.reark.network.fetchers.Fetcher;
 import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
@@ -66,7 +68,12 @@ public class DataLayer extends ClientDataLayerBase {
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
         intent.putExtra("id", repositoryId);
-        fetcherManager.findFetcher(GitHubService.REPOSITORY).fetch(intent);
+
+        Fetcher<Uri> fetcher = fetcherManager.findFetcher(GitHubService.REPOSITORY);
+
+        if (fetcher != null) {
+            fetcher.fetch(intent);
+        }
     }
 
     @Override
@@ -77,6 +84,11 @@ public class DataLayer extends ClientDataLayerBase {
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
         intent.putExtra("searchString", searchString);
-        fetcherManager.findFetcher(GitHubService.REPOSITORY_SEARCH).fetch(intent);
+
+        Fetcher<Uri> fetcher = fetcherManager.findFetcher(GitHubService.REPOSITORY_SEARCH);
+
+        if (fetcher != null) {
+            fetcher.fetch(intent);
+        }
     }
 }

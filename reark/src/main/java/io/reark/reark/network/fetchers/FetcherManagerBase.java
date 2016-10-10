@@ -28,18 +28,19 @@ package io.reark.reark.network.fetchers;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import io.reark.reark.utils.Preconditions;
 
-public abstract class FetcherManagerBase<T> {
+public class FetcherManagerBase<T> {
     @NonNull
-    final private Collection<Fetcher<T>> fetchers;
+    private final Collection<Fetcher<T>> fetchers;
 
-    public FetcherManagerBase(@NonNull Collection<Fetcher<T>> fetchers) {
+    protected FetcherManagerBase(@NonNull Collection<Fetcher<T>> fetchers) {
         Preconditions.checkNotNull(fetchers, "fetchers cannot be null.");
 
-        this.fetchers = fetchers;
+        this.fetchers = new ArrayList<>(fetchers);
     }
 
     @Nullable
@@ -51,6 +52,7 @@ public abstract class FetcherManagerBase<T> {
                 return fetcher;
             }
         }
+
         return null;
     }
 }

@@ -33,10 +33,10 @@ import io.reark.reark.network.fetchers.Fetcher;
 import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.shared.data.DataLayerBase;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
+import io.reark.rxgithubapp.shared.data.DataLayerBase;
 
 public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
@@ -49,8 +49,7 @@ public class ServiceDataLayer extends DataLayerBase {
                             @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
-        Preconditions.checkNotNull(fetcherManager,
-                "FetcherManager cannot be null.");
+        Preconditions.checkNotNull(fetcherManager, "FetcherManager cannot be null.");
         this.fetcherManager = fetcherManager;
     }
 
@@ -60,7 +59,7 @@ public class ServiceDataLayer extends DataLayerBase {
         final String serviceUriString = intent.getStringExtra("serviceUriString");
         if (serviceUriString != null) {
             final Uri serviceUri = Uri.parse(serviceUriString);
-            Fetcher matchingFetcher = fetcherManager.findFetcher(serviceUri);
+            Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
             if (matchingFetcher != null) {
                 Log.v(TAG, "Fetcher found for " + serviceUri);
                 matchingFetcher.fetch(intent);

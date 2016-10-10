@@ -25,15 +25,10 @@
  */
 package io.reark.rxgithubapp.basic.data.stores;
 
-import android.content.ContentResolver;
-
-import com.google.gson.Gson;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.rxgithubapp.basic.data.DataLayer;
 
 @Module

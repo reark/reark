@@ -32,7 +32,7 @@ import io.reark.reark.pojo.NetworkRequestStatus;
 import rx.Observable;
 import rx.functions.Func1;
 
-public class DataLayerUtils {
+public final class DataLayerUtils {
     private DataLayerUtils() {
     }
 
@@ -43,25 +43,27 @@ public class DataLayerUtils {
 
         final Observable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable
-                        .map(new Func1<NetworkRequestStatus, DataStreamNotification<T>>() {
-                            @Override
-                            public DataStreamNotification<T> call(NetworkRequestStatus networkRequestStatus) {
-                                if (networkRequestStatus.isOngoing()) {
-                                    return DataStreamNotification.fetchingStart();
-                                } else if (networkRequestStatus.isCompleted()) {
-                                    return DataStreamNotification.fetchingCompleted();
-                                } else if (networkRequestStatus.isError()) {
-                                    return DataStreamNotification.fetchingError();
-                                } else {
-                                    return null;
-                                }
-                            }
-                        })
+                        .map(DataLayerUtils.<T>fromNetworkRequestStatus())
                         .filter(dataStreamNotification -> dataStreamNotification != null);
 
         final Observable<DataStreamNotification<T>> valueStream =
                 valueObservable.map(DataStreamNotification::onNext);
 
         return Observable.merge(networkStatusStream, valueStream);
+    }
+
+    private static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
+        return networkRequestStatus -> {
+            switch (networkRequestStatus.getStatus()) {
+                case NETWORK_STATUS_ONGOING:
+                    return DataStreamNotification.fetchingStart();
+                case NETWORK_STATUS_COMPLETED:
+                    return DataStreamNotification.fetchingCompleted();
+                case NETWORK_STATUS_ERROR:
+                    return DataStreamNotification.fetchingError();
+            }
+
+            throw new IllegalStateException("Unexpected network status " + networkRequestStatus);
+        };
     }
 }

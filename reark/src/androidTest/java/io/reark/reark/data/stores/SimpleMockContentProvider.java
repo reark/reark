@@ -80,7 +80,7 @@ public class SimpleMockContentProvider extends MockContentProvider {
         if (values.containsKey(uri)) {
             String[] result = { uri.getLastPathSegment(), values.get(uri) };
             cursor.addRow(result);
-        } else if (uri.getLastPathSegment().equals("0")) {
+        } else if ("0".equals(uri.getLastPathSegment())) {
             for (Uri key : values.keySet()) {
                 String[] result = { key.getLastPathSegment(), values.get(key) };
                 cursor.addRow(result);

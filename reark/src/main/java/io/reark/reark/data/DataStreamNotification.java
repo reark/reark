@@ -48,7 +48,9 @@ public final class DataStreamNotification<T> {
     @Nullable
     private final Throwable error;
 
-    private DataStreamNotification(@NonNull final Type type, @Nullable T value, @Nullable Throwable error) {
+    private DataStreamNotification(@NonNull final Type type,
+                                   @Nullable final T value,
+                                   @Nullable final Throwable error) {
         this.type = get(type);
         this.value = value;
         this.error = error;

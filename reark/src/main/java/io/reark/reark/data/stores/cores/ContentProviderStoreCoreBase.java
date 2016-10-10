@@ -147,7 +147,9 @@ public abstract class ContentProviderStoreCoreBase<T> {
                 .map(queryResults -> {
                     if (queryResults.isEmpty()) {
                         return null;
-                    } else if (queryResults.size() > 1) {
+                    }
+
+                    if (queryResults.size() > 1) {
                         Log.w(TAG, String.format("%s items found in a get for a single item", queryResults.size()));
                     }
 

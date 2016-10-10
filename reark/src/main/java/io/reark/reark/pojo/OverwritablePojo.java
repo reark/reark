@@ -84,9 +84,10 @@ public abstract class OverwritablePojo<T extends OverwritablePojo<T>> {
                 || Modifier.isTransient(modifiers);
     }
 
-    protected boolean isEmpty(Field field, OverwritablePojo<T> pojo) {
+    protected boolean isEmpty(@NonNull final Field field, @NonNull final OverwritablePojo<T> pojo) {
         try {
             Object value = field.get(pojo);
+
             if (value == null) {
                 return true;
             } else if (value instanceof String) {

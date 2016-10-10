@@ -31,19 +31,16 @@ import com.google.gson.annotations.SerializedName;
 
 import io.reark.reark.utils.Preconditions;
 
+import static io.reark.reark.utils.Preconditions.get;
+
 public class GitHubOwner {
 
     @SerializedName("avatar_url")
     @NonNull
     private final String avatarUrl;
 
-    @SuppressWarnings("NullableProblems")
     public GitHubOwner(@NonNull final String avatarUrl) {
-        this.avatarUrl = Preconditions.get(avatarUrl);
-    }
-
-    public GitHubOwner() {
-        this("");
+        this.avatarUrl = get(avatarUrl);
     }
 
     @NonNull

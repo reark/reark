@@ -37,6 +37,7 @@ import javax.inject.Inject;
 
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.advanced.injections.Graph;
+import io.reark.rxgithubapp.advanced.injections.Graph.Initializer;
 import io.reark.rxgithubapp.advanced.widget.WidgetProvider;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 
@@ -54,7 +55,7 @@ public class RxGitHubApp extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        mGraph = Graph.Initializer.init(this);
+        mGraph = Initializer.init(this);
         getGraph().inject(this);
 
         instrumentation.init();
@@ -73,7 +74,7 @@ public class RxGitHubApp extends Application {
     }
 
     public void updateWidget() {
-        int widgetIds[] = AppWidgetManager
+        int[] widgetIds = AppWidgetManager
                 .getInstance(this)
                 .getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 

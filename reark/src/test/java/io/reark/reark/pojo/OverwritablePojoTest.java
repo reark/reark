@@ -72,9 +72,9 @@ public class OverwritablePojoTest {
         assertEquals("bar", pojo1.value);
     }
 
-    private static class TestPojo extends OverwritablePojo<TestPojo> {
+    private static final class TestPojo extends OverwritablePojo<TestPojo> {
         private final int id;
-        private final String value;
+        private String value;
 
         private TestPojo(int id, String value) {
             this.id = id;

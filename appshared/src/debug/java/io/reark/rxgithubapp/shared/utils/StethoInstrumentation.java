@@ -80,7 +80,7 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     }
 
     @VisibleForTesting
-    static void addInterceptor(@NonNull final OkHttpClient httpClient, @NonNull final Interceptor interceptor) {
+    void addInterceptor(@NonNull final OkHttpClient httpClient, @NonNull final Interceptor interceptor) {
         checkNotNull(httpClient);
         checkNotNull(interceptor);
 

@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'spoon'
 
 buildscript {
     repositories {
@@ -10,6 +11,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
     }
 }
 

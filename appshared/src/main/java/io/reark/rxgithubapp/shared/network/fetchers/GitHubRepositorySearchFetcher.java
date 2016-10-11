@@ -96,12 +96,12 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
                     }
                     return new GitHubRepositorySearch(searchString, repositoryIds);
                 })
+                .doOnSubscribe(() -> startRequest(uri))
                 .doOnCompleted(() -> completeRequest(uri))
                 .doOnError(doOnError(uri))
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
         requestMap.put(searchString.hashCode(), subscription);
-        startRequest(uri);
     }
 
     @NonNull

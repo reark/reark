@@ -79,12 +79,12 @@ public class GitHubRepositoryFetcher extends AppFetcherBase {
         final String uri = getUniqueId(repositoryId);
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
+                .doOnSubscribe(() -> startRequest(uri))
                 .doOnError(doOnError(uri))
                 .doOnCompleted(() -> completeRequest(uri))
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
         requestMap.put(repositoryId, subscription);
-        startRequest(uri);
     }
 
     @NonNull

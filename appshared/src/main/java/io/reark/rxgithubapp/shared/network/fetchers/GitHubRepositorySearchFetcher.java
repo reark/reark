@@ -95,7 +95,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
         Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {
-                    final List<Integer> repositoryIds = new ArrayList<>();
+                    final List<Integer> repositoryIds = new ArrayList<>(repositories.size());
                     for (GitHubRepository repository : repositories) {
                         gitHubRepositoryStore.put(repository);
                         repositoryIds.add(repository.getId());

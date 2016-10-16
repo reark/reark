@@ -29,8 +29,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-import io.reark.reark.utils.Preconditions;
-
 import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubOwner {

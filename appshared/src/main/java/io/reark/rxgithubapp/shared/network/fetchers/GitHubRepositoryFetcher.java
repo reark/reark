@@ -64,7 +64,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
 
         final int repositoryId = intent.getIntExtra("id", -1);
 
-        if (repositoryId > -1) {
+        if (repositoryId >= 0) {
             fetchGitHubRepository(repositoryId);
         } else {
             Log.e(TAG, "No repositoryId provided in the intent extras");

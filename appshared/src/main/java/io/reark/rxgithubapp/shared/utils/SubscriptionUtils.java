@@ -41,11 +41,13 @@ public final class SubscriptionUtils {
     private SubscriptionUtils() {
     }
 
+    @NonNull
     public static Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
                                                      @NonNull final TextView textView) {
         return subscribeTextViewText(observable, textView, AndroidSchedulers.mainThread());
     }
 
+    @NonNull
     public static Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
                                                      @NonNull final TextView textView,
                                                      @NonNull final Scheduler scheduler) {

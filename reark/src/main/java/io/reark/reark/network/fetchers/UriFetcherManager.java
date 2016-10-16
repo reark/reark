@@ -30,8 +30,10 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 public final class UriFetcherManager extends FetcherManagerBase<Uri> {
 
@@ -40,13 +42,14 @@ public final class UriFetcherManager extends FetcherManagerBase<Uri> {
     }
 
     public static class Builder {
-        private Collection<Fetcher<Uri>> fetchers = new ArrayList<>();
+        private Collection<Fetcher<Uri>> fetchers = Collections.emptyList();
 
         @NonNull
         public Builder fetchers(@NonNull final Collection<Fetcher<Uri>> fetchers) {
             checkNotNull(fetchers);
 
-            this.fetchers = new ArrayList<>(fetchers);
+            this.fetchers = new ArrayList<>(get(fetchers));
+
             return this;
         }
 

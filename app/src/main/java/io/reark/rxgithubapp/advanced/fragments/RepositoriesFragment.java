@@ -99,7 +99,6 @@ public class RepositoriesFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         repositoriesViewModel.dispose();
-        repositoriesViewModel = null;
         mInstrumentation.getLeakTracing().traceLeakage(this);
     }
 }

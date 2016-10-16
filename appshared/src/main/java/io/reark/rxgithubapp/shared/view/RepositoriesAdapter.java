@@ -25,6 +25,7 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -91,9 +92,11 @@ public class RepositoriesAdapter extends Adapter<RepositoryViewHolder> {
 
     public static class RepositoryViewHolder extends ViewHolder {
 
-        public ImageView avatarImageView;
+        @NonNull
+        public final ImageView avatarImageView;
 
-        public TextView titleTextView;
+        @NonNull
+        public final TextView titleTextView;
 
         public RepositoryViewHolder(View view, OnClickListener onClickListener) {
             super(view);

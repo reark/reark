@@ -42,7 +42,7 @@ import static io.reark.reark.utils.Preconditions.get;
 public abstract class FetcherBase<T> implements Fetcher<T> {
     private static final String TAG = FetcherBase.class.getSimpleName();
 
-    public static final int NO_ERROR_CODE = -1;
+    private static final int NO_ERROR_CODE = -1;
 
     @NonNull
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;

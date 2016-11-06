@@ -70,8 +70,8 @@ retrolambda {
 }
 
 dependencies {
-    compile project(':reark')
-    compile project(':appshared')
+    debugCompile project(path: ':appshared', configuration: 'debug')
+    releaseCompile project(path: ':appshared', configuration: 'release')
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 

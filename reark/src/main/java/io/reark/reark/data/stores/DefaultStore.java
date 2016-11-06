@@ -27,7 +27,8 @@ package io.reark.reark.data.stores;
 
 import android.support.annotation.NonNull;
 
-import io.reark.reark.data.stores.cores.StoreCoreInterface;
+import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
+import io.reark.reark.data.stores.interfaces.StoreInterface;
 import rx.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
@@ -42,8 +43,9 @@ import static io.reark.reark.utils.Preconditions.get;
  *
  * @param <T> Type of the id used in this store.
  * @param <U> Type of the data this store contains.
+ * @param <R> Non-null type or wrapper for the data this store contains.
  */
-public class DefaultStore<T, U> implements StoreInterface<T, U> {
+public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
     @NonNull
     private final StoreCoreInterface<T, U> core;
@@ -51,10 +53,20 @@ public class DefaultStore<T, U> implements StoreInterface<T, U> {
     @NonNull
     private final GetIdForItem<T, U> getIdForItem;
 
+    @NonNull
+    private final GetNullSafe<U, R> getNullSafe;
+
+    @NonNull
+    private final GetEmptyValue<R> getEmptyValue;
+
     public DefaultStore(@NonNull final StoreCoreInterface<T, U> core,
-                        @NonNull final GetIdForItem<T, U> getIdForItem) {
+                        @NonNull final GetIdForItem<T, U> getIdForItem,
+                        @NonNull final GetNullSafe<U, R> getNullSafe,
+                        @NonNull final GetEmptyValue<R> getEmptyValue) {
         this.core = get(core);
         this.getIdForItem = get(getIdForItem);
+        this.getNullSafe = get(getNullSafe);
+        this.getEmptyValue = get(getEmptyValue);
     }
 
     @Override
@@ -66,23 +78,33 @@ public class DefaultStore<T, U> implements StoreInterface<T, U> {
 
     @NonNull
     @Override
-    public Observable<U> getOnce(@NonNull final T id) {
+    public Observable<R> getOnce(@NonNull final T id) {
         checkNotNull(id);
 
-        return core.getCached(id);
+        return core.getCached(id)
+                .map(getNullSafe::call)
+                .defaultIfEmpty(getEmptyValue.call());
     }
 
     @NonNull
     @Override
-    public Observable<U> getOnceAndStream(@NonNull final T id) {
+    public Observable<R> getOnceAndStream(@NonNull final T id) {
         checkNotNull(id);
 
         return Observable.concat(
                 getOnce(id),
-                core.getStream(id));
+                core.getStream(id).map(getNullSafe::call));
     }
 
     public interface GetIdForItem<T, U> {
         T call(U item);
+    }
+
+    public interface GetNullSafe<U, R> {
+        R call(U item);
+    }
+
+    public interface GetEmptyValue<R> {
+        R call();
     }
 }

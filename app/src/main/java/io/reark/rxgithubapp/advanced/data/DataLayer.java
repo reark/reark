@@ -42,6 +42,7 @@ import static io.reark.reark.utils.Preconditions.get;
 
 public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
+
     private final Context context;
 
     public DataLayer(@NonNull final Context context,

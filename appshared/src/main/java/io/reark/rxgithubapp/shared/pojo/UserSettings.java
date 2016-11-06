@@ -25,11 +25,22 @@
  */
 package io.reark.rxgithubapp.shared.pojo;
 
+import android.support.annotation.NonNull;
+
 public class UserSettings {
     private final int selectedRepositoryId;
 
     public UserSettings(int selectedRepositoryId) {
         this.selectedRepositoryId = selectedRepositoryId;
+    }
+
+    @NonNull
+    public static UserSettings none() {
+        return new UserSettings(-1);
+    }
+
+    public boolean isEmpty() {
+        return selectedRepositoryId == -1;
     }
 
     public int getSelectedRepositoryId() {

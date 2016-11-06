@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.cores;
+package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
@@ -65,7 +65,7 @@ public interface StoreCoreInterface<T, U> {
      * data item is in the cache, it simply completes without emitting any items.
      */
     @NonNull
-    Observable<U> getCached(@NonNull T id);
+    Observable<U> getCached(@NonNull final T id);
 
     /**
      * Takes an identifier and returns an observable that emits all _future_ items that are put into
@@ -78,5 +78,5 @@ public interface StoreCoreInterface<T, U> {
      * that are put into the core.
      */
     @NonNull
-    Observable<U> getStream(@NonNull T id);
+    Observable<U> getStream(@NonNull final T id);
 }

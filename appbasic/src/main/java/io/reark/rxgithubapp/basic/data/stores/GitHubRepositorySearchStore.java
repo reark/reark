@@ -28,8 +28,12 @@ package io.reark.rxgithubapp.basic.data.stores;
 import io.reark.reark.data.stores.MemoryStore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
-public class GitHubRepositorySearchStore extends MemoryStore<String, GitHubRepositorySearch> {
+public class GitHubRepositorySearchStore
+        extends MemoryStore<String, GitHubRepositorySearch, GitHubRepositorySearch> {
+
     public GitHubRepositorySearchStore() {
-        super(GitHubRepositorySearch::getSearch);
+        super(GitHubRepositorySearch::getSearch,
+                search -> search != null ? search : GitHubRepositorySearch.none(),
+                GitHubRepositorySearch::none);
     }
 }

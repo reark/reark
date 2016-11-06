@@ -26,70 +26,21 @@
 package io.reark.rxgithubapp.advanced.data.stores;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositorySearches;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubRepositorySearchColumns;
+import io.reark.reark.data.stores.DefaultStore;
+import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositorySearchStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
-import static io.reark.reark.utils.Preconditions.checkNotNull;
-
-public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositorySearch, String> {
+public class GitHubRepositorySearchStore
+        extends DefaultStore<String, GitHubRepositorySearch, GitHubRepositorySearch> {
 
     public GitHubRepositorySearchStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
-        super(contentResolver, gson);
-    }
-
-    @NonNull
-    @Override
-    protected String getIdFor(@NonNull final GitHubRepositorySearch item) {
-        checkNotNull(item);
-
-        return item.getSearch();
-    }
-
-    @NonNull
-    @Override
-    public Uri getContentUri() {
-        return GitHubRepositorySearches.GITHUB_REPOSITORY_SEARCHES;
-    }
-
-    @NonNull
-    @Override
-    protected String[] getProjection() {
-        return new String[] { GitHubRepositorySearchColumns.SEARCH, GitHubRepositorySearchColumns.JSON };
-    }
-
-    @NonNull
-    @Override
-    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepositorySearch item) {
-        checkNotNull(item);
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
-        contentValues.put(GitHubRepositorySearchColumns.JSON, getGson().toJson(item));
-        return contentValues;
-    }
-
-    @NonNull
-    @Override
-    protected GitHubRepositorySearch read(@NonNull final Cursor cursor) {
-        checkNotNull(cursor);
-
-        final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
-        return getGson().fromJson(json, GitHubRepositorySearch.class);
-    }
-
-    @NonNull
-    @Override
-    public Uri getUriForId(@NonNull final String id) {
-        checkNotNull(id);
-
-        return GitHubRepositorySearches.withSearch(id);
+        super(new GitHubRepositorySearchStoreCore(contentResolver, gson),
+                GitHubRepositorySearch::getSearch,
+                search -> search != null ? search : GitHubRepositorySearch.none(),
+                GitHubRepositorySearch::none);
     }
 }

@@ -42,6 +42,15 @@ public class GitHubOwner {
     }
 
     @NonNull
+    public static GitHubOwner empty() {
+        return new GitHubOwner("");
+    }
+
+    public boolean isEmpty() {
+        return avatarUrl.isEmpty();
+    }
+
+    @NonNull
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -61,7 +70,6 @@ public class GitHubOwner {
         GitHubOwner that = (GitHubOwner) o;
 
         return avatarUrl.equals(that.avatarUrl);
-
     }
 
     @Override

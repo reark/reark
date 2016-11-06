@@ -34,18 +34,19 @@ import android.support.annotation.NonNull;
 import com.google.gson.Gson;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
+import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
-import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.NetworkRequestStatusColumns;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer, GitHubRepository> {
+public class NetworkRequestStatusStoreCore extends ContentProviderStoreCore<Integer, NetworkRequestStatus> {
 
     private final Gson gson;
 
-    public GitHubRepositoryStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
+    public NetworkRequestStatusStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver);
 
         this.gson = Preconditions.get(gson);
@@ -54,53 +55,41 @@ public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer,
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubRepositories.GITHUB_REPOSITORIES;
+        return NetworkRequestStatuses.NETWORK_REQUEST_STATUSES;
     }
 
     @NonNull
     @Override
     protected String[] getProjection() {
-        return new String[] { JsonIdColumns.ID, JsonIdColumns.JSON };
+        return new String[] { NetworkRequestStatusColumns.ID, NetworkRequestStatusColumns.JSON };
     }
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepository item) {
+    protected ContentValues getContentValuesForItem(@NonNull final NetworkRequestStatus item) {
         checkNotNull(item);
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(JsonIdColumns.ID, item.getId());
+        contentValues.put(JsonIdColumns.ID, item.getUri().hashCode());
         contentValues.put(JsonIdColumns.JSON, gson.toJson(item));
         return contentValues;
     }
 
     @NonNull
     @Override
-    protected GitHubRepository read(@NonNull final Cursor cursor) {
+    protected NetworkRequestStatus read(@NonNull final Cursor cursor) {
         checkNotNull(cursor);
 
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        return gson.fromJson(json, GitHubRepository.class);
+        return gson.fromJson(json, NetworkRequestStatus.class);
     }
 
     @NonNull
     @Override
-    protected GitHubRepository mergeValues(@NonNull final GitHubRepository v1, @NonNull final GitHubRepository v2) {
-        checkNotNull(v1);
-        checkNotNull(v2);
-
-        // Creating a new object to avoid overwriting the passed argument
-        GitHubRepository newValue = new GitHubRepository(v1);
-
-        return newValue.overwrite(v2);
-    }
-
-    @NonNull
-    @Override
-    protected Uri getUriForId(@NonNull final Integer id) {
+    public Uri getUriForId(@NonNull final Integer id) {
         checkNotNull(id);
 
-        return GitHubRepositories.withId(id);
+        return NetworkRequestStatuses.withId(id);
     }
 
     @NonNull
@@ -108,6 +97,6 @@ public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer,
     protected Integer getIdForUri(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return (int) GitHubRepositories.fromUri(uri);
+        return (int) NetworkRequestStatuses.fromUri(uri);
     }
 }

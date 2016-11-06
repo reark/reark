@@ -26,83 +26,34 @@
 package io.reark.rxgithubapp.advanced.data.stores;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.rxgithubapp.advanced.data.DataLayer;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
+import io.reark.reark.data.stores.DefaultStore;
+import io.reark.rxgithubapp.advanced.data.stores.cores.UserSettingsStoreCore;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 
-import static io.reark.reark.utils.Preconditions.checkNotNull;
-
-public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
+public class UserSettingsStore
+        extends DefaultStore<Integer, UserSettings, UserSettings> {
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
-    public UserSettingsStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
-        super(contentResolver, gson);
+    public UserSettingsStore(final int userId, @NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
+        super(new UserSettingsStoreCore(contentResolver, gson),
+                __ -> userId,
+                user -> user != null ? user : UserSettings.none(),
+                UserSettings::none);
 
-        initUserSettings();
+        initUserSettings(userId);
     }
 
-    @NonNull
-    @Override
-    protected Integer getIdFor(@NonNull final UserSettings item) {
-        return DataLayer.DEFAULT_USER_ID;
-    }
-
-    @NonNull
-    @Override
-    public Uri getContentUri() {
-        return GitHubProvider.UserSettings.USER_SETTINGS;
-    }
-
-    private void initUserSettings() {
-        getOnce(DataLayer.DEFAULT_USER_ID)
+    private void initUserSettings(final int userId) {
+        getOnce(userId)
                 .first()
                 .filter(userSettings -> userSettings == null)
                 .subscribe(userSettings -> {
                     put(new UserSettings(DEFAULT_REPOSITORY_ID));
                 });
-    }
-
-    @NonNull
-    @Override
-    protected String[] getProjection() {
-        return new String[] { UserSettingsColumns.ID, UserSettingsColumns.JSON };
-    }
-
-    @NonNull
-    @Override
-    protected ContentValues getContentValuesForItem(@NonNull final UserSettings item) {
-        checkNotNull(item);
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(JsonIdColumns.ID, DataLayer.DEFAULT_USER_ID);
-        contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
-        return contentValues;
-    }
-
-    @NonNull
-    @Override
-    protected UserSettings read(@NonNull final Cursor cursor) {
-        checkNotNull(cursor);
-
-        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        return getGson().fromJson(json, UserSettings.class);
-    }
-
-    @NonNull
-    @Override
-    public Uri getUriForId(@NonNull final Integer id) {
-        checkNotNull(id);
-
-        return GitHubProvider.UserSettings.withId(id);
     }
 }

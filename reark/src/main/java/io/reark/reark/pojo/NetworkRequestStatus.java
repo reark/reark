@@ -26,19 +26,31 @@
 package io.reark.reark.pojo;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import io.reark.reark.utils.Preconditions;
 
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_COMPLETED;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ERROR;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_NONE;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ONGOING;
+import static io.reark.reark.utils.Preconditions.get;
 
 public final class NetworkRequestStatus {
 
+    @NonNull
     private final String uri;
+
+    @NonNull
     private final Status status;
+
     private final int errorCode;
+
+    @Nullable
     private final String errorMessage;
 
     public enum Status {
+        NETWORK_STATUS_NONE("networkStatusNone"),
         NETWORK_STATUS_ONGOING("networkStatusOngoing"),
         NETWORK_STATUS_COMPLETED("networkStatusCompleted"),
         NETWORK_STATUS_ERROR("networkStatusError");
@@ -54,32 +66,42 @@ public final class NetworkRequestStatus {
         }
     }
 
-    private NetworkRequestStatus(String uri,
-                                 Status status,
+    private NetworkRequestStatus(@NonNull final String uri,
+                                 @NonNull final Status status,
                                  int errorCode,
-                                 String errorMessage) {
+                                 @Nullable final String errorMessage) {
         this.uri = uri;
         this.status = status;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
     }
 
-    public static NetworkRequestStatus ongoing(String uri) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_ONGOING, 0, null);
+    @NonNull
+    public static NetworkRequestStatus none() {
+        return new NetworkRequestStatus("", NETWORK_STATUS_NONE, 0, null);
     }
 
-    public static NetworkRequestStatus error(String uri, int errorCode, String errorMessage) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_ERROR, 0, errorMessage);
+    @NonNull
+    public static NetworkRequestStatus ongoing(@NonNull final String uri) {
+        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ONGOING, 0, null);
     }
 
-    public static NetworkRequestStatus completed(String uri) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_COMPLETED, 0, null);
+    @NonNull
+    public static NetworkRequestStatus error(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
+        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ERROR, errorCode, errorMessage);
     }
 
+    @NonNull
+    public static NetworkRequestStatus completed(@NonNull final String uri) {
+        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_COMPLETED, 0, null);
+    }
+
+    @NonNull
     public String getUri() {
         return uri;
     }
 
+    @NonNull
     public Status getStatus() {
         return status;
     }
@@ -88,8 +110,13 @@ public final class NetworkRequestStatus {
         return errorCode;
     }
 
+    @Nullable
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public boolean isNone() {
+        return status == NETWORK_STATUS_NONE;
     }
 
     public boolean isOngoing() {

@@ -28,8 +28,12 @@ package io.reark.rxgithubapp.basic.data.stores;
 import io.reark.reark.data.stores.MemoryStore;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 
-public class UserSettingsStore extends MemoryStore<Integer, UserSettings> {
-    public UserSettingsStore(int userId) {
-        super(userSettings -> userId);
+public class UserSettingsStore
+        extends MemoryStore<Integer, UserSettings, UserSettings> {
+
+    public UserSettingsStore(final int userId) {
+        super(__ -> userId,
+                user -> user != null ? user : UserSettings.none(),
+                UserSettings::none);
     }
 }

@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import io.reark.reark.data.stores.StoreItem;
+import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
 import rx.Observable;
 import rx.functions.Func2;
@@ -47,16 +48,22 @@ import static io.reark.reark.utils.Preconditions.get;
  * the app.
  *
  * @param <T> Type of the id used in this store core.
- * @param <U> Type of the data this store contains.
+ * @param <U> Type of the data this store core contains.
  */
 public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     private static final String TAG = MemoryStoreCore.class.getSimpleName();
 
+    @NonNull
     private final Func2<U, U, U> putMergeFunction;
+
+    @NonNull
     private final Map<Integer, U> cache = new ConcurrentHashMap<>(10);
+
+    @NonNull
     private final Subject<StoreItem<T, U>, StoreItem<T, U>> subject = PublishSubject.create();
-    private final ConcurrentMap<Integer, Subject<U, U>> subjectCache =
-            new ConcurrentHashMap<>(20, 0.75f, 4);
+
+    @NonNull
+    private final ConcurrentMap<Integer, Subject<U, U>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
 
     public MemoryStoreCore() {
         this((v1, v2) -> v2);

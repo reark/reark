@@ -71,6 +71,15 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
     }
 
     @NonNull
+    public static GitHubRepository none() {
+        return new GitHubRepository(-1, "", -1, -1, GitHubOwner.empty());
+    }
+
+    public boolean isEmpty() {
+        return id == -1;
+    }
+
+    @NonNull
     @Override
     protected Class<GitHubRepository> getTypeParameterClass() {
         return GitHubRepository.class;

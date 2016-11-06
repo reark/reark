@@ -26,6 +26,7 @@
 package io.reark.reark.network.fetchers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +62,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
     }
 
-    protected void errorRequest(@NonNull final String uri, int errorCode, String errorMessage) {
+    protected void errorRequest(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
         checkNotNull(uri);
 
         Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
@@ -82,10 +83,10 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
                 && !requestMap.get(requestId).isUnsubscribed();
     }
 
-    protected void addRequest(int requestId, Subscription subscription) {
+    protected void addRequest(int requestId, @NonNull final Subscription subscription) {
         Log.v(TAG, "addRequest(" + requestId + ")");
 
-        requestMap.put(requestId, subscription);
+        requestMap.put(requestId, get(subscription));
     }
 
     @NonNull

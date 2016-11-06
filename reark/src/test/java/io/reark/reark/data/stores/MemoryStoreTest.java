@@ -36,12 +36,20 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 
 public class MemoryStoreTest {
-    private MemoryStore<Integer, Pair<Integer, String>> memoryStore;
+    private MemoryStore<Integer, Pair<Integer, String>, Pair<Integer, String>> memoryStore;
     private TestSubscriber<Pair<Integer, String>> testSubscriber;
+
+    // Store will emit an empty value in case an instant value is requested but does not exist.
+    // Each store needs to define the strategy for the empty value -- it may be a specific
+    // value representing none, or e.g. an empty optional.
+    private static final Pair<Integer, String> NONE = Pair.create(-1, null);
 
     @Before
     public void setup() {
-        memoryStore = new MemoryStore<>(pair -> pair.first);
+        memoryStore = new MemoryStore<>(pair -> pair.first,
+                pair -> pair != null ? pair : NONE,
+                () -> NONE);
+
         testSubscriber = new TestSubscriber<>();
     }
 
@@ -61,7 +69,7 @@ public class MemoryStoreTest {
         // getOnce is expected to return null observable in case it does not have the value.
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.assertValue(null);
+        testSubscriber.assertValue(NONE);
         testSubscriber.assertCompleted();
     }
 
@@ -73,7 +81,7 @@ public class MemoryStoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
-                        null,
+                        NONE,
                         new Pair<>(100, "test string 1")
                 ));
     }
@@ -87,7 +95,7 @@ public class MemoryStoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
-                        null,
+                        NONE,
                         new Pair<>(100, "test string 1"),
                         new Pair<>(100, "test string 2"),
                         new Pair<>(100, "test string 3")
@@ -104,7 +112,7 @@ public class MemoryStoreTest {
 
         testSubscriber.assertReceivedOnNext(
                 Arrays.asList(
-                        null,
+                        NONE,
                         new Pair<>(100, "test string")
                 ));
     }

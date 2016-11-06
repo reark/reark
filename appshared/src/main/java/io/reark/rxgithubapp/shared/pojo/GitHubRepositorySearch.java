@@ -47,6 +47,15 @@ public class GitHubRepositorySearch {
     }
 
     @NonNull
+    public static GitHubRepositorySearch none() {
+        return new GitHubRepositorySearch("", Collections.emptyList());
+    }
+
+    public boolean isEmpty() {
+        return search.isEmpty();
+    }
+
+    @NonNull
     public String getSearch() {
         return search;
     }

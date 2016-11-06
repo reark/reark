@@ -33,15 +33,10 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reark.rxgithubapp.advanced.data.DataLayer;
 
 @Module
 public final class StoreModule {
-
-    @Provides
-    @Singleton
-    public UserSettingsStore provideUserSettingsStore(ContentResolver contentResolver, Gson gson) {
-        return new UserSettingsStore(contentResolver, gson);
-    }
 
     @Provides
     @Singleton
@@ -59,6 +54,12 @@ public final class StoreModule {
     @Singleton
     public GitHubRepositorySearchStore provideGitHubRepositorySearchStore(ContentResolver contentResolver, Gson gson) {
         return new GitHubRepositorySearchStore(contentResolver, gson);
+    }
+
+    @Provides
+    @Singleton
+    public UserSettingsStore provideUserSettingsStore(ContentResolver contentResolver, Gson gson) {
+        return new UserSettingsStore(DataLayer.DEFAULT_USER_ID, contentResolver, gson);
     }
 
 }

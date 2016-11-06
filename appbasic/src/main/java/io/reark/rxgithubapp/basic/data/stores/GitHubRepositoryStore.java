@@ -28,9 +28,14 @@ package io.reark.rxgithubapp.basic.data.stores;
 import io.reark.reark.data.stores.MemoryStore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
-public class GitHubRepositoryStore extends MemoryStore<Integer, GitHubRepository> {
+public class GitHubRepositoryStore
+        extends MemoryStore<Integer, GitHubRepository, GitHubRepository> {
+
     public GitHubRepositoryStore() {
         // Use a custom merge function for put values.
-        super(GitHubRepository::getId, (v1, v2) -> new GitHubRepository(v1).overwrite(v2));
+        super((oldItem, newItem) -> new GitHubRepository(oldItem).overwrite(newItem),
+                GitHubRepository::getId,
+                repository -> repository != null ? repository : GitHubRepository.none(),
+                GitHubRepository::none);
     }
 }

@@ -41,6 +41,7 @@ import java.util.List;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -56,9 +57,9 @@ import static io.reark.reark.utils.Preconditions.checkNotNull;
  * This in an abstract class that implements the content provider access and expects extending
  * classes to implement data type specific methods.
  *
- * @param <T> Type of the data this store core contains.
+ * @param <U> Type of the data this store core contains.
  */
-public abstract class ContentProviderStoreCoreBase<T> {
+public abstract class ContentProviderStoreCoreBase<U> {
     private static final String TAG = ContentProviderStoreCoreBase.class.getSimpleName();
 
     @NonNull
@@ -68,7 +69,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     private final ContentObserver contentObserver = getContentObserver();
 
     @NonNull
-    private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
+    private final PublishSubject<Pair<U, Uri>> updateSubject = PublishSubject.create();
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
         this.contentResolver = Preconditions.get(contentResolver);
@@ -77,24 +78,22 @@ public abstract class ContentProviderStoreCoreBase<T> {
         updateSubject
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
-                .subscribe(pair -> {
-                    updateIfValueChanged(this, pair);
-                });
+                .subscribe(this::updateIfValueChanged);
     }
 
-    private static <T> void updateIfValueChanged(ContentProviderStoreCoreBase<T> store, Pair<T, Uri> pair) {
-        final Cursor cursor = store.contentResolver.query(pair.second, store.getProjection(), null, null, null);
-        T newItem = pair.first;
+    private void updateIfValueChanged(@NonNull final Pair<U, Uri> pair) {
+        final Cursor cursor = contentResolver.query(pair.second, getProjection(), null, null, null);
+        U newItem = pair.first;
         boolean valuesEqual = false;
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                T currentItem = store.read(cursor);
+                U currentItem = read(cursor);
                 valuesEqual = newItem.equals(currentItem);
 
                 if (!valuesEqual) {
                     Log.v(TAG, "Merging values at " + pair.second);
-                    newItem = store.mergeValues(currentItem, newItem);
+                    newItem = mergeValues(currentItem, newItem);
                     valuesEqual = newItem.equals(currentItem);
                 }
             }
@@ -106,10 +105,10 @@ public abstract class ContentProviderStoreCoreBase<T> {
             return;
         }
 
-        final ContentValues contentValues = store.getContentValuesForItem(newItem);
+        final ContentValues contentValues = getContentValuesForItem(newItem);
 
-        if (store.contentResolver.update(pair.second, contentValues, null, null) == 0) {
-            final Uri resultUri = store.contentResolver.insert(pair.second, contentValues);
+        if (contentResolver.update(pair.second, contentValues, null, null) == 0) {
+            final Uri resultUri = contentResolver.insert(pair.second, contentValues);
             Log.v(TAG, "Inserted at " + resultUri);
         } else {
             Log.v(TAG, "Updated at " + pair.second);
@@ -117,7 +116,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    protected static Handler createHandler(@NonNull final String name) {
+    public static Handler createHandler(@NonNull final String name) {
         checkNotNull(name);
 
         HandlerThread handlerThread = new HandlerThread(name);
@@ -125,7 +124,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
         return new Handler(handlerThread.getLooper());
     }
 
-    protected void put(@NonNull final T item, @NonNull final Uri uri) {
+    protected void put(@NonNull final U item, @NonNull final Uri uri) {
         checkNotNull(item);
         checkNotNull(uri);
 
@@ -133,7 +132,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    protected Observable<List<T>> get(@NonNull final Uri uri) {
+    public Observable<List<U>> get(@NonNull final Uri uri) {
         checkNotNull(uri);
 
         return Observable.just(uri)
@@ -142,25 +141,21 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    protected Observable<T> getOne(@NonNull final Uri uri) {
+    public Observable<U> getOnce(@NonNull final Uri uri) {
         return get(Preconditions.get(uri))
-                .map(queryResults -> {
-                    if (queryResults.isEmpty()) {
-                        return null;
+                .filter(list -> !list.isEmpty())
+                .doOnNext(list -> {
+                    if (list.size() > 1) {
+                        Log.w(TAG, String.format("%s items found in a get for a single item", list.size()));
                     }
-
-                    if (queryResults.size() > 1) {
-                        Log.w(TAG, String.format("%s items found in a get for a single item", queryResults.size()));
-                    }
-
-                    return queryResults.get(0);
-                });
+                })
+                .map(queryResults -> queryResults.get(0));
     }
 
     @NonNull
-    private List<T> queryList(@NonNull final Uri uri) {
+    private List<U> queryList(@NonNull final Uri uri) {
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
-        List<T> list = new ArrayList<>(10);
+        List<U> list = new ArrayList<>(10);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -174,6 +169,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
         if (list.isEmpty()) {
             Log.v(TAG, "Could not find with id: " + uri);
         }
+
         return list;
     }
 
@@ -192,13 +188,13 @@ public abstract class ContentProviderStoreCoreBase<T> {
     protected abstract String[] getProjection();
 
     @NonNull
-    protected abstract T read(@NonNull final Cursor cursor);
+    protected abstract U read(@NonNull final Cursor cursor);
 
     @NonNull
-    protected abstract ContentValues getContentValuesForItem(@NonNull final T item);
+    protected abstract ContentValues getContentValuesForItem(@NonNull final U item);
 
     @NonNull
-    protected T mergeValues(@NonNull final T v1, @NonNull final T v2) {
-        return v2; // Default behavior is new values overriding
+    protected U mergeValues(@NonNull final U oldItem, @NonNull final U newItem) {
+        return newItem; // Default behavior is new values overriding
     }
 }

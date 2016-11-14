@@ -27,23 +27,20 @@ package io.reark.rxgithubapp.shared.utils;
 
 import android.support.annotation.NonNull;
 
-import io.reark.reark.utils.Preconditions;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class DebugApplicationInstrumentation implements ApplicationInstrumentation {
+
     @NonNull
     private final LeakTracing leakTracing;
 
     @NonNull
     private final Instrumentation instrumentation;
 
-    public DebugApplicationInstrumentation(@NonNull LeakTracing leakTracing,
-                                           @NonNull Instrumentation instrumentation) {
-
-        Preconditions.checkNotNull(leakTracing, "Leak Tracing cannot be null.");
-        Preconditions.checkNotNull(instrumentation, "Instrumentation cannot be null.");
-
-        this.leakTracing = leakTracing;
-        this.instrumentation = instrumentation;
+    public DebugApplicationInstrumentation(@NonNull final LeakTracing leakTracing,
+                                           @NonNull final Instrumentation instrumentation) {
+        this.leakTracing = get(leakTracing);
+        this.instrumentation = get(instrumentation);
     }
 
     @Override

@@ -35,36 +35,38 @@ import com.google.gson.Gson;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatus, Integer> {
     private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
 
-    public NetworkRequestStatusStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public NetworkRequestStatusStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
     }
 
     @NonNull
     @Override
-    protected Integer getIdFor(@NonNull NetworkRequestStatus item) {
-        Preconditions.checkNotNull(item, "Network Request Status cannot be null.");
+    protected Integer getIdFor(@NonNull final NetworkRequestStatus item) {
+        checkNotNull(item);
+
         return item.getUri().hashCode();
     }
 
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubProvider.NetworkRequestStatuses.NETWORK_REQUEST_STATUSES;
+        return NetworkRequestStatuses.NETWORK_REQUEST_STATUSES;
     }
 
     @Override
-    public void put(@NonNull NetworkRequestStatus item) {
-        Preconditions.checkNotNull(item, "Network Request Status cannot be null.");
-
+    public void put(@NonNull final NetworkRequestStatus item) {
+        checkNotNull(item);
         Log.v(TAG, "put(" + item.getStatus() + ", " + item.getUri() + ")");
+
         super.put(item);
     }
 
@@ -76,7 +78,9 @@ public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatu
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(NetworkRequestStatus item) {
+    protected ContentValues getContentValuesForItem(@NonNull final NetworkRequestStatus item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, item.getUri().hashCode());
         contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
@@ -85,17 +89,18 @@ public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatu
 
     @NonNull
     @Override
-    protected NetworkRequestStatus read(Cursor cursor) {
+    protected NetworkRequestStatus read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final NetworkRequestStatus value = getGson().fromJson(json, NetworkRequestStatus.class);
-        return value;
+        return getGson().fromJson(json, NetworkRequestStatus.class);
     }
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull Integer id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Uri getUriForId(@NonNull final Integer id) {
+        checkNotNull(id);
 
-        return GitHubProvider.NetworkRequestStatuses.withId(id);
+        return NetworkRequestStatuses.withId(id);
     }
 }

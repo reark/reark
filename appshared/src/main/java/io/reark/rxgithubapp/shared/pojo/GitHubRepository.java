@@ -26,48 +26,48 @@
 package io.reark.rxgithubapp.shared.pojo;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 import io.reark.reark.pojo.OverwritablePojo;
-import io.reark.reark.utils.Preconditions;
+
+import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
+
     private final int id;
+
+    @NonNull
     private final String name;
 
     @SerializedName("stargazers_count")
-    private int stargazersCount;
+    private final int stargazersCount;
 
     @SerializedName("forks_count")
-    private int forksCount;
+    private final int forksCount;
 
-    @Nullable
+    @NonNull
     @SerializedName("owner")
     private final GitHubOwner owner;
 
-    @SuppressWarnings("NullableProblems")
     public GitHubRepository(int id,
-                            String name,
+                            @NonNull final String name,
                             int stargazersCount,
                             int forksCount,
-                            @NonNull GitHubOwner owner) {
-        Preconditions.checkNotNull(owner, "Owner cannot be null.");
-
+                            @NonNull final GitHubOwner owner) {
         this.id = id;
-        this.name = name;
+        this.name = get(name);
         this.stargazersCount = stargazersCount;
         this.forksCount = forksCount;
-        this.owner = owner;
+        this.owner = get(owner);
     }
 
-    public GitHubRepository(GitHubRepository gitHubRepository) {
-        this(gitHubRepository.getId(),
-             gitHubRepository.getName(),
-             gitHubRepository.getStargazersCount(),
-             gitHubRepository.getForksCount(),
-             gitHubRepository.getOwner());
+    public GitHubRepository(@NonNull final GitHubRepository other) {
+        this(other.getId(),
+             other.getName(),
+             other.getStargazersCount(),
+             other.getForksCount(),
+             other.getOwner());
     }
 
     @NonNull
@@ -80,6 +80,7 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
         return id;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
@@ -94,55 +95,43 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
 
     @NonNull
     public GitHubOwner getOwner() {
-        return owner == null ? new GitHubOwner() : owner;
+        return owner;
     }
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("GitHubRepository{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", stargazersCount=").append(stargazersCount);
-        sb.append(", forksCount=").append(forksCount);
-        sb.append(", owner=").append(owner);
-        sb.append('}');
-        return sb.toString();
+        return "GitHubRepository{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", stargazersCount=" + stargazersCount +
+                ", forksCount=" + forksCount +
+                ", owner=" + owner +
+                '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof GitHubRepository)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         GitHubRepository that = (GitHubRepository) o;
 
-        if (id != that.id) {
-            return false;
-        }
-        if (stargazersCount != that.stargazersCount) {
-            return false;
-        }
-        if (forksCount != that.forksCount) {
-            return false;
-        }
-        if (name != null ? !name.equals(that.name) : that.name != null) {
-            return false;
-        }
-        return !(owner != null ? !owner.equals(that.owner) : that.owner != null);
+        if (id != that.id) return false;
+        if (stargazersCount != that.stargazersCount) return false;
+        if (forksCount != that.forksCount) return false;
+        if (!name.equals(that.name)) return false;
+        return owner.equals(that.owner);
 
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + name.hashCode();
         result = 31 * result + stargazersCount;
         result = 31 * result + forksCount;
-        result = 31 * result + (owner != null ? owner.hashCode() : 0);
+        result = 31 * result + owner.hashCode();
         return result;
     }
 }

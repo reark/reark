@@ -29,7 +29,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
@@ -38,41 +37,42 @@ import io.reark.rxgithubapp.advanced.network.NetworkService;
 import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
     private final Context context;
 
-    public DataLayer(@NonNull Context context,
-                     @NonNull UserSettingsStore userSettingsStore,
-                     @NonNull NetworkRequestStatusStore networkRequestStatusStore,
-                     @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                     @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public DataLayer(@NonNull final Context context,
+                     @NonNull final UserSettingsStore userSettingsStore,
+                     @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
+                     @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
+                     @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore,
                 gitHubRepositoryStore,
                 gitHubRepositorySearchStore,
                 userSettingsStore);
 
-        Preconditions.checkNotNull(context, "Context cannot be null.");
-        Preconditions.checkNotNull(userSettingsStore, "User Settings Store cannot be null.");
+        checkNotNull(context);
+        checkNotNull(userSettingsStore);
 
         this.context = context;
     }
 
     @Override
-    protected void fetchGitHubRepository(@NonNull Integer repositoryId) {
+    protected void fetchGitHubRepository(@NonNull final Integer repositoryId) {
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
-        intent.putExtra("id", repositoryId);
+        intent.putExtra("id", get(repositoryId));
         context.startService(intent);
     }
 
     @Override
     protected void fetchGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
-
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
-        intent.putExtra("searchString", searchString);
+        intent.putExtra("searchString", get(searchString));
         context.startService(intent);
     }
 }

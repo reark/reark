@@ -27,23 +27,23 @@ package io.reark.rxgithubapp.shared.pojo;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import io.reark.reark.utils.Preconditions;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubRepositorySearchResults {
 
     @NonNull
-    final private List<GitHubRepository> items;
+    private final List<GitHubRepository> items;
 
     public GitHubRepositorySearchResults(@NonNull final List<GitHubRepository> items) {
-        Preconditions.checkNotNull(items, "GitHub Repository Items cannot be null.");
-
-        this.items = items;
+        this.items = new ArrayList<>(get(items));
     }
 
     @NonNull
     public List<GitHubRepository> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 }

@@ -40,7 +40,6 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import java.util.Collections;
 import java.util.List;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -50,6 +49,9 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class RepositoriesView extends FrameLayout {
 
@@ -86,20 +88,21 @@ public class RepositoriesView extends FrameLayout {
         repositoriesListView.setAdapter(repositoriesAdapter);
     }
 
-    private void setRepositories(@NonNull List<GitHubRepository> repositories) {
-        Preconditions.checkNotNull(repositories, "Repository List Text cannot be null.");
-        Preconditions.checkState(repositoriesAdapter != null, "List Adapter should not be null.");
+    private void setRepositories(@NonNull final List<GitHubRepository> repositories) {
+        checkNotNull(repositories);
+        checkNotNull(repositoriesAdapter);
 
         repositoriesAdapter.set(repositories);
     }
 
-    private void setNetworkRequestStatus(@NonNull ProgressStatus networkRequestStatus) {
-        Preconditions.checkNotNull(networkRequestStatus, "Network Request Status cannot be null.");
+    private void setNetworkRequestStatus(@NonNull final ProgressStatus networkRequestStatus) {
+        checkNotNull(networkRequestStatus);
 
         setNetworkRequestStatusText(getLoadingStatusString(networkRequestStatus));
     }
 
-    private String getLoadingStatusString(ProgressStatus networkRequestStatus) {
+    @NonNull
+    private static String getLoadingStatusString(ProgressStatus networkRequestStatus) {
         switch (networkRequestStatus) {
             case LOADING:
                 return "Loading..";
@@ -111,24 +114,21 @@ public class RepositoriesView extends FrameLayout {
         }
     }
 
-    private void setNetworkRequestStatusText(@NonNull String networkRequestStatusText) {
-        Preconditions.checkNotNull(networkRequestStatusText, "Network Status Text cannot be null.");
-        Preconditions.checkState(statusText != null, "Status Text View should not be null.");
+    private void setNetworkRequestStatusText(@NonNull final String networkRequestStatusText) {
+        checkNotNull(networkRequestStatusText);
+        checkNotNull(statusText);
 
         statusText.setText(networkRequestStatusText);
     }
 
     public static class ViewBinder extends RxViewBinder {
-        private RepositoriesView view;
-        private RepositoriesViewModel viewModel;
+        private final RepositoriesView view;
+        private final RepositoriesViewModel viewModel;
 
         public ViewBinder(@NonNull final RepositoriesView view,
                           @NonNull final RepositoriesViewModel viewModel) {
-            Preconditions.checkNotNull(view, "View cannot be null.");
-            Preconditions.checkNotNull(viewModel, "ViewModel cannot be null.");
-
-            this.view = view;
-            this.viewModel = viewModel;
+            this.view = get(view);
+            this.viewModel = get(viewModel);
         }
 
         @Override

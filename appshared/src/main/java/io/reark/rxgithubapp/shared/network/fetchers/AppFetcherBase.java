@@ -29,21 +29,25 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.network.fetchers.FetcherBase;
 import io.reark.reark.pojo.NetworkRequestStatus;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import rx.functions.Action1;
 
-public abstract class AppFetcherBase extends FetcherBase {
+import static io.reark.reark.utils.Preconditions.get;
+
+public abstract class AppFetcherBase<T> extends FetcherBase<T> {
 
     @NonNull
-    NetworkApi networkApi;
+    private final NetworkApi networkApi;
 
-    public AppFetcherBase(@NonNull NetworkApi networkApi,
-                          @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    protected AppFetcherBase(@NonNull final NetworkApi networkApi,
+                             @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         super(updateNetworkRequestStatus);
 
-        Preconditions.checkNotNull(networkApi, "Network Api cannot be null.");
+        this.networkApi = get(networkApi);
+    }
 
-        this.networkApi = networkApi;
+    @NonNull
+    public NetworkApi getNetworkApi() {
+        return networkApi;
     }
 }

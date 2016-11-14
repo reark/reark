@@ -34,6 +34,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.test.mock.MockContentProvider;
 
+import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -42,7 +43,7 @@ import java.util.LinkedHashMap;
 public class SimpleMockContentProvider extends MockContentProvider {
 
     // LinkedHashMap keeps the insertion order for more straightforward testing
-    private LinkedHashMap<Uri, String> values = new LinkedHashMap<>();
+    private final AbstractMap<Uri, String> values = new LinkedHashMap<>(5);
 
     public interface DataColumns {
         String KEY = "key";
@@ -67,7 +68,7 @@ public class SimpleMockContentProvider extends MockContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(@NonNull final Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder, CancellationSignal cancellationSignal) {
         return getCursor(uri, projection);
     }
@@ -79,7 +80,7 @@ public class SimpleMockContentProvider extends MockContentProvider {
         if (values.containsKey(uri)) {
             String[] result = { uri.getLastPathSegment(), values.get(uri) };
             cursor.addRow(result);
-        } else if (uri.getLastPathSegment().equals("0")) {
+        } else if ("0".equals(uri.getLastPathSegment())) {
             for (Uri key : values.keySet()) {
                 String[] result = { key.getLastPathSegment(), values.get(key) };
                 cursor.addRow(result);

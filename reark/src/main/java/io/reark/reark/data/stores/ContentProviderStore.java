@@ -34,11 +34,11 @@ import java.util.List;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCoreBase;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static rx.Observable.concat;
 
@@ -60,7 +60,7 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     @NonNull
     private final PublishSubject<StoreItem<Uri, T>> subjectCache = PublishSubject.create();
 
-    protected ContentProviderStore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStore(@NonNull final ContentResolver contentResolver) {
         super(contentResolver);
     }
 
@@ -88,8 +88,8 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      * Any open stream Observables for the item's id will emit this new value.
      */
     @Override
-    public void put(@NonNull T item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
+    public void put(@NonNull final T item) {
+        checkNotNull(item);
 
         put(item, getUriForItem(item));
     }
@@ -101,11 +101,10 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      * by providing an empty id.
      */
     @NonNull
-    public Observable<List<T>> get(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Observable<List<T>> get(@NonNull final U id) {
+        checkNotNull(id);
 
-        final Uri uri = getUriForId(id);
-        return get(uri);
+        return get(getUriForId(id));
     }
 
     /**
@@ -114,8 +113,8 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     @Override
-    public Observable<T> getOnce(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Observable<T> getOnce(@NonNull final U id) {
+        checkNotNull(id);
 
         final Uri uri = getUriForId(id);
         return getOne(uri);
@@ -137,8 +136,8 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      */
     @NonNull
     @Override
-    public Observable<T> getOnceAndStream(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Observable<T> getOnceAndStream(@NonNull final U id) {
+        checkNotNull(id);
         Log.v(TAG, "getStream(" + id + ")");
 
         return concat(getOnce(id).filter(item -> item != null),
@@ -150,11 +149,11 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
      * Returns unique Uri for the given id in the content provider of this store.
      */
     @NonNull
-    protected abstract Uri getUriForId(@NonNull U id);
+    protected abstract Uri getUriForId(@NonNull final U id);
 
     @NonNull
-    private Observable<T> getItemObservable(@NonNull U id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    private Observable<T> getItemObservable(@NonNull final U id) {
+        checkNotNull(id);
 
         return subjectCache
                 .filter(item -> item.id().equals(getUriForId(id)))
@@ -163,13 +162,11 @@ public abstract class ContentProviderStore<T, U> extends ContentProviderStoreCor
     }
 
     @NonNull
-    private Uri getUriForItem(@NonNull T item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
-
+    private Uri getUriForItem(@NonNull final T item) {
         return getUriForId(getIdFor(item));
     }
 
     @NonNull
-    protected abstract U getIdFor(@NonNull T item);
+    protected abstract U getIdFor(@NonNull final T item);
 
 }

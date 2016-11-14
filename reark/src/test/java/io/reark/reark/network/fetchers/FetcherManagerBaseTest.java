@@ -27,9 +27,8 @@ package io.reark.reark.network.fetchers;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -44,10 +43,10 @@ public class FetcherManagerBaseTest {
         final Fetcher<String> fetcher = mock(Fetcher.class);
         when(fetcher.getServiceUri()).thenReturn("path/to/resource");
         final FetcherManagerBase<String> fetcherManager =
-                new TestFetcherManager(Arrays.asList(fetcher));
+                new TestFetcherManager(Collections.singletonList(fetcher));
 
         // Act
-        Fetcher foundFetcher = fetcherManager.findFetcher("path/to/resource");
+        Fetcher<String> foundFetcher = fetcherManager.findFetcher("path/to/resource");
 
         // Assert
         assertEquals(foundFetcher, fetcher);
@@ -56,7 +55,7 @@ public class FetcherManagerBaseTest {
     @Test
     public void testFindFetcherNull() {
         // Assign
-        final FetcherManagerBase<String> fetcherManager = new TestFetcherManager(new ArrayList<>());
+        final FetcherManagerBase<String> fetcherManager = new TestFetcherManager(Collections.emptyList());
 
         // Act
         Fetcher<String> foundFetcher = fetcherManager.findFetcher("path/to/resource");
@@ -66,7 +65,7 @@ public class FetcherManagerBaseTest {
     }
 
     static class TestFetcherManager extends FetcherManagerBase<String> {
-        public TestFetcherManager(Collection<Fetcher<String>> fetchers) {
+        TestFetcherManager(Collection<Fetcher<String>> fetchers) {
             super(fetchers);
         }
     }

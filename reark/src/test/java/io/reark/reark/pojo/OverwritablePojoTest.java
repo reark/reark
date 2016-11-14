@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class OverwritablePojoTest {
 
@@ -38,7 +39,7 @@ public class OverwritablePojoTest {
         TestPojo pojo1 = new TestPojo(100, "");
         TestPojo pojo2 = new TestPojo(100, "");
 
-        assertEquals(true, pojo1.equals(pojo2));
+        assertEquals(pojo1, pojo2);
     }
 
     @Test
@@ -46,7 +47,7 @@ public class OverwritablePojoTest {
         TestPojo pojo1 = new TestPojo(100, "");
         TestPojo pojo2 = new TestPojo(200, "");
 
-        assertEquals(false, pojo1.equals(pojo2));
+        assertFalse(pojo1.equals(pojo2));
     }
 
     @Test
@@ -66,16 +67,16 @@ public class OverwritablePojoTest {
 
         pojo1.overwrite(pojo2);
 
-        assertEquals(false, pojo1.equals(pojo2));
+        assertFalse(pojo1.equals(pojo2));
         assertEquals(100, pojo1.id);
         assertEquals("bar", pojo1.value);
     }
 
-    private class TestPojo extends OverwritablePojo<TestPojo> {
+    private static final class TestPojo extends OverwritablePojo<TestPojo> {
         private final int id;
         private String value;
 
-        public TestPojo(int id, String value) {
+        private TestPojo(int id, String value) {
             this.id = id;
             this.value = value;
         }

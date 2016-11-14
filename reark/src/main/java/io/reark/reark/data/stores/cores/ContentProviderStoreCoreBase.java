@@ -44,6 +44,8 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 /**
  * ContentProviderStoreCoreBase implements an Observable based item store that uses a content provider as
  * its data backing store.
@@ -68,10 +70,8 @@ public abstract class ContentProviderStoreCoreBase<T> {
     @NonNull
     private final PublishSubject<Pair<T, Uri>> updateSubject = PublishSubject.create();
 
-    protected ContentProviderStoreCoreBase(@NonNull ContentResolver contentResolver) {
-        Preconditions.checkNotNull(contentResolver, "Content Resolver cannot be null.");
-
-        this.contentResolver = contentResolver;
+    protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
+        this.contentResolver = Preconditions.get(contentResolver);
         this.contentResolver.registerContentObserver(getContentUri(), true, contentObserver);
 
         updateSubject
@@ -117,33 +117,40 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    protected static Handler createHandler(String name) {
+    protected static Handler createHandler(@NonNull final String name) {
+        checkNotNull(name);
+
         HandlerThread handlerThread = new HandlerThread(name);
         handlerThread.start();
         return new Handler(handlerThread.getLooper());
     }
 
-    protected void put(T item, Uri uri) {
-        Preconditions.checkNotNull(item, "Item to be inserted cannot be null");
+    protected void put(@NonNull final T item, @NonNull final Uri uri) {
+        checkNotNull(item);
+        checkNotNull(uri);
 
         updateSubject.onNext(new Pair<>(item, uri));
     }
 
     @NonNull
-    protected Observable<List<T>> get(Uri uri) {
+    protected Observable<List<T>> get(@NonNull final Uri uri) {
+        checkNotNull(uri);
+
         return Observable.just(uri)
                 .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
 
     @NonNull
-    protected Observable<T> getOne(Uri uri) {
-        return get(uri)
+    protected Observable<T> getOne(@NonNull final Uri uri) {
+        return get(Preconditions.get(uri))
                 .map(queryResults -> {
-                    if (queryResults.size() == 0) {
+                    if (queryResults.isEmpty()) {
                         return null;
-                    } else if (queryResults.size() > 1) {
-                        Log.w(TAG, "Multiple items found in a get for a single item:" + queryResults.size());
+                    }
+
+                    if (queryResults.size() > 1) {
+                        Log.w(TAG, String.format("%s items found in a get for a single item", queryResults.size()));
                     }
 
                     return queryResults.get(0);
@@ -151,11 +158,9 @@ public abstract class ContentProviderStoreCoreBase<T> {
     }
 
     @NonNull
-    private List<T> queryList(Uri uri) {
-        Preconditions.checkNotNull(uri, "Uri cannot be null.");
-
+    private List<T> queryList(@NonNull final Uri uri) {
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
-        List<T> list = new ArrayList<>();
+        List<T> list = new ArrayList<>(10);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -166,7 +171,7 @@ public abstract class ContentProviderStoreCoreBase<T> {
             }
             cursor.close();
         }
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             Log.v(TAG, "Could not find with id: " + uri);
         }
         return list;
@@ -187,13 +192,13 @@ public abstract class ContentProviderStoreCoreBase<T> {
     protected abstract String[] getProjection();
 
     @NonNull
-    protected abstract T read(Cursor cursor);
+    protected abstract T read(@NonNull final Cursor cursor);
 
     @NonNull
-    protected abstract ContentValues getContentValuesForItem(T item);
+    protected abstract ContentValues getContentValuesForItem(@NonNull final T item);
 
     @NonNull
-    protected T mergeValues(@NonNull T v1, @NonNull T v2) {
+    protected T mergeValues(@NonNull final T v1, @NonNull final T v2) {
         return v2; // Default behavior is new values overriding
     }
 }

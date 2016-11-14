@@ -33,22 +33,22 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositorySearches;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubRepositorySearchColumns;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
-public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositorySearch, String> {
-    private static final String TAG = GitHubRepositorySearchStore.class.getSimpleName();
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-    public GitHubRepositorySearchStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositorySearch, String> {
+
+    public GitHubRepositorySearchStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
     }
 
     @NonNull
     @Override
-    protected String getIdFor(@NonNull GitHubRepositorySearch item) {
-        Preconditions.checkNotNull(item, "GitHub Repository Search cannot be null.");
+    protected String getIdFor(@NonNull final GitHubRepositorySearch item) {
+        checkNotNull(item);
 
         return item.getSearch();
     }
@@ -56,7 +56,7 @@ public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositoryS
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubProvider.GitHubRepositorySearches.GITHUB_REPOSITORY_SEARCHES;
+        return GitHubRepositorySearches.GITHUB_REPOSITORY_SEARCHES;
     }
 
     @NonNull
@@ -67,7 +67,9 @@ public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositoryS
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(GitHubRepositorySearch item) {
+    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepositorySearch item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
         contentValues.put(GitHubRepositorySearchColumns.JSON, getGson().toJson(item));
@@ -76,17 +78,18 @@ public class GitHubRepositorySearchStore extends GsonStoreBase<GitHubRepositoryS
 
     @NonNull
     @Override
-    protected GitHubRepositorySearch read(Cursor cursor) {
+    protected GitHubRepositorySearch read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
-        final GitHubRepositorySearch value = getGson().fromJson(json, GitHubRepositorySearch.class);
-        return value;
+        return getGson().fromJson(json, GitHubRepositorySearch.class);
     }
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull String id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Uri getUriForId(@NonNull final String id) {
+        checkNotNull(id);
 
-        return GitHubProvider.GitHubRepositorySearches.withSearch(id);
+        return GitHubRepositorySearches.withSearch(id);
     }
 }

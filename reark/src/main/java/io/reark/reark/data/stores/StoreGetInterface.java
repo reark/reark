@@ -25,6 +25,8 @@
  */
 package io.reark.reark.data.stores;
 
+import android.support.annotation.NonNull;
+
 import rx.Observable;
 
 /**
@@ -44,7 +46,8 @@ public interface StoreGetInterface<T, U> {
      * @return An observable that either returns the latest item with the requested id and
      * completes, or in case no item is found, just an empty completing observable.
      */
-    Observable<U> getOnce(T id);
+    @NonNull
+    Observable<U> getOnce(@NonNull final T id);
 
     /**
      * Get a full stream of items with the specified identifier. Whenever a store receives a new
@@ -59,5 +62,6 @@ public interface StoreGetInterface<T, U> {
      * first item of the observable, and then emits all further items with the same id as they are
      * inserted into the store.
      */
-    Observable<U> getOnceAndStream(T id);
+    @NonNull
+    Observable<U> getOnceAndStream(@NonNull final T id);
 }

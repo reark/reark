@@ -26,8 +26,11 @@
 package io.reark.reark.network.fetchers;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 public interface Fetcher<T> {
-    void fetch(Intent intent);
+    void fetch(@NonNull final Intent intent);
+
+    @NonNull
     T getServiceUri();
 }

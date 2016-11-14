@@ -33,19 +33,19 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.DataLayer;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+
 public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
-    private static final String TAG = UserSettingsStore.class.getSimpleName();
 
     private static final int DEFAULT_REPOSITORY_ID = 15491874;
 
-    public UserSettingsStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+    public UserSettingsStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
 
         initUserSettings();
@@ -53,7 +53,7 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    protected Integer getIdFor(@NonNull UserSettings item) {
+    protected Integer getIdFor(@NonNull final UserSettings item) {
         return DataLayer.DEFAULT_USER_ID;
     }
 
@@ -80,7 +80,9 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(UserSettings item) {
+    protected ContentValues getContentValuesForItem(@NonNull final UserSettings item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, DataLayer.DEFAULT_USER_ID);
         contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
@@ -89,16 +91,17 @@ public class UserSettingsStore extends GsonStoreBase<UserSettings, Integer> {
 
     @NonNull
     @Override
-    protected UserSettings read(Cursor cursor) {
+    protected UserSettings read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final UserSettings value = getGson().fromJson(json, UserSettings.class);
-        return value;
+        return getGson().fromJson(json, UserSettings.class);
     }
 
     @NonNull
     @Override
-    public Uri getUriForId(@NonNull Integer id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Uri getUriForId(@NonNull final Integer id) {
+        checkNotNull(id);
 
         return GitHubProvider.UserSettings.withId(id);
     }

@@ -28,7 +28,7 @@ package io.reark.reark.data.stores;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import io.reark.reark.utils.Preconditions;
+import static io.reark.reark.utils.Preconditions.get;
 
 /**
  * A class used internally in stores. It behaves much like a Pair.
@@ -45,10 +45,8 @@ public class StoreItem<T, U> {
     private final U item;
 
     public StoreItem(@NonNull final T id, @Nullable final U item) {
-        Preconditions.checkNotNull(id, "id cannot be null.");
-
-        this.id = id;
-        this.item = item;
+        this.id = get(id);
+        this.item = get(item);
     }
 
     @NonNull

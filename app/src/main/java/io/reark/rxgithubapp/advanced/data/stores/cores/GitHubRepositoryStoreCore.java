@@ -33,23 +33,23 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
-public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHubRepository> {
-    private static final String TAG = GitHubRepositoryStoreCore.class.getSimpleName();
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-    public GitHubRepositoryStoreCore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHubRepository> {
+
+    public GitHubRepositoryStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver, gson);
     }
 
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
+        return GitHubRepositories.GITHUB_REPOSITORIES;
     }
 
     @NonNull
@@ -60,7 +60,9 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(GitHubRepository item) {
+    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepository item) {
+        checkNotNull(item);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(JsonIdColumns.ID, item.getId());
         contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
@@ -69,15 +71,19 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected GitHubRepository read(Cursor cursor) {
+    protected GitHubRepository read(@NonNull final Cursor cursor) {
+        checkNotNull(cursor);
+
         final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        final GitHubRepository value = getGson().fromJson(json, GitHubRepository.class);
-        return value;
+        return getGson().fromJson(json, GitHubRepository.class);
     }
 
     @NonNull
     @Override
-    protected GitHubRepository mergeValues(@NonNull GitHubRepository v1, @NonNull GitHubRepository v2) {
+    protected GitHubRepository mergeValues(@NonNull final GitHubRepository v1, @NonNull final GitHubRepository v2) {
+        checkNotNull(v1);
+        checkNotNull(v2);
+
         // Creating a new object to avoid overwriting the passed argument
         GitHubRepository newValue = new GitHubRepository(v1);
 
@@ -86,17 +92,17 @@ public class GitHubRepositoryStoreCore extends GsonStoreCoreBase<Integer, GitHub
 
     @NonNull
     @Override
-    protected Uri getUriForId(@NonNull Integer id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    protected Uri getUriForId(@NonNull final Integer id) {
+        checkNotNull(id);
 
-        return GitHubProvider.GitHubRepositories.withId(id);
+        return GitHubRepositories.withId(id);
     }
 
     @NonNull
     @Override
-    protected Integer getIdForUri(@NonNull Uri uri) {
-        Preconditions.checkNotNull(uri, "Uri cannot be null.");
+    protected Integer getIdForUri(@NonNull final Uri uri) {
+        checkNotNull(uri);
 
-        return (int) GitHubProvider.GitHubRepositories.fromUri(uri);
+        return (int) GitHubRepositories.fromUri(uri);
     }
 }

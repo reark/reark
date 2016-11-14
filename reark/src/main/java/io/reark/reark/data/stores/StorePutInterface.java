@@ -25,6 +25,8 @@
  */
 package io.reark.reark.data.stores;
 
+import android.support.annotation.NonNull;
+
 /**
  * Interface for stores into which it is possible to insert data. This default interface is the most
  * simple put interface possible.
@@ -39,5 +41,5 @@ public interface StorePutInterface<T> {
      *
      * @param item The data item to insert into the store.
      */
-    void put(T item);
+    void put(@NonNull final T item);
 }

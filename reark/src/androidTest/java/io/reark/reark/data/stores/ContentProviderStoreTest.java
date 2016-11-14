@@ -32,7 +32,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.test.ProviderTestCase2;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     private static final String AUTHORITY = "test.authority";
     private static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
     private static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, "veggies");
-    private static final String[] PROJECTION = new String[] { DataColumns.KEY, DataColumns.VALUE };
+    private static final String[] PROJECTION = { DataColumns.KEY, DataColumns.VALUE };
 
     private TestStore store;
 
@@ -74,7 +75,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void testGetOneWithData() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = new ArrayList<String>(){{ add("parsnip"); }};
+        List<String> expected = Collections.singletonList("parsnip");
 
         // ACT
         store.getOnce(store.getIdFor("parsnip")).subscribe(testSubscriber);
@@ -89,7 +90,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void testGetOneWithoutData() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = new ArrayList<String>(){{ add(null); }};
+        List<String> expected = Collections.singletonList(null);
 
         // ACT
         store.getOnce(store.getIdFor("bacon")).subscribe(testSubscriber);
@@ -104,9 +105,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void testGetWithData() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        List<List<String>> expected = new ArrayList<List<String>>(){{
-            add(new ArrayList<String>() {{ add("parsnip"); }});
-        }};
+        List<List<String>> expected = Collections.singletonList(Collections.singletonList("parsnip"));
 
         // ACT
         store.get(store.getIdFor("parsnip")).subscribe(testSubscriber);
@@ -121,13 +120,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void testGetAll() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        List<List<String>> expected = new ArrayList<List<String>>(){{
-            add(new ArrayList<String>() {{
-                add("parsnip");
-                add("lettuce");
-                add("spinach");
-            }});
-        }};
+        List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
 
         // ACT
         // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
@@ -145,7 +138,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void testGetOnceAndStream() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = new ArrayList<String>(){{ add("spinach"); }};
+        List<String> expected = Collections.singletonList("spinach");
 
         // ACT
         store.getOnceAndStream(store.getIdFor("spinach")).subscribe(testSubscriber);
@@ -174,21 +167,21 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     /**
      * A simple store containing String values tracked with Integer keys.
      */
-    public class TestStore extends ContentProviderStore<String, Integer> {
+    public static class TestStore extends ContentProviderStore<String, Integer> {
 
-        public TestStore(@NonNull ContentResolver contentResolver) {
+        public TestStore(@NonNull final ContentResolver contentResolver) {
             super(contentResolver);
         }
 
         @NonNull
         @Override
-        public Uri getUriForId(@NonNull Integer id) {
+        public Uri getUriForId(@NonNull final Integer id) {
             return Uri.withAppendedPath(getContentUri(), String.valueOf(id));
         }
 
         @NonNull
         @Override
-        protected Integer getIdFor(@NonNull String item) {
+        protected Integer getIdFor(@NonNull final String item) {
             return item.hashCode();
         }
 
@@ -206,13 +199,13 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
 
         @NonNull
         @Override
-        protected String read(Cursor cursor) {
+        protected String read(@NonNull final Cursor cursor) {
             return cursor.getString(cursor.getColumnIndex(DataColumns.VALUE));
         }
 
         @NonNull
         @Override
-        protected ContentValues getContentValuesForItem(String item) {
+        protected ContentValues getContentValuesForItem(@NonNull final String item) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DataColumns.KEY, getIdFor(item));
             contentValues.put(DataColumns.VALUE, item);

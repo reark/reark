@@ -26,6 +26,7 @@
 package io.reark.rxgithubapp.advanced.data.schematicProvider;
 
 import android.net.Uri;
+import android.net.Uri.Builder;
 import android.support.annotation.NonNull;
 
 import net.simonvt.schematic.annotation.ContentProvider;
@@ -33,25 +34,25 @@ import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
 import net.simonvt.schematic.annotation.TableEndpoint;
 
-import io.reark.reark.utils.Preconditions;
+import static io.reark.reark.utils.Preconditions.get;
 
 @ContentProvider(authority = GitHubProvider.AUTHORITY, database = GitHubDatabase.class)
-public class GitHubProvider {
+public final class GitHubProvider {
     public static final String AUTHORITY = "io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider";
 
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    private static Uri buildUri(@NonNull String... paths) {
-        Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+    private static Uri buildUri(@NonNull final String... paths) {
+        Builder builder = BASE_CONTENT_URI.buildUpon();
         for (String path : paths) {
             builder.appendPath(path);
         }
-        Uri uri = builder.build();
-        Preconditions.checkNotNull(uri, "Uri cannot be null.");
-        return uri;
+
+        return get(builder.build());
     }
 
-    @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORIES) public static class GitHubRepositories {
+    @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORIES)
+    public static final class GitHubRepositories {
         @ContentUri(
                 path = GitHubDatabase.GITHUB_REPOSITORIES,
                 type = "vnd.android.cursor.dir/vnd.io.reark.rxgithubapp.repository",
@@ -73,7 +74,8 @@ public class GitHubProvider {
         }
     }
 
-    @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORY_SEARCHES) public static class GitHubRepositorySearches {
+    @TableEndpoint(table = GitHubDatabase.GITHUB_REPOSITORY_SEARCHES)
+    public static final class GitHubRepositorySearches {
         @ContentUri(
                 path = GitHubDatabase.GITHUB_REPOSITORY_SEARCHES,
                 type = "vnd.android.cursor.dir/vnd.io.reark.rxgithubapp.repositorysearch",
@@ -91,7 +93,8 @@ public class GitHubProvider {
         }
     }
 
-    @TableEndpoint(table = GitHubDatabase.USER_SETTINGS) public static class UserSettings {
+    @TableEndpoint(table = GitHubDatabase.USER_SETTINGS)
+    public static final class UserSettings {
         @ContentUri(
                 path = GitHubDatabase.USER_SETTINGS,
                 type = "vnd.android.cursor.dir/vnd.io.reark.rxgithubapp.usersettings",
@@ -109,7 +112,8 @@ public class GitHubProvider {
         }
     }
 
-    @TableEndpoint(table = GitHubDatabase.NETWORK_REQUEST_STATUSES) public static class NetworkRequestStatuses {
+    @TableEndpoint(table = GitHubDatabase.NETWORK_REQUEST_STATUSES)
+    public static final class NetworkRequestStatuses {
         @ContentUri(
                 path = GitHubDatabase.NETWORK_REQUEST_STATUSES,
                 type = "vnd.android.cursor.dir/vnd.io.reark.rxgithubapp.networkrequeststatus",

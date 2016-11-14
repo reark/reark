@@ -31,21 +31,21 @@ import android.support.annotation.NonNull;
 import com.google.gson.Gson;
 
 import io.reark.reark.data.stores.DefaultStore;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositoryStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
-public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepository> {
-    private static final String TAG = GitHubRepositoryStore.class.getSimpleName();
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-    public GitHubRepositoryStore(@NonNull ContentResolver contentResolver, @NonNull Gson gson) {
+public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepository> {
+
+    public GitHubRepositoryStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(new GitHubRepositoryStoreCore(contentResolver, gson),
                 GitHubRepositoryStore::getIdFor);
     }
 
     @NonNull
-    protected static Integer getIdFor(@NonNull GitHubRepository item) {
-        Preconditions.checkNotNull(item, "GitHub Repository cannot be null.");
+    protected static Integer getIdFor(@NonNull final GitHubRepository item) {
+        checkNotNull(item);
 
         return item.getId();
     }

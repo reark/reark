@@ -52,10 +52,11 @@ import static org.junit.Assert.assertTrue;
 @PrepareForTest(AndroidSchedulers.class)
 public class RxViewBinderTest {
 
-    RxViewBinder binder;
+    private RxViewBinder binder;
 
-    Subject<String, String> testSubject;
-    TestSubscriber<String> testSubscriber;
+    private Subject<String, String> testSubject;
+
+    private TestSubscriber<String> testSubscriber;
 
     @Before
     public void setUp() {
@@ -68,7 +69,7 @@ public class RxViewBinderTest {
 
         binder = new RxViewBinder() {
             @Override
-            protected void bindInternal(@NonNull CompositeSubscription compositeSubscription) {
+            protected void bindInternal(@NonNull final CompositeSubscription compositeSubscription) {
                 assertNull(testSubscriber);
 
                 // It is not possible to subscribe multiple with the same subscriber.

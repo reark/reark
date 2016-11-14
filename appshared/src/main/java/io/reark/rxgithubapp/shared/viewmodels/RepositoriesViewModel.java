@@ -32,10 +32,10 @@ import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxUtils;
 import io.reark.reark.viewmodels.AbstractViewModel;
-import io.reark.rxgithubapp.shared.data.DataFunctions;
+import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepository;
+import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import rx.Observable;
@@ -44,6 +44,9 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class RepositoriesViewModel extends AbstractViewModel {
     private static final String TAG = RepositoriesViewModel.class.getSimpleName();
@@ -56,27 +59,27 @@ public class RepositoriesViewModel extends AbstractViewModel {
     private static final int SEARCH_INPUT_DELAY = 500;
 
     @NonNull
-    private final DataFunctions.GetGitHubRepositorySearch getGitHubRepositorySearch;
+    private final GetGitHubRepositorySearch getGitHubRepositorySearch;
 
     @NonNull
-    private final DataFunctions.GetGitHubRepository getGitHubRepository;
+    private final GetGitHubRepository getGitHubRepository;
 
+    @NonNull
     private final PublishSubject<String> searchString = PublishSubject.create();
+
+    @NonNull
     private final PublishSubject<GitHubRepository> selectRepository = PublishSubject.create();
 
+    @NonNull
     private final BehaviorSubject<List<GitHubRepository>> repositories = BehaviorSubject.create();
+
+    @NonNull
     private final BehaviorSubject<ProgressStatus> networkRequestStatusText = BehaviorSubject.create();
 
-    public RepositoriesViewModel(@NonNull DataFunctions.GetGitHubRepositorySearch getGitHubRepositorySearch,
-                                 @NonNull DataFunctions.GetGitHubRepository getGitHubRepository) {
-        Preconditions.checkNotNull(getGitHubRepositorySearch,
-                                   "GetGitHubRepositorySearch cannot be null.");
-        Preconditions.checkNotNull(getGitHubRepository,
-                                   "GetGitHubRepository cannot be null.");
-
-        this.getGitHubRepositorySearch = getGitHubRepositorySearch;
-        this.getGitHubRepository = getGitHubRepository;
-        Log.v(TAG, "RepositoriesViewModel");
+    public RepositoriesViewModel(@NonNull final GetGitHubRepositorySearch getGitHubRepositorySearch,
+                                 @NonNull final GetGitHubRepository getGitHubRepository) {
+        this.getGitHubRepositorySearch = get(getGitHubRepositorySearch);
+        this.getGitHubRepository = get(getGitHubRepository);
     }
 
     @NonNull
@@ -94,14 +97,14 @@ public class RepositoriesViewModel extends AbstractViewModel {
         return networkRequestStatusText.asObservable();
     }
 
-    public void setSearchString(@NonNull String searchString) {
-        Preconditions.checkNotNull(searchString, "SearchString cannot be null.");
+    public void setSearchString(@NonNull final String searchString) {
+        checkNotNull(searchString);
 
         this.searchString.onNext(searchString);
     }
 
-    public void selectRepository(@NonNull GitHubRepository repository) {
-        Preconditions.checkNotNull(repository, "Repository cannot be null.");
+    public void selectRepository(@NonNull final GitHubRepository repository) {
+        checkNotNull(repository);
 
         this.selectRepository.onNext(repository);
     }
@@ -120,15 +123,16 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
+    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
+        checkNotNull(compositeSubscription);
         Log.v(TAG, "subscribeToDataStoreInternal");
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
                 searchString
-                        .filter(string -> string.length() > 2)
+                        .filter(value -> value.length() > 2)
                         .debounce(SEARCH_INPUT_DELAY, TimeUnit.MILLISECONDS)
                         .distinctUntilChanged()
-                        .doOnNext(string -> Log.d(TAG, "Searching with: " + string))
+                        .doOnNext(value -> Log.d(TAG, "Searching with: " + value))
                         .switchMap(getGitHubRepositorySearch::call)
                         .publish();
 
@@ -143,7 +147,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
                 .map(GitHubRepositorySearch::getItems)
                 .flatMap(toGitHubRepositoryList())
                 .doOnNext(list -> Log.d(TAG, "Publishing " + list.size() + " repositories from the ViewModel"))
-                .subscribe(RepositoriesViewModel.this.repositories::onNext));
+                .subscribe(repositories::onNext));
 
         compositeSubscription.add(repositorySearchSource.connect());
     }
@@ -158,16 +162,16 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @NonNull
-    Observable<GitHubRepository> getGitHubRepositoryObservable(@NonNull Integer repositoryId) {
-        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+    Observable<GitHubRepository> getGitHubRepositoryObservable(@NonNull final Integer repositoryId) {
+        checkNotNull(repositoryId);
 
         return getGitHubRepository
                 .call(repositoryId)
                 .doOnNext((repository) -> Log.v(TAG, "Received repository " + repository.getId()));
     }
 
-    void setNetworkStatusText(@NonNull ProgressStatus status) {
-        Preconditions.checkNotNull(status, "ProgressStatus cannot be null.");
+    void setNetworkStatusText(@NonNull final ProgressStatus status) {
+        checkNotNull(status);
 
         networkRequestStatusText.onNext(status);
     }

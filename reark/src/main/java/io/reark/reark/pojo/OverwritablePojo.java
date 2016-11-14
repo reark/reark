@@ -31,13 +31,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 /**
  * Pojo base class that supports overwriting the fields with fields from
  * another instance of the same class.
  */
-public abstract class OverwritablePojo<T extends OverwritablePojo> {
+public abstract class OverwritablePojo<T extends OverwritablePojo<T>> {
     private static final String TAG = OverwritablePojo.class.getSimpleName();
 
     @NonNull
@@ -45,8 +46,8 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
 
     @NonNull
     @SuppressWarnings("unchecked")
-    public T overwrite(@NonNull T other) {
-        Preconditions.checkNotNull(other, "Can't overwrite with null value");
+    public T overwrite(@NonNull final T other) {
+        checkNotNull(other, "Can't overwrite with null value");
 
         if (equals(other)) {
             return (T) this;
@@ -57,7 +58,9 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
 
             if (hasIllegalAccessModifiers(modifiers)) {
                 continue;
-            } else if (!Modifier.isPublic(modifiers)) {
+            }
+
+            if (!Modifier.isPublic(modifiers)) {
                 // We want to overwrite also protected and private fields. This allows field access
                 // for this instance of the field. The actual field of the class isn't modified.
                 field.setAccessible(true);
@@ -81,9 +84,10 @@ public abstract class OverwritablePojo<T extends OverwritablePojo> {
                 || Modifier.isTransient(modifiers);
     }
 
-    protected boolean isEmpty(Field field, OverwritablePojo pojo) {
+    protected boolean isEmpty(@NonNull final Field field, @NonNull final OverwritablePojo<T> pojo) {
         try {
             Object value = field.get(pojo);
+
             if (value == null) {
                 return true;
             } else if (value instanceof String) {

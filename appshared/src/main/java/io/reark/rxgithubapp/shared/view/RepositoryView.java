@@ -35,7 +35,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 
-import io.reark.reark.utils.Preconditions;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.glide.SerialTarget;
@@ -43,6 +42,9 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class RepositoryView extends FrameLayout {
     private TextView titleTextView;
@@ -70,8 +72,8 @@ public class RepositoryView extends FrameLayout {
         avatarImageView = (ImageView) findViewById(R.id.widget_avatar_image_view);
     }
 
-    private void setRepository(@NonNull GitHubRepository repository) {
-        Preconditions.checkNotNull(repository, "Repository cannot be null.");
+    private void setRepository(@NonNull final GitHubRepository repository) {
+        checkNotNull(repository);
 
         titleTextView.setText(repository.getName());
         stargazersTextView.setText("stars: " + repository.getStargazersCount());
@@ -97,15 +99,12 @@ public class RepositoryView extends FrameLayout {
 
         public ViewBinder(@NonNull final RepositoryView view,
                           @NonNull final RepositoryViewModel viewModel) {
-            Preconditions.checkNotNull(view, "View cannot be null.");
-            Preconditions.checkNotNull(viewModel, "ViewModel cannot be null.");
-
-            this.view = view;
-            this.viewModel = viewModel;
+            this.view = get(view);
+            this.viewModel = get(viewModel);
         }
 
         @Override
-        protected void bindInternal(@NonNull CompositeSubscription s) {
+        protected void bindInternal(@NonNull final CompositeSubscription s) {
             s.add(viewModel.getRepository()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setRepository));

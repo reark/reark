@@ -27,37 +27,39 @@ package io.reark.rxgithubapp.shared.viewmodels;
 
 import android.support.annotation.NonNull;
 
-import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.reark.viewmodels.AbstractViewModel;
-import io.reark.rxgithubapp.shared.data.DataFunctions;
+import io.reark.rxgithubapp.shared.data.DataFunctions.FetchAndGetGitHubRepository;
+import io.reark.rxgithubapp.shared.data.DataFunctions.GetUserSettings;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public class RepositoryViewModel extends AbstractViewModel {
-    private static final String TAG = RepositoryViewModel.class.getSimpleName();
 
-    private final DataFunctions.GetUserSettings getUserSettings;
-    private final DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
+    @NonNull
+    private final GetUserSettings getUserSettings;
 
-    final private BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
+    @NonNull
+    private final FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
-    public RepositoryViewModel(@NonNull DataFunctions.GetUserSettings getUserSettings,
-                               @NonNull DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
-        Preconditions.checkNotNull(getUserSettings, "Gey User Settings cannot be null.");
-        Preconditions.checkNotNull(fetchAndGetGitHubRepository,
-                                   "Fetch And Get GitHub Repository cannot be null.");
+    @NonNull
+    private final BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
 
-        this.getUserSettings = getUserSettings;
-        this.fetchAndGetGitHubRepository = fetchAndGetGitHubRepository;
-        Log.v(TAG, "RepositoryViewModel");
+    public RepositoryViewModel(@NonNull final GetUserSettings getUserSettings,
+                               @NonNull final FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
+        this.getUserSettings = get(getUserSettings);
+        this.fetchAndGetGitHubRepository = get(fetchAndGetGitHubRepository);
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull CompositeSubscription compositeSubscription) {
+    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
+        checkNotNull(compositeSubscription);
+
         compositeSubscription.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)

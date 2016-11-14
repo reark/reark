@@ -36,7 +36,6 @@ import java.util.List;
 import io.reark.reark.data.stores.StorePutInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -46,29 +45,34 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-public class GitHubRepositorySearchFetcher extends AppFetcherBase {
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
+public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     private static final String TAG = GitHubRepositorySearchFetcher.class.getSimpleName();
 
+    @NonNull
     private final StorePutInterface<GitHubRepository> gitHubRepositoryStore;
+
+    @NonNull
     private final StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore;
 
-    public GitHubRepositorySearchFetcher(@NonNull NetworkApi networkApi,
-                                         @NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus,
-                                         @NonNull StorePutInterface<GitHubRepository> gitHubRepositoryStore,
-                                         @NonNull StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore) {
+    public GitHubRepositorySearchFetcher(@NonNull final NetworkApi networkApi,
+                                         @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus,
+                                         @NonNull final StorePutInterface<GitHubRepository> gitHubRepositoryStore,
+                                         @NonNull final StorePutInterface<GitHubRepositorySearch> gitHubRepositorySearchStore) {
         super(networkApi, updateNetworkRequestStatus);
 
-        Preconditions.checkNotNull(gitHubRepositoryStore, "GitHub Repository Store cannot be null.");
-        Preconditions.checkNotNull(gitHubRepositorySearchStore, ""
-                                                                + "GitHub Repository Search Store cannot be null.");
-
-        this.gitHubRepositoryStore = gitHubRepositoryStore;
-        this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
+        this.gitHubRepositoryStore = get(gitHubRepositoryStore);
+        this.gitHubRepositorySearchStore = get(gitHubRepositorySearchStore);
     }
 
     @Override
-    public void fetch(@NonNull Intent intent) {
+    public void fetch(@NonNull final Intent intent) {
+        checkNotNull(intent);
+
         final String searchString = intent.getStringExtra("searchString");
+
         if (searchString != null) {
             fetchGitHubSearch(searchString);
         } else {
@@ -77,19 +81,21 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
     }
 
     private void fetchGitHubSearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search String cannot be null.");
+        checkNotNull(searchString);
 
         Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
-        if (requestMap.containsKey(searchString.hashCode()) &&
-                !requestMap.get(searchString.hashCode()).isUnsubscribed()) {
+
+        if (isOngoingRequest(searchString.hashCode())) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
             return;
         }
+
         final String uri = getUniqueId(searchString);
+
         Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
                 .map((repositories) -> {
-                    final List<Integer> repositoryIds = new ArrayList<>();
+                    final List<Integer> repositoryIds = new ArrayList<>(repositories.size());
                     for (GitHubRepository repository : repositories) {
                         gitHubRepositoryStore.put(repository);
                         repositoryIds.add(repository.getId());
@@ -101,14 +107,13 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase {
                 .doOnError(doOnError(uri))
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
-        requestMap.put(searchString.hashCode(), subscription);
+
+        addRequest(searchString.hashCode(), subscription);
     }
 
     @NonNull
     private Observable<List<GitHubRepository>> createNetworkObservable(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search String cannot be null.");
-
-        return networkApi.search(Collections.singletonMap("q", searchString));
+        return getNetworkApi().search(Collections.singletonMap("q", searchString));
     }
 
     @NonNull

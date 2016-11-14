@@ -28,7 +28,7 @@ package io.reark.reark.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import io.reark.reark.utils.Preconditions;
+import static io.reark.reark.utils.Preconditions.get;
 
 public final class DataStreamNotification<T> {
 
@@ -48,10 +48,10 @@ public final class DataStreamNotification<T> {
     @Nullable
     private final Throwable error;
 
-    private DataStreamNotification(@NonNull Type type, @Nullable T value, @Nullable Throwable error) {
-        Preconditions.checkNotNull(type, "Type cannot be null.");
-
-        this.type = type;
+    private DataStreamNotification(@NonNull final Type type,
+                                   @Nullable final T value,
+                                   @Nullable final Throwable error) {
+        this.type = get(type);
         this.value = value;
         this.error = error;
     }

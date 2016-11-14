@@ -25,8 +25,13 @@
  */
 package io.reark.reark.data.stores;
 
+import android.support.annotation.NonNull;
+
 import io.reark.reark.data.stores.cores.StoreCoreInterface;
 import rx.Observable;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 /**
  * DefaultStore is a simple implementation of store logic. It can be used with any data types by
@@ -39,27 +44,39 @@ import rx.Observable;
  * @param <U> Type of the data this store contains.
  */
 public class DefaultStore<T, U> implements StoreInterface<T, U> {
+
+    @NonNull
     private final StoreCoreInterface<T, U> core;
+
+    @NonNull
     private final GetIdForItem<T, U> getIdForItem;
 
-    public DefaultStore(StoreCoreInterface<T, U> core,
-                        GetIdForItem<T, U> getIdForItem) {
-        this.core = core;
-        this.getIdForItem = getIdForItem;
+    public DefaultStore(@NonNull final StoreCoreInterface<T, U> core,
+                        @NonNull final GetIdForItem<T, U> getIdForItem) {
+        this.core = get(core);
+        this.getIdForItem = get(getIdForItem);
     }
 
     @Override
-    public void put(U item) {
+    public void put(@NonNull final U item) {
+        checkNotNull(item);
+
         core.put(getIdForItem.call(item), item);
     }
 
+    @NonNull
     @Override
-    public Observable<U> getOnce(T id) {
+    public Observable<U> getOnce(@NonNull final T id) {
+        checkNotNull(id);
+
         return core.getCached(id);
     }
 
+    @NonNull
     @Override
-    public Observable<U> getOnceAndStream(T id) {
+    public Observable<U> getOnceAndStream(@NonNull final T id) {
+        checkNotNull(id);
+
         return Observable.concat(
                 getOnce(id),
                 core.getStream(id));

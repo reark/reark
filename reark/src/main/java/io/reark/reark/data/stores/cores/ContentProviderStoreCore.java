@@ -36,6 +36,7 @@ import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 /**
@@ -56,7 +57,7 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
     @NonNull
     private final PublishSubject<StoreItem<T, U>> subjectCache = PublishSubject.create();
 
-    protected ContentProviderStoreCore(@NonNull ContentResolver contentResolver) {
+    protected ContentProviderStoreCore(@NonNull final ContentResolver contentResolver) {
         super(contentResolver);
     }
 
@@ -84,10 +85,10 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
      * Any open stream Observables for the item's id will emit this new value.
      */
     @Override
-    public void put(@NonNull T id, @NonNull U item) {
-        Preconditions.checkNotNull(item, "Item cannot be null.");
+    public void put(@NonNull final T id, @NonNull final U item) {
+        checkNotNull(id);
 
-        put(item, getUriForId(id));
+        put(Preconditions.get(item), getUriForId(id));
     }
 
     /**
@@ -96,8 +97,8 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
      */
     @NonNull
     @Override
-    public Observable<U> getCached(@NonNull T id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Observable<U> getCached(@NonNull final T id) {
+        checkNotNull(id);
 
         final Uri uri = getUriForId(id);
         return getOne(uri);
@@ -115,8 +116,8 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
 
     @NonNull
     @Override
-    public Observable<U> getStream(@NonNull T id) {
-        Preconditions.checkNotNull(id, "Id cannot be null.");
+    public Observable<U> getStream(@NonNull final T id) {
+        checkNotNull(id);
 
         return subjectCache
                 .filter(item -> item.id().equals(id))
@@ -129,12 +130,12 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
      * Returns unique Uri for the given id in the content provider of this store.
      */
     @NonNull
-    protected abstract Uri getUriForId(@NonNull T id);
+    protected abstract Uri getUriForId(@NonNull final T id);
 
     /**
      * Returns id for the unique Uri in the content provider of this store.
      */
     @NonNull
-    protected abstract T getIdForUri(@NonNull Uri uri);
+    protected abstract T getIdForUri(@NonNull final Uri uri);
 
 }

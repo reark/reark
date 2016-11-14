@@ -35,7 +35,7 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-import io.reark.reark.utils.Preconditions;
+import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 public class SerialTarget<T> implements Target<T> {
 
@@ -52,21 +52,22 @@ public class SerialTarget<T> implements Target<T> {
             target = t;
         }
 
-        State<T> set(@NonNull Target<T> t) {
+        State<T> set(@NonNull final Target<T> t) {
             return new State<>(t);
         }
-
     }
 
-    public void set(@NonNull Target<T> s) {
-        Preconditions.checkNotNull(s, "Target can not be null");
+    public void set(@NonNull final Target<T> s) {
+        checkNotNull(s);
 
-        State oldState;
-        State newState;
+        State<T> oldState;
+        State<T> newState;
+
         do {
             oldState = state;
             newState = oldState.set(s);
         } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+
         oldState.target.onDestroy();
     }
 
@@ -123,5 +124,4 @@ public class SerialTarget<T> implements Target<T> {
     public void onDestroy() {
         state.target.onDestroy();
     }
-
 }

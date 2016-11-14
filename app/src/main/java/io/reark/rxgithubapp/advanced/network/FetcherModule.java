@@ -67,7 +67,7 @@ public final class FetcherModule {
     }
 
     @Provides
-    public UriFetcherManager provideUriFetcherManager(@Named("gitHubRepository")Fetcher gitHubRepositoryFetcher,
+    public UriFetcherManager provideUriFetcherManager(@Named("gitHubRepository") Fetcher gitHubRepositoryFetcher,
                                                       @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher) {
         return new UriFetcherManager.Builder()
                 .fetchers(Arrays.asList(gitHubRepositoryFetcher, gitHubRepositorySearchFetcher))

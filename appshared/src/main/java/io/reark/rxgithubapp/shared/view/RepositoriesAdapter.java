@@ -25,7 +25,9 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
-import android.support.v7.widget.RecyclerView;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView.Adapter;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,32 +41,21 @@ import java.util.List;
 
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.shared.view.RepositoriesAdapter.RepositoryViewHolder;
 
-public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapter.ViewHolder> {
+import static android.view.View.OnClickListener;
 
-    private final List<GitHubRepository> gitHubRepositories = new ArrayList<>();
+public class RepositoriesAdapter extends Adapter<RepositoryViewHolder> {
 
-    private View.OnClickListener onClickListener;
+    private final List<GitHubRepository> gitHubRepositories = new ArrayList<>(10);
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    private OnClickListener onClickListener;
 
-        public ImageView avatarImageView;
-
-        public TextView titleTextView;
-
-        public ViewHolder(View view, View.OnClickListener onClickListener) {
-            super(view);
-            avatarImageView = (ImageView) view.findViewById(R.id.avatar_image_view);
-            titleTextView = (TextView) view.findViewById(R.id.repository_name);
-            view.setOnClickListener(onClickListener);
-        }
-
-    }
     public RepositoriesAdapter(List<GitHubRepository> gitHubRepositories) {
         this.gitHubRepositories.addAll(gitHubRepositories);
     }
 
-    public void setOnClickListener(View.OnClickListener onClickListener) {
+    public void setOnClickListener(OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
 
@@ -73,13 +64,13 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
     }
 
     @Override
-    public RepositoriesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RepositoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.repository_item, parent, false);
-        return new ViewHolder(v, onClickListener);
+        return new RepositoryViewHolder(v, onClickListener);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RepositoryViewHolder holder, int position) {
         holder.titleTextView.setText(gitHubRepositories.get(position).getName());
         Glide.with(holder.avatarImageView.getContext())
                 .load(gitHubRepositories.get(position).getOwner().getAvatarUrl())
@@ -99,4 +90,19 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoriesAdapte
         notifyDataSetChanged();
     }
 
+    public static class RepositoryViewHolder extends ViewHolder {
+
+        @NonNull
+        public final ImageView avatarImageView;
+
+        @NonNull
+        public final TextView titleTextView;
+
+        public RepositoryViewHolder(View view, OnClickListener onClickListener) {
+            super(view);
+            avatarImageView = (ImageView) view.findViewById(R.id.avatar_image_view);
+            titleTextView = (TextView) view.findViewById(R.id.repository_name);
+            view.setOnClickListener(onClickListener);
+        }
+    }
 }

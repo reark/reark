@@ -29,27 +29,27 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.data.stores.StoreInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
-abstract public class DataLayerBase {
+import static io.reark.reark.utils.Preconditions.get;
+
+public abstract class DataLayerBase {
+
+    @NonNull
     protected final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore;
+
+    @NonNull
     protected final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore;
+
+    @NonNull
     protected final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore;
 
-    public DataLayerBase(@NonNull StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                         @NonNull StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                         @NonNull StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore) {
-        Preconditions.checkNotNull(networkRequestStatusStore,
-                                   "Network Request Status Store cannot be null.");
-        Preconditions.checkNotNull(gitHubRepositoryStore,
-                                   "GitHub Repository Store cannot be null.");
-        Preconditions.checkNotNull(gitHubRepositorySearchStore,
-                                   "GitHub Repository Search Store cannot be null.");
-
-        this.networkRequestStatusStore = networkRequestStatusStore;
-        this.gitHubRepositoryStore = gitHubRepositoryStore;
-        this.gitHubRepositorySearchStore = gitHubRepositorySearchStore;
+    protected DataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
+                            @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
+                            @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore) {
+        this.networkRequestStatusStore = get(networkRequestStatusStore);
+        this.gitHubRepositoryStore = get(gitHubRepositoryStore);
+        this.gitHubRepositorySearchStore = get(gitHubRepositorySearchStore);
     }
 }

@@ -25,6 +25,8 @@
  */
 package io.reark.reark.data.stores.cores;
 
+import android.support.annotation.NonNull;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -35,6 +37,9 @@ import rx.Observable;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 /**
  * A simple StoreCore that only uses an in-memory ConcurrentHashMap to persist the data. This means
@@ -48,7 +53,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     private static final String TAG = MemoryStoreCore.class.getSimpleName();
 
     private final Func2<U, U, U> putMergeFunction;
-    private final Map<Integer, U> cache = new ConcurrentHashMap<>();
+    private final Map<Integer, U> cache = new ConcurrentHashMap<>(10);
     private final Subject<StoreItem<T, U>, StoreItem<T, U>> subject = PublishSubject.create();
     private final ConcurrentMap<Integer, Subject<U, U>> subjectCache =
             new ConcurrentHashMap<>(20, 0.75f, 4);
@@ -57,16 +62,20 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         this((v1, v2) -> v2);
     }
 
-    public MemoryStoreCore(Func2<U, U, U> putMergeFunction) {
-        this.putMergeFunction = putMergeFunction;
+    public MemoryStoreCore(@NonNull final Func2<U, U, U> putMergeFunction) {
+        this.putMergeFunction = get(putMergeFunction);
     }
 
+    @NonNull
     protected Observable<StoreItem<T, U>> getStream() {
         return subject.asObservable();
     }
 
+    @NonNull
     @Override
-    public Observable<U> getStream(T id) {
+    public Observable<U> getStream(@NonNull final T id) {
+        checkNotNull(id);
+
         int hash = getHashCodeForId(id);
         subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
         return subjectCache.get(hash)
@@ -74,19 +83,23 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     }
 
     @Override
-    public void put(T id, U item) {
+    public void put(@NonNull final T id, @NonNull final U item) {
+        checkNotNull(id);
+        checkNotNull(item);
+
         final int hash = getHashCodeForId(id);
+        U newItem = item;
         boolean valuesEqual = false;
 
         if (cache.containsKey(hash)) {
-            U currentItem = cache.get(hash);
+            final U currentItem = cache.get(hash);
 
-            valuesEqual = item.equals(currentItem);
+            valuesEqual = newItem.equals(currentItem);
 
             if (!valuesEqual) {
                 Log.v(TAG, "Merging values at " + id);
-                item = putMergeFunction.call(currentItem, item);
-                valuesEqual = item.equals(currentItem);
+                newItem = putMergeFunction.call(currentItem, newItem);
+                valuesEqual = newItem.equals(currentItem);
             }
         }
 
@@ -95,19 +108,25 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
             return;
         }
 
-        cache.put(hash, item);
-        subject.onNext(new StoreItem<>(id, item));
+        cache.put(hash, newItem);
+        subject.onNext(new StoreItem<>(id, newItem));
+
         if (subjectCache.containsKey(hash)) {
-            subjectCache.get(hash).onNext(item);
+            subjectCache.get(hash).onNext(newItem);
         }
     }
 
+    @NonNull
     @Override
-    public Observable<U> getCached(T id) {
+    public Observable<U> getCached(@NonNull final T id) {
+        checkNotNull(id);
+
         return Observable.just(cache.get(getHashCodeForId(id)));
     }
 
-    protected int getHashCodeForId(T id) {
+    protected int getHashCodeForId(@NonNull final T id) {
+        checkNotNull(id);
+
         return id.hashCode();
     }
 }

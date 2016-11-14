@@ -38,10 +38,12 @@ import io.reark.rxgithubapp.advanced.RxGitHubApp;
 import io.reark.rxgithubapp.advanced.activities.ChooseRepositoryActivity;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
 import io.reark.rxgithubapp.shared.view.RepositoriesView;
+import io.reark.rxgithubapp.shared.view.RepositoriesView.ViewBinder;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel;
 
 public class RepositoriesFragment extends Fragment {
-    private RepositoriesView.ViewBinder repositoriesViewBinder;
+
+    private ViewBinder repositoriesViewBinder;
 
     @Inject
     RepositoriesViewModel repositoriesViewModel;
@@ -69,7 +71,7 @@ public class RepositoriesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        repositoriesViewBinder = new RepositoriesView.ViewBinder(
+        repositoriesViewBinder = new ViewBinder(
                 (RepositoriesView) view.findViewById(R.id.repositories_view),
                 repositoriesViewModel);
         repositoriesViewModel.subscribeToDataStore();
@@ -97,7 +99,6 @@ public class RepositoriesFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         repositoriesViewModel.dispose();
-        repositoriesViewModel = null;
         mInstrumentation.getLeakTracing().traceLeakage(this);
     }
 }

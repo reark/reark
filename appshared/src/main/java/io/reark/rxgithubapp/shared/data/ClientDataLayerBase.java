@@ -32,33 +32,34 @@ import io.reark.reark.data.stores.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public abstract class ClientDataLayerBase extends DataLayerBase {
     private static final String TAG = ClientDataLayerBase.class.getSimpleName();
     public static final int DEFAULT_USER_ID = 0;
 
+    @NonNull
     protected final StoreInterface<Integer, UserSettings> userSettingsStore;
 
-    public ClientDataLayerBase(@NonNull StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                               @NonNull StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                               @NonNull StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
-                               @NonNull StoreInterface<Integer, UserSettings> userSettingsStore) {
+    protected ClientDataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
+                                  @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
+                                  @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
+                                  @NonNull final StoreInterface<Integer, UserSettings> userSettingsStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
-        Preconditions.checkNotNull(userSettingsStore,
-                "User Settings Store cannot be null.");
 
-        this.userSettingsStore = userSettingsStore;
+        this.userSettingsStore = get(userSettingsStore);
     }
 
     @NonNull
     public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
+        checkNotNull(searchString);
 
         Log.d(TAG, "getGitHubRepositorySearch(" + searchString + ")");
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
@@ -73,34 +74,33 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
     @NonNull
     public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(@NonNull final String searchString) {
-        Preconditions.checkNotNull(searchString, "Search string Store cannot be null.");
-
+        checkNotNull(searchString);
         Log.d(TAG, "fetchAndGetGitHubRepositorySearch(" + searchString + ")");
+
         fetchGitHubRepositorySearch(searchString);
-        final Observable<DataStreamNotification<GitHubRepositorySearch>> gitHubRepositoryStream =
-                getGitHubRepositorySearch(searchString);
-        return gitHubRepositoryStream;
+        return getGitHubRepositorySearch(searchString);
     }
 
-    protected abstract void fetchGitHubRepositorySearch(@NonNull String searchString);
+    protected abstract void fetchGitHubRepositorySearch(@NonNull final String searchString);
 
     @NonNull
-    public Observable<GitHubRepository> getGitHubRepository(@NonNull Integer repositoryId) {
-        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+    public Observable<GitHubRepository> getGitHubRepository(@NonNull final Integer repositoryId) {
+        checkNotNull(repositoryId);
 
-        return gitHubRepositoryStore.getOnceAndStream(repositoryId)
+        return gitHubRepositoryStore
+                .getOnceAndStream(repositoryId)
                 .filter(value -> value != null);
     }
 
     @NonNull
-    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull Integer repositoryId) {
-        Preconditions.checkNotNull(repositoryId, "Repository Id cannot be null.");
+    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull final Integer repositoryId) {
+        checkNotNull(repositoryId);
 
         fetchGitHubRepository(repositoryId);
         return getGitHubRepository(repositoryId);
     }
 
-    protected abstract void fetchGitHubRepository(@NonNull Integer repositoryId);
+    protected abstract void fetchGitHubRepository(@NonNull final Integer repositoryId);
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {
@@ -108,8 +108,8 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
                 .filter(value -> value != null);
     }
 
-    public void setUserSettings(@NonNull UserSettings userSettings) {
-        Preconditions.checkNotNull(userSettings, "User Settings cannot be null.");
+    public void setUserSettings(@NonNull final UserSettings userSettings) {
+        checkNotNull(userSettings);
 
         userSettingsStore.put(userSettings);
     }

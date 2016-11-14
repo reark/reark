@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import io.reark.rxgithubapp.shared.data.DataFunctions;
@@ -71,7 +72,7 @@ public class RepositoriesViewModelTest {
 
     @Test
     public void testAnyValueReportedAsIdle() {
-        GitHubRepositorySearch value = new GitHubRepositorySearch("", null);
+        GitHubRepositorySearch value = new GitHubRepositorySearch("", Collections.emptyList());
 
         assertEquals(IDLE, toProgressStatus().call(onNext(value)));
     }

@@ -32,42 +32,47 @@ import android.support.annotation.NonNull;
 import io.reark.reark.network.fetchers.Fetcher;
 import io.reark.reark.network.fetchers.UriFetcherManager;
 import io.reark.reark.utils.Log;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositorySearchStore;
 import io.reark.rxgithubapp.advanced.data.stores.GitHubRepositoryStore;
 import io.reark.rxgithubapp.advanced.data.stores.NetworkRequestStatusStore;
 import io.reark.rxgithubapp.shared.data.DataLayerBase;
 
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
+
 public class ServiceDataLayer extends DataLayerBase {
     private static final String TAG = ServiceDataLayer.class.getSimpleName();
 
-    final private UriFetcherManager fetcherManager;
+    @NonNull
+    private final UriFetcherManager fetcherManager;
 
-    public ServiceDataLayer(@NonNull UriFetcherManager fetcherManager,
-                            @NonNull NetworkRequestStatusStore networkRequestStatusStore,
-                            @NonNull GitHubRepositoryStore gitHubRepositoryStore,
-                            @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public ServiceDataLayer(@NonNull final UriFetcherManager fetcherManager,
+                            @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
+                            @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
+                            @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
-        Preconditions.checkNotNull(fetcherManager, "FetcherManager cannot be null.");
-        this.fetcherManager = fetcherManager;
+        this.fetcherManager = get(fetcherManager);
     }
 
-    public void processIntent(@NonNull Intent intent) {
-        Preconditions.checkNotNull(intent, "Intent cannot be null.");
+    public void processIntent(@NonNull final Intent intent) {
+        checkNotNull(intent);
 
         final String serviceUriString = intent.getStringExtra("serviceUriString");
-        if (serviceUriString != null) {
-            final Uri serviceUri = Uri.parse(serviceUriString);
-            Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
-            if (matchingFetcher != null) {
-                Log.v(TAG, "Fetcher found for " + serviceUri);
-                matchingFetcher.fetch(intent);
-            } else {
-                Log.e(TAG, "Unknown Uri " + serviceUri);
-            }
-        } else {
+
+        if (serviceUriString == null) {
             Log.e(TAG, "No Uri defined");
+            return;
+        }
+
+        final Uri serviceUri = Uri.parse(serviceUriString);
+        final Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
+
+        if (matchingFetcher != null) {
+            Log.v(TAG, "Fetcher found for " + serviceUri);
+            matchingFetcher.fetch(intent);
+        } else {
+            Log.e(TAG, "Unknown Uri " + serviceUri);
         }
     }
 }

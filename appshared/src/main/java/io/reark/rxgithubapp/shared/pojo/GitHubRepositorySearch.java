@@ -51,8 +51,8 @@ public class GitHubRepositorySearch {
         return new GitHubRepositorySearch("", Collections.emptyList());
     }
 
-    public boolean isEmpty() {
-        return search.isEmpty();
+    public boolean isSome() {
+        return !search.isEmpty();
     }
 
     @NonNull

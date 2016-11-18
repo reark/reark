@@ -63,12 +63,17 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
         checkNotNull(searchString);
 
         Log.d(TAG, "getGitHubRepositorySearch(" + searchString + ")");
+
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
-                networkRequestStatusStore.getOnceAndStream(
-                        GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode());
+                networkRequestStatusStore
+                        .getOnceAndStream(GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode())
+                        .filter(NetworkRequestStatus::isSome);
+
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
-                gitHubRepositorySearchStore.getOnceAndStream(searchString)
-                        .filter(value -> value != null);
+                gitHubRepositorySearchStore
+                        .getOnceAndStream(searchString)
+                        .filter(GitHubRepositorySearch::isSome);
+
         return DataLayerUtils.createDataStreamNotificationObservable(
                 networkRequestStatusObservable, gitHubRepositorySearchObservable);
     }
@@ -90,7 +95,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
         return gitHubRepositoryStore
                 .getOnceAndStream(repositoryId)
-                .filter(value -> value != null);
+                .filter(GitHubRepository::isSome);
     }
 
     @NonNull
@@ -105,8 +110,9 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {
-        return userSettingsStore.getOnceAndStream(DEFAULT_USER_ID)
-                .filter(value -> value != null);
+        return userSettingsStore
+                .getOnceAndStream(DEFAULT_USER_ID)
+                .filter(UserSettings::isSome);
     }
 
     public void setUserSettings(@NonNull final UserSettings userSettings) {

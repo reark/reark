@@ -46,8 +46,8 @@ public class GitHubOwner {
         return new GitHubOwner("");
     }
 
-    public boolean isEmpty() {
-        return avatarUrl.isEmpty();
+    public boolean isSome() {
+        return !avatarUrl.isEmpty();
     }
 
     @NonNull

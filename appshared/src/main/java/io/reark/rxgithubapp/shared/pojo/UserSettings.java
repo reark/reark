@@ -39,8 +39,12 @@ public class UserSettings {
         return new UserSettings(-1);
     }
 
-    public boolean isEmpty() {
-        return selectedRepositoryId == -1;
+    public boolean isSome() {
+        return selectedRepositoryId != -1;
+    }
+
+    public boolean isNone() {
+        return !isSome();
     }
 
     public int getSelectedRepositoryId() {

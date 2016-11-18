@@ -51,7 +51,7 @@ public class UserSettingsStore
     private void initUserSettings(final int userId) {
         getOnce(userId)
                 .first()
-                .filter(userSettings -> userSettings == null)
+                .filter(UserSettings::isNone)
                 .subscribe(userSettings -> {
                     put(new UserSettings(DEFAULT_REPOSITORY_ID));
                 });

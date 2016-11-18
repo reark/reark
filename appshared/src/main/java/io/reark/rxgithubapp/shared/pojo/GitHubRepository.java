@@ -75,8 +75,8 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
         return new GitHubRepository(-1, "", -1, -1, GitHubOwner.empty());
     }
 
-    public boolean isEmpty() {
-        return id == -1;
+    public boolean isSome() {
+        return id != -1;
     }
 
     @NonNull

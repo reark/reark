@@ -30,7 +30,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.ProviderTestCase2;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,13 +47,13 @@ import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
+@RunWith(AndroidJUnit4.class)
 public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
 
     private static final String AUTHORITY = "test.authority";
     private static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
     private static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, "veggies");
     private static final String[] PROJECTION = { DataColumns.KEY, DataColumns.VALUE };
-
     private static final String NONE = "";
 
     private TestStore store;
@@ -57,8 +62,9 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         super(SimpleMockContentProvider.class, AUTHORITY);
     }
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
         TestStoreCore core = new TestStoreCore(getMockContentResolver());
@@ -76,7 +82,8 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         insert.call("spinach");
     }
 
-    public void testGetOnceWithData() {
+    @Test
+    public void getOnce_WithData_ReturnsData_AndCompletes() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = Collections.singletonList("parsnip");
@@ -91,7 +98,8 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetOnceWithoutData() {
+    @Test
+    public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = Collections.singletonList(NONE);
@@ -106,13 +114,14 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetWithData() {
+    @Test
+    public void get_WithData_ReturnsData_AndCompletes() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
         List<List<String>> expected = Collections.singletonList(Collections.singletonList("parsnip"));
 
         // ACT
-        store.get(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
+        store.getAllOnce(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -121,7 +130,8 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetAll() {
+    @Test
+    public void get_WithWildcardQuery_WithData_ReturnsAllData_AndCompletes() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
         List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
@@ -130,7 +140,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
         // this would be an asterisk. The exact wildcard is not important for the test as we just
         // want to make sure the provider stores can return a larger listing of results.
-        store.get(0).subscribe(testSubscriber);
+        store.getAllOnce(0).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -139,7 +149,8 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetOnceAndStream() {
+    @Test
+    public void getOnceAndStream_WithData_ReturnsData_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = Collections.singletonList("spinach");
@@ -154,7 +165,8 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetEmptyStream() {
+    @Test
+    public void getOnceAndStream_WithNoData_ReturnsNoneValue_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = Collections.singletonList(NONE);

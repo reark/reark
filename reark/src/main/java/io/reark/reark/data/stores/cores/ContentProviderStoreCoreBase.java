@@ -41,7 +41,6 @@ import java.util.List;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -132,8 +131,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    public Observable<List<U>> get(@NonNull final Uri uri) {
+    protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
         checkNotNull(uri);
+        Log.d(TAG, "getAllOnce: " + uri);
 
         return Observable.just(uri)
                 .observeOn(Schedulers.io())
@@ -141,8 +141,10 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    public Observable<U> getOnce(@NonNull final Uri uri) {
-        return get(Preconditions.get(uri))
+    protected Observable<U> getOnce(@NonNull final Uri uri) {
+        Log.d(TAG, "getOnce: " + uri);
+        return getAllOnce(Preconditions.get(uri))
+                .doOnEach(notification -> Log.d(TAG, "Notif: " + notification))
                 .filter(list -> !list.isEmpty())
                 .doOnNext(list -> {
                     if (list.size() > 1) {
@@ -154,6 +156,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     private List<U> queryList(@NonNull final Uri uri) {
+
+        Log.d(TAG, "queryList: " + uri);
+
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
         List<U> list = new ArrayList<>(10);
 
@@ -169,6 +174,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
         if (list.isEmpty()) {
             Log.v(TAG, "Could not find with id: " + uri);
         }
+
+        Log.d(TAG, "queryList return: " + list);
 
         return list;
     }

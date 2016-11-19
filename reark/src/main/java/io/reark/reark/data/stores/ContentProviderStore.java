@@ -62,12 +62,6 @@ public class ContentProviderStore<T, U, R> extends DefaultStore<T, U, R> {
     @NonNull
     private final ContentProviderStoreCore<T, U> core;
 
-    @NonNull
-    private final GetIdForItem<T, U> getIdForItem;
-
-    @NonNull
-    private final PublishSubject<StoreItem<Uri, T>> subjectCache = PublishSubject.create();
-
     protected ContentProviderStore(@NonNull final ContentProviderStoreCore<T, U> core,
                                    @NonNull final GetIdForItem<T, U> getIdForItem,
                                    @NonNull final GetNullSafe<U, R> getNullSafe,
@@ -75,19 +69,16 @@ public class ContentProviderStore<T, U, R> extends DefaultStore<T, U, R> {
         super(core, getIdForItem, getNullSafe, getEmptyValue);
 
         this.core = Preconditions.get(core);
-        this.getIdForItem = Preconditions.get(getIdForItem);
     }
 
     /**
-     * Returns a completing Observable of all items matching the id.
-     *
-     * This method can for example be used to request all the contents of this store
-     * by providing an empty id.
+     * Returns a completing Observable of all items matching the id. This method can be used to
+     * request all the contents of this store by providing an empty id.
      */
     @NonNull
-    public Observable<List<U>> get(@NonNull final T id) {
+    public Observable<List<U>> getAllOnce(@NonNull final T id) {
         checkNotNull(id);
 
-        return core.get(id);
+        return core.getAllCached(id);
     }
 }

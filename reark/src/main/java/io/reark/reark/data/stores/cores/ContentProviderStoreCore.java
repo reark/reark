@@ -82,12 +82,6 @@ public abstract class ContentProviderStoreCore<T, U>
         };
     }
 
-    /**
-     * Inserts the given item to the store, or updates the store if an item with the same id
-     * already exists.
-     *
-     * Any open stream Observables for the item's id will emit this new value.
-     */
     @Override
     public void put(@NonNull final T id, @NonNull final U item) {
         checkNotNull(id);
@@ -95,17 +89,19 @@ public abstract class ContentProviderStoreCore<T, U>
         put(Preconditions.get(item), getUriForId(id));
     }
 
+    /**
+     * Returns an observable that emits all stored values for the given id and completes.
+     *
+     * @param id Store item id.
+     * @return Values associated with the given id.
+     */
     @NonNull
-    public Observable<List<U>> get(@NonNull final T id) {
+    public Observable<List<U>> getAllCached(@NonNull final T id) {
         checkNotNull(id);
 
-        return get(getUriForId(id));
+        return getAllOnce(getUriForId(id));
     }
 
-    /**
-     * Returns a completing Observable that either emits the first existing item in the store
-     * matching the id, or emits null if the store does not contain the requested id.
-     */
     @NonNull
     @Override
     public Observable<U> getCached(@NonNull final T id) {

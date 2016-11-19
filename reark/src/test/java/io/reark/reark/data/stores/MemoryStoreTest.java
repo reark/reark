@@ -31,11 +31,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 public class MemoryStoreTest {
+
     private MemoryStore<Integer, Pair<Integer, String>, Pair<Integer, String>> memoryStore;
     private TestSubscriber<Pair<Integer, String>> testSubscriber;
 
@@ -54,79 +60,93 @@ public class MemoryStoreTest {
     }
 
     @Test
-    public void testGetOne() {
-        // getOnce is expected to return a observable that emits the value and then completes.
-        memoryStore.put(new Pair<>(100, "test string 1"));
+    public void getOne_WithData_ReturnsData_AndCompletes() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
 
+        // getOnce is expected to return a observable that emits the value and then completes.
+        memoryStore.put(value);
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.assertValue(new Pair<>(100, "test string 1"));
         testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(singletonList(value));
     }
 
     @Test
-    public void testGetOneEmpty() {
+    public void getOne_WithNoData_ReturnsNoneValue_AndCompletes() {
         // getOnce is expected to return null observable in case it does not have the value.
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.assertValue(NONE);
         testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(NONE);
     }
 
     @Test
-    public void testGetOnceAndStream() {
+    public void getOnceAndStream_ReturnsOnlyValuesForSubscribedId_AndDoesNotComplete() {
+        final Pair<Integer, String> value1 = new Pair<>(100, "test string 1");
+        final Pair<Integer, String> value2 = new Pair<>(200, "test string 2");
+
         memoryStore.getOnceAndStream(100).subscribe(testSubscriber);
-        memoryStore.put(new Pair<>(100, "test string 1"));
-        memoryStore.put(new Pair<>(200, "test string 2"));
+        memoryStore.put(value1);
+        memoryStore.put(value2);
 
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        NONE,
-                        new Pair<>(100, "test string 1")
-                ));
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(asList(NONE, value1));
     }
 
     @Test
-    public void testMultipleValues() {
+    public void getOnceAndStream_ReturnsAllValuesForSubscribedId_AndDoesNotComplete() {
+        final Pair<Integer, String> value1 = new Pair<>(100, "test string 1");
+        final Pair<Integer, String> value2 = new Pair<>(100, "test string 2");
+        final Pair<Integer, String> value3 = new Pair<>(100, "test string 3");
+
         memoryStore.getOnceAndStream(100).subscribe(testSubscriber);
-        memoryStore.put(new Pair<>(100, "test string 1"));
-        memoryStore.put(new Pair<>(100, "test string 2"));
-        memoryStore.put(new Pair<>(100, "test string 3"));
+        memoryStore.put(value1);
+        memoryStore.put(value2);
+        memoryStore.put(value3);
 
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        NONE,
-                        new Pair<>(100, "test string 1"),
-                        new Pair<>(100, "test string 2"),
-                        new Pair<>(100, "test string 3")
-                ));
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(asList(NONE, value1, value2, value3));
     }
 
     @Test
-    public void testIdenticalValues() {
+    public void getOnceAndStream_ReturnsOnlyNewValues_AndDoesNotComplete() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
+
         // In the default store implementation identical values are filtered out.
-
         memoryStore.getOnceAndStream(100).subscribe(testSubscriber);
-        memoryStore.put(new Pair<>(100, "test string"));
-        memoryStore.put(new Pair<>(100, "test string"));
+        memoryStore.put(value);
+        memoryStore.put(value);
 
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        NONE,
-                        new Pair<>(100, "test string")
-                ));
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(asList(NONE, value));
     }
 
     @Test
-    public void testGetOnceAndStreamWithInitialValue() {
-        memoryStore.put(new Pair<>(100, "test string 1"));
+    public void getOnceAndStream_WithInitialValue_ReturnsInitialValues_AndDoesNotComplete() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
+
+        memoryStore.put(value);
         memoryStore.getOnceAndStream(100).subscribe(testSubscriber);
 
-        testSubscriber.assertValue(new Pair<>(100, "test string 1"));
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(singletonList(value));
     }
 
     @Test
-    public void testGetOnceAndStreamWithInitialValueDelayedSubscription() {
+    public void getOnceAndStream_WithInitialValue_WithDelayedSubscription_ReturnsFirstValue_AndDoesNotComplete() {
+        final Pair<Integer, String> value1 = new Pair<>(100, "test string 1");
+        final Pair<Integer, String> value2 = new Pair<>(100, "test string 2");
+
         // This behavior is a little surprising, but it is because we cannot guarantee that the
         // observable that is produced as the stream will keep its first (cached) value up to date.
         // The only ways to around this would be custom subscribe function or converting the
@@ -134,19 +154,22 @@ public class MemoryStoreTest {
         // complexity and are hard to implement in other kinds of store (such as content providers).
 
         // Put initial value.
-        memoryStore.put(new Pair<>(100, "test string 1"));
+        memoryStore.put(value1);
 
         // Create the stream observable but do not subscribe immediately.
         Observable<Pair<Integer, String>> stream = memoryStore.getOnceAndStream(100);
 
         // Put new value into the store.
-        memoryStore.put(new Pair<>(100, "test string 2"));
+        memoryStore.put(value2);
 
         // Subscribe to stream that was created potentially a long time ago.
         stream.subscribe(testSubscriber);
 
         // Observe that the stream actually gives as the first item the cached value at the time of
         // creating the stream observable.
-        testSubscriber.assertValue(new Pair<>(100, "test string 1"));
+        testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(singletonList(value1));
     }
 }

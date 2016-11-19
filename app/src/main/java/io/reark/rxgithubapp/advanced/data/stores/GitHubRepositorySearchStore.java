@@ -27,20 +27,38 @@ package io.reark.rxgithubapp.advanced.data.stores;
 
 import android.content.ContentResolver;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 
 import io.reark.reark.data.stores.DefaultStore;
+import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositorySearchStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
+
+import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubRepositorySearchStore
         extends DefaultStore<String, GitHubRepositorySearch, GitHubRepositorySearch> {
 
+    @NonNull
+    private static final GetIdForItem<String, GitHubRepositorySearch> getIdForItem =
+            search -> get(search).getSearch();
+
+    @NonNull
+    private static final GetNullSafe<GitHubRepositorySearch, GitHubRepositorySearch> getNullSafe =
+            search -> search != null ? search : GitHubRepositorySearch.none();
+
+    @NonNull
+    private static final GetEmptyValue<GitHubRepositorySearch> getEmptyValue =
+            GitHubRepositorySearch::none;
+
     public GitHubRepositorySearchStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(new GitHubRepositorySearchStoreCore(contentResolver, gson),
-                GitHubRepositorySearch::getSearch,
-                search -> search != null ? search : GitHubRepositorySearch.none(),
-                GitHubRepositorySearch::none);
+                getIdForItem,
+                getNullSafe,
+                getEmptyValue);
     }
+
 }

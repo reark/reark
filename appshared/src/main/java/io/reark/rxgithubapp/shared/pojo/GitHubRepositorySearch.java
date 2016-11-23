@@ -36,10 +36,10 @@ import static io.reark.reark.utils.Preconditions.get;
 public class GitHubRepositorySearch {
 
     @NonNull
-    private final String search;
+    private String search;
 
     @NonNull
-    private final List<Integer> items;
+    private List<Integer> items;
 
     public GitHubRepositorySearch(@NonNull final String search, @NonNull final List<Integer> items) {
         this.search = get(search);

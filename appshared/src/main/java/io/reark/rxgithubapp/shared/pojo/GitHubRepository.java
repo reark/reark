@@ -29,26 +29,31 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.reflect.Field;
+import java.security.acl.Owner;
+
 import io.reark.reark.pojo.OverwritablePojo;
+import io.reark.reark.utils.Log;
 
 import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
+    private static final String TAG = GitHubRepository.class.getSimpleName();
 
     private final int id;
 
     @NonNull
-    private final String name;
+    private String name;
 
     @SerializedName("stargazers_count")
-    private final int stargazersCount;
+    private int stargazersCount;
 
     @SerializedName("forks_count")
-    private final int forksCount;
+    private int forksCount;
 
     @NonNull
     @SerializedName("owner")
-    private final GitHubOwner owner;
+    private GitHubOwner owner;
 
     public GitHubRepository(int id,
                             @NonNull final String name,
@@ -83,6 +88,19 @@ public class GitHubRepository extends OverwritablePojo<GitHubRepository> {
     @Override
     protected Class<GitHubRepository> getTypeParameterClass() {
         return GitHubRepository.class;
+    }
+
+    @Override
+    protected boolean isEmpty(@NonNull final Field field, @NonNull final OverwritablePojo<GitHubRepository> pojo) {
+        try {
+            if (field.get(pojo) instanceof GitHubOwner) {
+                return false;
+            }
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, "Failed get at " + field.getName(), e);
+        }
+
+        return super.isEmpty(field, pojo);
     }
 
     public int getId() {

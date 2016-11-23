@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -80,6 +81,15 @@ public abstract class ContentProviderStoreCoreBase<U> {
                 .subscribe(this::updateIfValueChanged);
     }
 
+    @NonNull
+    public static Handler createHandler(@NonNull final String name) {
+        checkNotNull(name);
+
+        HandlerThread handlerThread = new HandlerThread(name);
+        handlerThread.start();
+        return new Handler(handlerThread.getLooper());
+    }
+
     private void updateIfValueChanged(@NonNull final Pair<U, Uri> pair) {
         final Cursor cursor = contentResolver.query(pair.second, getProjection(), null, null, null);
         U newItem = pair.first;
@@ -92,8 +102,12 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                 if (!valuesEqual) {
                     Log.v(TAG, "Merging values at " + pair.second);
+                    Log.v(TAG, " - old: " + currentItem);
+                    Log.v(TAG, " - new: " + newItem);
                     newItem = mergeValues(currentItem, newItem);
+                    Log.v(TAG, " - merged: " + newItem);
                     valuesEqual = newItem.equals(currentItem);
+                    Log.v(TAG, " - equal after merge: " + valuesEqual);
                 }
             }
             cursor.close();
@@ -112,15 +126,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
         } else {
             Log.v(TAG, "Updated at " + pair.second);
         }
-    }
-
-    @NonNull
-    public static Handler createHandler(@NonNull final String name) {
-        checkNotNull(name);
-
-        HandlerThread handlerThread = new HandlerThread(name);
-        handlerThread.start();
-        return new Handler(handlerThread.getLooper());
     }
 
     protected void put(@NonNull final U item, @NonNull final Uri uri) {

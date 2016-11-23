@@ -70,7 +70,12 @@ public final class GitHubProvider {
         }
 
         public static long fromUri(Uri uri) {
-            return Long.valueOf(uri.getLastPathSegment());
+            String lastSegment = uri.getLastPathSegment();
+            if (GitHubDatabase.GITHUB_REPOSITORIES.equals(lastSegment)) {
+                return 0;
+            } else {
+                return Long.valueOf(uri.getLastPathSegment());
+            }
         }
     }
 

@@ -28,6 +28,7 @@ package io.reark.rxgithubapp.shared.pojo;
 import android.support.annotation.NonNull;
 
 public class UserSettings {
+
     private final int selectedRepositoryId;
 
     public UserSettings(int selectedRepositoryId) {

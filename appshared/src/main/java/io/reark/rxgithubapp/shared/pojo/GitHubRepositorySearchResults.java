@@ -36,7 +36,7 @@ import static io.reark.reark.utils.Preconditions.get;
 public class GitHubRepositorySearchResults {
 
     @NonNull
-    private final List<GitHubRepository> items;
+    private List<GitHubRepository> items;
 
     public GitHubRepositorySearchResults(@NonNull final List<GitHubRepository> items) {
         this.items = new ArrayList<>(get(items));

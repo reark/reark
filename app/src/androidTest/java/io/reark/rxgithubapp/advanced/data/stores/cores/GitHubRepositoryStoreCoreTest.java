@@ -63,19 +63,6 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         super.tearDown();
     }
 
-    public void testPut_StoresValue() {
-        final GitHubRepository value = create(100, "test name");
-        TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
-
-        gitHubRepositoryStoreCore.put(100, value);
-        gitHubRepositoryStoreCore.getCached(100).subscribe(testSubscriber);
-
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(value);
-    }
-
     // PUT
 
     @Test

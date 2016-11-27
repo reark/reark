@@ -79,10 +79,6 @@ public final class NetworkRequestStatus {
         return new NetworkRequestStatus("", NETWORK_STATUS_NONE, 0, null);
     }
 
-    public boolean isSome() {
-        return status != NETWORK_STATUS_NONE;
-    }
-
     @NonNull
     public static NetworkRequestStatus ongoing(@NonNull final String uri) {
         return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ONGOING, 0, null);
@@ -115,6 +111,10 @@ public final class NetworkRequestStatus {
     @Nullable
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public boolean isSome() {
+        return status != NETWORK_STATUS_NONE;
     }
 
     public boolean isNone() {

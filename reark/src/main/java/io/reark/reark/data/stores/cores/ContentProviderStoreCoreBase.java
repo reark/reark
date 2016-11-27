@@ -101,12 +101,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                 if (!valuesEqual) {
                     Log.v(TAG, "Merging values at " + pair.second);
-                    Log.v(TAG, " - old: " + currentItem);
-                    Log.v(TAG, " - new: " + newItem);
                     newItem = mergeValues(currentItem, newItem);
-                    Log.v(TAG, " - merged: " + newItem);
                     valuesEqual = newItem.equals(currentItem);
-                    Log.v(TAG, " - equal after merge: " + valuesEqual);
                 }
             }
             cursor.close();
@@ -137,7 +133,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
     @NonNull
     protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
         checkNotNull(uri);
-        Log.d(TAG, "getAllOnce: " + uri);
 
         return Observable.just(uri)
                 .observeOn(Schedulers.io())
@@ -146,9 +141,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     protected Observable<U> getOnce(@NonNull final Uri uri) {
-        Log.d(TAG, "getOnce: " + uri);
         return getAllOnce(Preconditions.get(uri))
-                .doOnEach(notification -> Log.d(TAG, "Notif: " + notification))
                 .filter(list -> !list.isEmpty())
                 .doOnNext(list -> {
                     if (list.size() > 1) {
@@ -160,9 +153,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     private List<U> queryList(@NonNull final Uri uri) {
-
-        Log.d(TAG, "queryList: " + uri);
-
         Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
         List<U> list = new ArrayList<>(10);
 
@@ -178,8 +168,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
         if (list.isEmpty()) {
             Log.v(TAG, "Could not find with id: " + uri);
         }
-
-        Log.d(TAG, "queryList return: " + list);
 
         return list;
     }

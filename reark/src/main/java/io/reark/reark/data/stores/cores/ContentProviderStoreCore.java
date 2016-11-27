@@ -73,8 +73,6 @@ public abstract class ContentProviderStoreCore<T, U>
             public void onChange(boolean selfChange, Uri uri) {
                 super.onChange(selfChange, uri);
 
-                Log.d(ContentProviderStoreCore.this.getClass().getSimpleName(), "onChanged " + selfChange + ", " + uri);
-
                 getOnce(uri)
                         .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
                         .map(item -> new StoreItem<>(getIdForUri(uri), item))
@@ -108,8 +106,6 @@ public abstract class ContentProviderStoreCore<T, U>
     @Override
     public Observable<U> getCached(@NonNull final T id) {
         checkNotNull(id);
-
-        Log.d(TAG, "getCached " + id);
 
         return getOnce(getUriForId(id));
     }

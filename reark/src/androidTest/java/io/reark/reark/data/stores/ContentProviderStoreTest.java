@@ -210,6 +210,12 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
 
         @NonNull
         @Override
+        protected String getAuthority() {
+            return AUTHORITY;
+        }
+
+        @NonNull
+        @Override
         public Uri getContentUri() {
             return CONTENT_URI;
         }

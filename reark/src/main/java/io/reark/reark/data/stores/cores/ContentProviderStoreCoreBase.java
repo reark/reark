@@ -25,20 +25,26 @@
  */
 package io.reark.reark.data.stores.cores;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.utils.Log;
+import io.reark.reark.utils.ObjectLockHandler;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -59,25 +65,64 @@ import static io.reark.reark.utils.Preconditions.checkNotNull;
  * @param <U> Type of the data this store core contains.
  */
 public abstract class ContentProviderStoreCoreBase<U> {
-    private static final String TAG = ContentProviderStoreCoreBase.class.getSimpleName();
+
+    private final String TAG = getClass().getSimpleName();
 
     @NonNull
     private final ContentResolver contentResolver;
 
     @NonNull
-    private final ContentObserver contentObserver = getContentObserver();
-
-    @NonNull
     private final PublishSubject<Pair<U, Uri>> updateSubject = PublishSubject.create();
 
-    protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
-        this.contentResolver = Preconditions.get(contentResolver);
-        this.contentResolver.registerContentObserver(getContentUri(), true, contentObserver);
+    @NonNull
+    private final ObjectLockHandler<Uri> locker = new ObjectLockHandler<>();
 
-        updateSubject
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .subscribe(this::updateIfValueChanged);
+    private final int groupingTimeout;
+
+    private final int groupMaxSize;
+
+    protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
+        this(contentResolver, 10, 30);
+    }
+
+    protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver,
+                                           final int groupingTimeout,
+                                           final int groupMaxSize) {
+        this.contentResolver = Preconditions.get(contentResolver);
+        this.groupingTimeout = groupingTimeout;
+        this.groupMaxSize = groupMaxSize;
+
+        initialize();
+    }
+
+    private void initialize() {
+        this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
+
+        // Observable transforming updates and inserts to ContentProviderOperations
+        Observable<ContentProviderOperation> operationObservable = updateSubject
+                .flatMap(pair -> createOperation(pair.first, pair.second));
+
+        // Group the operations to a list that should be executed in one batch. The default
+        // grouping logic is suitable for pojo stores, but some stores may need to provide
+        // their own grouping logic, if for example buffering delays are undesirable.
+        groupOperations(operationObservable)
+                .observeOn(Schedulers.computation())
+                .map(ArrayList::new)
+                .doOnNext(list -> Log.v(TAG, "Grouped list of " + list.size()))
+                .doOnNext(operations -> {
+                    try {
+                        ContentProviderResult[] result = contentResolver.applyBatch(getAuthority(), operations);
+                        Log.v(TAG, String.format("Applied %s operations", result.length));
+                    } catch (RemoteException | OperationApplicationException e) {
+                        Log.e(TAG, "Error applying operations", e);
+                    }
+                })
+                .flatMap(Observable::from)
+                .map(ContentProviderOperation::getUri)
+                .subscribe(locker::release,
+                        // On error we can't release the processing lock. Any further update
+                        // operations for this object will likely be blocked until app is restarted.
+                        error -> Log.e(TAG, "Error while handling data! Processing may be blocked.", error));
     }
 
     @NonNull
@@ -89,38 +134,79 @@ public abstract class ContentProviderStoreCoreBase<U> {
         return new Handler(handlerThread.getLooper());
     }
 
-    private void updateIfValueChanged(@NonNull final Pair<U, Uri> pair) {
-        final Cursor cursor = contentResolver.query(pair.second, getProjection(), null, null, null);
-        U newItem = pair.first;
-        boolean valuesEqual = false;
+    /**
+     * Implements grouping logic for batching the content provider operations. The default
+     * logic buffers the operations with debounced timer, while applying a hard limit for the
+     * number of operations. The data is serialized into a binder transaction, and an attempt
+     * to pass a too large batch of operations will result in a failed binder transaction.
+     */
+    @NonNull
+    protected Observable<List<ContentProviderOperation>> groupOperations(@NonNull final Observable<ContentProviderOperation> source) {
+        return source.publish(stream -> stream.buffer(
+                Observable.amb(
+                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS),
+                        stream.skip(groupMaxSize - 1))
+                        .first() // Complete observable after the first reached trigger
+                        .repeatWhen(observable -> observable))); // Resubscribe immediately for the next buffer
+    }
 
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                U currentItem = read(cursor);
-                valuesEqual = newItem.equals(currentItem);
+    @NonNull
+    private Observable<ContentProviderOperation> createOperation(@NonNull final U item, @NonNull final Uri uri) {
+        return Observable
+                .fromCallable(() -> {
+                    // We block until this Uri is freed for operations
+                    try {
+                        locker.acquire(uri);
+                        Log.v(TAG, "Locked URI " + uri);
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "Thread interrupted", e);
+                        return ContentProviderOperation.newInsert(Uri.EMPTY).build();
+                    }
 
-                if (!valuesEqual) {
-                    Log.v(TAG, "Merging values at " + pair.second);
-                    newItem = mergeValues(currentItem, newItem);
-                    valuesEqual = newItem.equals(currentItem);
-                }
-            }
-            cursor.close();
-        }
+                    final Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
+                    U newItem = item;
 
-        if (valuesEqual) {
-            Log.v(TAG, "Data already up to date at " + pair.second);
-            return;
-        }
+                    if (cursor == null || !cursor.moveToFirst()) {
+                        if (cursor != null) {
+                            cursor.close();
+                        }
 
-        final ContentValues contentValues = getContentValuesForItem(newItem);
+                        Log.v(TAG, "Create insertion operation for " + uri);
+                        return ContentProviderOperation.newInsert(uri)
+                                .withValues(getContentValuesForItem(newItem))
+                                .build();
+                    }
 
-        if (contentResolver.update(pair.second, contentValues, null, null) == 0) {
-            final Uri resultUri = contentResolver.insert(pair.second, contentValues);
-            Log.v(TAG, "Inserted at " + resultUri);
-        } else {
-            Log.v(TAG, "Updated at " + pair.second);
-        }
+                    final U currentItem = read(cursor);
+                    boolean valuesEqual = newItem.equals(currentItem);
+
+                    if (!valuesEqual) {
+                        Log.v(TAG, "Merging values at " + uri);
+                        newItem = mergeValues(currentItem, newItem);
+                        valuesEqual = newItem.equals(currentItem);
+                    }
+
+                    cursor.close();
+
+                    if (valuesEqual) {
+                        Log.v(TAG, "Data already up to date at " + uri);
+
+                        // No ContentResolverOperation created, so we need to release and free
+                        // the Uri lock already here. For the other possible operations the lock
+                        // will be released after the created operation has been executed.
+                        locker.release(uri);
+                        return ContentProviderOperation.newInsert(Uri.EMPTY).build();
+                    }
+
+                    Log.v(TAG, "Create update operation for " + uri);
+                    return ContentProviderOperation.newUpdate(uri)
+                            .withValues(getContentValuesForItem(newItem))
+                            .build();
+
+                })
+                // Filtering by null uri is a hack for getting out no-ops.
+                .filter(operation -> operation.getUri() != Uri.EMPTY)
+                .subscribeOn(Schedulers.io());
     }
 
     protected void put(@NonNull final U item, @NonNull final Uri uri) {
@@ -176,6 +262,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
     protected ContentResolver getContentResolver() {
         return contentResolver;
     }
+
+    @NonNull
+    protected abstract String getAuthority();
 
     @NonNull
     protected abstract ContentObserver getContentObserver();

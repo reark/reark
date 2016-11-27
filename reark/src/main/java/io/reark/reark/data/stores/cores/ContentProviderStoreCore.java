@@ -65,6 +65,12 @@ public abstract class ContentProviderStoreCore<T, U>
         super(contentResolver);
     }
 
+    protected ContentProviderStoreCore(@NonNull final ContentResolver contentResolver,
+                                       final int groupingTimeout,
+                                       final int groupMaxSize) {
+        super(contentResolver, groupingTimeout, groupMaxSize);
+    }
+
     @NonNull
     @Override
     protected ContentObserver getContentObserver() {

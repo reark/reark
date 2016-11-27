@@ -50,14 +50,13 @@ public class MainActivityTest {
     public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void testInitialActivityState() {
+    public void testInitialActivityState() throws InterruptedException {
         onView(withText(R.string.repository_fragment_intro)).check(matches(isDisplayed()));
-        onView(withId(R.id.widget_avatar_image_view)).check(matches(isDisplayed()));
         onView(withText(R.string.repository_fragment_change)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testPressingChangeButtonLaunchesRepositoriesActivity() {
+    public void testPressingChangeButtonLaunchesRepositoriesActivity() throws InterruptedException {
         onView(withText(R.string.repository_fragment_change)).perform(click());
         onView(withId(R.id.repositories_view)).check(matches(isDisplayed()));
     }

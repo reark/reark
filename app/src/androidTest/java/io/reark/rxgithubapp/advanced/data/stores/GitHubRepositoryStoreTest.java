@@ -77,7 +77,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void getOne_WithData_ReturnsData_AndCompletes() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value); // TODO synchronous init with contentProvider
-        Thread.sleep(50);
+        Thread.sleep(100);
 
         // getOnce is expected to return a observable that emits the value and then completes.
         gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
@@ -100,11 +100,12 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     }
 
     @Test
-    public void getOnceAndStream_ReturnsOnlyValuesForSubscribedId_AndDoesNotComplete() {
+    public void getOnceAndStream_ReturnsOnlyValuesForSubscribedId_AndDoesNotComplete() throws InterruptedException {
         final GitHubRepository value1 = create(100, "repository1");
         final GitHubRepository value2 = create(200, "repository2");
 
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
+        Thread.sleep(100);
         gitHubRepositoryStore.put(value1);
         gitHubRepositoryStore.put(value2);
 
@@ -116,15 +117,16 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
     @Test
     public void getOnceAndStream_ReturnsAllValuesForSubscribedId_AndDoesNotComplete() throws InterruptedException {
-        final GitHubRepository value1 = create(100, "repository1");
-        final GitHubRepository value2 = create(100, "repository2");
-        final GitHubRepository value3 = create(100, "repository3");
+        final GitHubRepository value1 = create(100, "repository-1");
+        final GitHubRepository value2 = create(100, "repository-2");
+        final GitHubRepository value3 = create(100, "repository-3");
 
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
+        Thread.sleep(100);
         gitHubRepositoryStore.put(value1);
-        Thread.sleep(50);
+        Thread.sleep(100);
         gitHubRepositoryStore.put(value2);
-        Thread.sleep(50);
+        Thread.sleep(100);
         gitHubRepositoryStore.put(value3);
 
         testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
@@ -134,11 +136,12 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     }
 
     @Test
-    public void getOnceAndStream_ReturnsOnlyNewValues_AndDoesNotComplete() {
+    public void getOnceAndStream_ReturnsOnlyNewValues_AndDoesNotComplete() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
 
         // In the default store implementation identical values are filtered out.
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
+        Thread.sleep(100);
         gitHubRepositoryStore.put(value);
         gitHubRepositoryStore.put(value);
 
@@ -152,7 +155,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void getOnceAndStream_WithInitialValue_ReturnsInitialValues_AndDoesNotComplete() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value);
-        Thread.sleep(50);
+        Thread.sleep(200);
 
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
 
@@ -175,7 +178,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         // Put initial value.
         gitHubRepositoryStore.put(value1);
-        Thread.sleep(50);
+        Thread.sleep(100);
 
         // Create the stream observable but do not subscribe immediately.
         Observable<GitHubRepository> stream = gitHubRepositoryStore.getOnceAndStream(100);

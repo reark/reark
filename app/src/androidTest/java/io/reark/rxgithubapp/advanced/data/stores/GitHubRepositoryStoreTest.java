@@ -4,7 +4,6 @@ import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.util.Pair;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 
@@ -18,7 +17,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.rxgithubapp.advanced.data.schematicProvider.generated.GitHubProvider;
-import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositoryStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import rx.Observable;

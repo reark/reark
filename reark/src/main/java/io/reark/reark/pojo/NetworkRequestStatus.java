@@ -28,8 +28,6 @@ package io.reark.reark.pojo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import io.reark.reark.utils.Preconditions;
-
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_COMPLETED;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ERROR;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_NONE;

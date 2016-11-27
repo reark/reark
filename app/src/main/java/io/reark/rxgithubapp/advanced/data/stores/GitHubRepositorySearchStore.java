@@ -27,16 +27,13 @@ package io.reark.rxgithubapp.advanced.data.stores;
 
 import android.content.ContentResolver;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 
 import io.reark.reark.data.stores.DefaultStore;
-import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositorySearchStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
-import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
 public class GitHubRepositorySearchStore

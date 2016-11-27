@@ -25,26 +25,15 @@
  */
 package io.reark.reark.data.stores;
 
-import android.content.ContentResolver;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.List;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
-import io.reark.reark.data.stores.cores.ContentProviderStoreCoreBase;
-import io.reark.reark.data.stores.interfaces.StoreInterface;
-import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
-import rx.functions.Func2;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
-import static java.lang.String.format;
-import static rx.Observable.concat;
 
 /**
  * ContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for

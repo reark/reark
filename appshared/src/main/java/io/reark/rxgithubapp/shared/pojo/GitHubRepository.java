@@ -30,7 +30,6 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Field;
-import java.security.acl.Owner;
 
 import io.reark.reark.pojo.OverwritablePojo;
 import io.reark.reark.utils.Log;

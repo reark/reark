@@ -47,6 +47,8 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         contentProvider.attachInfo(InstrumentationRegistry.getTargetContext(), providerInfo);
         contentProvider.delete(GITHUB_REPOSITORIES, null, null);
 
+        Thread.sleep(2000);
+
         final MockContentResolver contentResolver = new MockContentResolver();
         contentResolver.addProvider(GitHubProvider.AUTHORITY, contentProvider);
 
@@ -74,7 +76,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
 
         gitHubRepositoryStoreCore.put(100, value1);
         gitHubRepositoryStoreCore.put(200, value2);
-        Thread.sleep(100);
+        Thread.sleep(1500);
         gitHubRepositoryStoreCore.getCached(100).subscribe(testSubscriber1);
         gitHubRepositoryStoreCore.getCached(200).subscribe(testSubscriber2);
 
@@ -103,12 +105,12 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.put(100, value1);
         gitHubRepositoryStoreCore.put(200, value2);
 
-        testSubscriber1.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber1.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber1.assertNotCompleted();
         testSubscriber1.assertNoErrors();
         testSubscriber1.assertValue(value1);
 
-        testSubscriber2.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber2.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber2.assertNotCompleted();
         testSubscriber2.assertNoErrors();
         testSubscriber2.assertValue(value2);
@@ -123,7 +125,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.getStream(100).subscribe(testSubscriber);
         gitHubRepositoryStoreCore.put(100, value);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(value);

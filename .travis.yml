@@ -25,6 +25,9 @@ before_script:
 script:
   - ./gradlew test spoon
 
+after_failure:
+  - find . -path "*spoon*.json" | xargs grep "fail"
+
 notifications:
   email: false
 

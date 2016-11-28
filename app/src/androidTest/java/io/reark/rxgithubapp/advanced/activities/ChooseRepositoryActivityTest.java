@@ -29,6 +29,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,7 @@ public class ChooseRepositoryActivityTest {
     @Rule
     public ActivityTestRule<ChooseRepositoryActivity> activityRule = new ActivityTestRule<>(ChooseRepositoryActivity.class);
 
+    @Ignore("Ignore UI tests due to Travis")
     @Test
     public void testInitialActivityState() {
         onView(withId(R.id.repositories_list_view)).check(matches(isDisplayed()));
@@ -58,6 +60,7 @@ public class ChooseRepositoryActivityTest {
         onView(withId(R.id.repositories_status_text)).check(matches(withText((""))));
     }
 
+    @Ignore("Ignore UI tests due to Travis")
     @Test
     public void testCanPerformInsertingSearchText() {
         onView(withId(R.id.repositories_search)).perform(closeSoftKeyboard(), typeText("reark"));

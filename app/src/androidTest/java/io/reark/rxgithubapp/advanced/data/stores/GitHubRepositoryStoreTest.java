@@ -54,6 +54,8 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         contentProvider.attachInfo(InstrumentationRegistry.getTargetContext(), providerInfo);
         contentProvider.delete(GITHUB_REPOSITORIES, null, null);
 
+        Thread.sleep(2500);
+
         final MockContentResolver contentResolver = new MockContentResolver();
         contentResolver.addProvider(GitHubProvider.AUTHORITY, contentProvider);
 
@@ -75,12 +77,12 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void getOne_WithData_ReturnsData_AndCompletes() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value); // TODO synchronous init with contentProvider
-        Thread.sleep(100);
+        Thread.sleep(1500);
 
         // getOnce is expected to return a observable that emits the value and then completes.
         gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(singletonList(value));
@@ -91,7 +93,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         // getOnce is expected to emit empty value in case no actual value exists.
         gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(none());
@@ -103,11 +105,11 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         final GitHubRepository value2 = create(200, "repository2");
 
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
-        Thread.sleep(100);
+        Thread.sleep(1500);
         gitHubRepositoryStore.put(value1);
         gitHubRepositoryStore.put(value2);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(asList(none(), value1));
@@ -120,14 +122,14 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         final GitHubRepository value3 = create(100, "repository-3");
 
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
-        Thread.sleep(100);
+        Thread.sleep(1500);
         gitHubRepositoryStore.put(value1);
-        Thread.sleep(100);
+        Thread.sleep(1500);
         gitHubRepositoryStore.put(value2);
-        Thread.sleep(100);
+        Thread.sleep(1500);
         gitHubRepositoryStore.put(value3);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(asList(none(), value1, value2, value3));
@@ -139,11 +141,11 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         // In the default store implementation identical values are filtered out.
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
-        Thread.sleep(100);
+        Thread.sleep(1500);
         gitHubRepositoryStore.put(value);
         gitHubRepositoryStore.put(value);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(asList(none(), value));
@@ -153,11 +155,11 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void getOnceAndStream_WithInitialValue_ReturnsInitialValues_AndDoesNotComplete() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value);
-        Thread.sleep(200);
+        Thread.sleep(1500);
 
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(singletonList(value));
@@ -176,7 +178,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         // Put initial value.
         gitHubRepositoryStore.put(value1);
-        Thread.sleep(100);
+        Thread.sleep(1500);
 
         // Create the stream observable but do not subscribe immediately.
         Observable<GitHubRepository> stream = gitHubRepositoryStore.getOnceAndStream(100);
@@ -189,7 +191,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         // Observe that the stream actually gives as the first item the cached value at the time of
         // creating the stream observable.
-        testSubscriber.awaitTerminalEvent(100, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(singletonList(value1));

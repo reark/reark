@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/reark/reark.svg?branch=master)](https://travis-ci.org/reark/reark)
+
 Latest Updates
 ==============
 

@@ -35,17 +35,17 @@ import com.google.gson.Gson;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.utils.Preconditions;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
-import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositorySearches;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubRepositorySearchColumns;
+import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
-public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer, GitHubRepository> {
+public class GitHubRepositorySearchStoreCore extends ContentProviderStoreCore<String, GitHubRepositorySearch> {
 
     private final Gson gson;
 
-    public GitHubRepositoryStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
+    public GitHubRepositorySearchStoreCore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(contentResolver);
 
         this.gson = Preconditions.get(gson);
@@ -54,60 +54,48 @@ public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer,
     @NonNull
     @Override
     public Uri getContentUri() {
-        return GitHubRepositories.GITHUB_REPOSITORIES;
+        return GitHubRepositorySearches.GITHUB_REPOSITORY_SEARCHES;
     }
 
     @NonNull
     @Override
     protected String[] getProjection() {
-        return new String[] { JsonIdColumns.ID, JsonIdColumns.JSON };
+        return new String[] { GitHubRepositorySearchColumns.SEARCH, GitHubRepositorySearchColumns.JSON };
     }
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepository item) {
+    protected ContentValues getContentValuesForItem(@NonNull final GitHubRepositorySearch item) {
         checkNotNull(item);
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(JsonIdColumns.ID, item.getId());
-        contentValues.put(JsonIdColumns.JSON, gson.toJson(item));
+        contentValues.put(GitHubRepositorySearchColumns.SEARCH, item.getSearch());
+        contentValues.put(GitHubRepositorySearchColumns.JSON, gson.toJson(item));
         return contentValues;
     }
 
     @NonNull
     @Override
-    protected GitHubRepository read(@NonNull final Cursor cursor) {
+    protected GitHubRepositorySearch read(@NonNull final Cursor cursor) {
         checkNotNull(cursor);
 
-        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        return gson.fromJson(json, GitHubRepository.class);
+        final String json = cursor.getString(cursor.getColumnIndex(GitHubRepositorySearchColumns.JSON));
+        return gson.fromJson(json, GitHubRepositorySearch.class);
     }
 
     @NonNull
     @Override
-    protected GitHubRepository mergeValues(@NonNull final GitHubRepository v1, @NonNull final GitHubRepository v2) {
-        checkNotNull(v1);
-        checkNotNull(v2);
-
-        // Creating a new object to avoid overwriting the passed argument
-        GitHubRepository newValue = new GitHubRepository(v1);
-
-        return newValue.overwrite(v2);
-    }
-
-    @NonNull
-    @Override
-    protected Uri getUriForId(@NonNull final Integer id) {
+    public Uri getUriForId(@NonNull final String id) {
         checkNotNull(id);
 
-        return GitHubRepositories.withId(id);
+        return GitHubRepositorySearches.withSearch(id);
     }
 
     @NonNull
     @Override
-    protected Integer getIdForUri(@NonNull final Uri uri) {
+    protected String getIdForUri(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return (int) GitHubRepositories.fromUri(uri);
+        return GitHubRepositorySearches.fromUri(uri);
     }
 }

@@ -34,19 +34,13 @@ import io.reark.reark.data.stores.DefaultStore;
 import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositoryStoreCore;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 
-import static io.reark.reark.utils.Preconditions.checkNotNull;
-
-public class GitHubRepositoryStore extends DefaultStore<Integer, GitHubRepository> {
+public class GitHubRepositoryStore
+        extends DefaultStore<Integer, GitHubRepository, GitHubRepository> {
 
     public GitHubRepositoryStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
         super(new GitHubRepositoryStoreCore(contentResolver, gson),
-                GitHubRepositoryStore::getIdFor);
-    }
-
-    @NonNull
-    protected static Integer getIdFor(@NonNull final GitHubRepository item) {
-        checkNotNull(item);
-
-        return item.getId();
+                GitHubRepository::getId,
+                repository -> repository != null ? repository : GitHubRepository.none(),
+                GitHubRepository::none);
     }
 }

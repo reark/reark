@@ -70,7 +70,12 @@ public final class GitHubProvider {
         }
 
         public static long fromUri(Uri uri) {
-            return Long.valueOf(uri.getLastPathSegment());
+            String lastSegment = uri.getLastPathSegment();
+            if (GitHubDatabase.GITHUB_REPOSITORIES.equals(lastSegment)) {
+                return 0;
+            } else {
+                return Long.valueOf(uri.getLastPathSegment());
+            }
         }
     }
 
@@ -91,6 +96,10 @@ public final class GitHubProvider {
         public static Uri withSearch(String search) {
             return buildUri(GitHubDatabase.GITHUB_REPOSITORY_SEARCHES, search);
         }
+
+        public static String fromUri(Uri uri) {
+            return uri.getLastPathSegment();
+        }
     }
 
     @TableEndpoint(table = GitHubDatabase.USER_SETTINGS)
@@ -110,6 +119,10 @@ public final class GitHubProvider {
         public static Uri withId(long id) {
             return buildUri(GitHubDatabase.USER_SETTINGS, String.valueOf(id));
         }
+
+        public static long fromUri(Uri uri) {
+            return Long.valueOf(uri.getLastPathSegment());
+        }
     }
 
     @TableEndpoint(table = GitHubDatabase.NETWORK_REQUEST_STATUSES)
@@ -128,6 +141,10 @@ public final class GitHubProvider {
                 pathSegment = 1)
         public static Uri withId(long id) {
             return buildUri(GitHubDatabase.NETWORK_REQUEST_STATUSES, String.valueOf(id));
+        }
+
+        public static long fromUri(Uri uri) {
+            return Long.valueOf(uri.getLastPathSegment());
         }
     }
 }

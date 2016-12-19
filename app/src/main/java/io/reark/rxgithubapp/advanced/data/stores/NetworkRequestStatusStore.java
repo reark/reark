@@ -26,81 +26,21 @@
 package io.reark.rxgithubapp.advanced.data.stores;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import io.reark.reark.data.stores.DefaultStore;
 import io.reark.reark.pojo.NetworkRequestStatus;
-import io.reark.reark.utils.Log;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
-import io.reark.rxgithubapp.advanced.data.schematicProvider.UserSettingsColumns;
+import io.reark.rxgithubapp.advanced.data.stores.cores.NetworkRequestStatusStoreCore;
 
-import static io.reark.reark.utils.Preconditions.checkNotNull;
-
-public class NetworkRequestStatusStore extends GsonStoreBase<NetworkRequestStatus, Integer> {
-    private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
+public class NetworkRequestStatusStore
+        extends DefaultStore<Integer, NetworkRequestStatus, NetworkRequestStatus> {
 
     public NetworkRequestStatusStore(@NonNull final ContentResolver contentResolver, @NonNull final Gson gson) {
-        super(contentResolver, gson);
-    }
-
-    @NonNull
-    @Override
-    protected Integer getIdFor(@NonNull final NetworkRequestStatus item) {
-        checkNotNull(item);
-
-        return item.getUri().hashCode();
-    }
-
-    @NonNull
-    @Override
-    public Uri getContentUri() {
-        return NetworkRequestStatuses.NETWORK_REQUEST_STATUSES;
-    }
-
-    @Override
-    public void put(@NonNull final NetworkRequestStatus item) {
-        checkNotNull(item);
-        Log.v(TAG, "put(" + item.getStatus() + ", " + item.getUri() + ")");
-
-        super.put(item);
-    }
-
-    @NonNull
-    @Override
-    protected String[] getProjection() {
-        return new String[] { UserSettingsColumns.ID, UserSettingsColumns.JSON };
-    }
-
-    @NonNull
-    @Override
-    protected ContentValues getContentValuesForItem(@NonNull final NetworkRequestStatus item) {
-        checkNotNull(item);
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(JsonIdColumns.ID, item.getUri().hashCode());
-        contentValues.put(JsonIdColumns.JSON, getGson().toJson(item));
-        return contentValues;
-    }
-
-    @NonNull
-    @Override
-    protected NetworkRequestStatus read(@NonNull final Cursor cursor) {
-        checkNotNull(cursor);
-
-        final String json = cursor.getString(cursor.getColumnIndex(JsonIdColumns.JSON));
-        return getGson().fromJson(json, NetworkRequestStatus.class);
-    }
-
-    @NonNull
-    @Override
-    public Uri getUriForId(@NonNull final Integer id) {
-        checkNotNull(id);
-
-        return NetworkRequestStatuses.withId(id);
+        super(new NetworkRequestStatusStoreCore(contentResolver, gson),
+                status -> status.getUri().hashCode(),
+                status -> status == null ? NetworkRequestStatus.none() : status,
+                NetworkRequestStatus::none);
     }
 }

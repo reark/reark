@@ -37,14 +37,19 @@ import rx.functions.Func2;
  *
  * @param <T> Type of the id used in this store.
  * @param <U> Type of the data this store contains.
+ * @param <R> Non-null type or wrapper for the data this store contains.
  */
-public class MemoryStore<T, U> extends DefaultStore<T, U> {
-    public MemoryStore(GetIdForItem<T, U> getIdForItem) {
-        super(new MemoryStoreCore<>(), getIdForItem);
+public class MemoryStore<T, U, R> extends DefaultStore<T, U, R> {
+    public MemoryStore(@NonNull final GetIdForItem<T, U> getIdForItem,
+                       @NonNull final GetNullSafe<U, R> getNullSafe,
+                       @NonNull final GetEmptyValue<R> getEmptyValue) {
+        super(new MemoryStoreCore<>(), getIdForItem, getNullSafe, getEmptyValue);
     }
 
-    public MemoryStore(@NonNull final GetIdForItem<T, U> getIdForItem,
-                       @NonNull final Func2<U, U, U> putMergeFunction) {
-        super(new MemoryStoreCore<>(putMergeFunction), getIdForItem);
+    public MemoryStore(@NonNull final Func2<U, U, U> putMergeFunction,
+                       @NonNull final GetIdForItem<T, U> getIdForItem,
+                       @NonNull final GetNullSafe<U, R> getNullSafe,
+                       @NonNull final GetEmptyValue<R> getEmptyValue) {
+        super(new MemoryStoreCore<>(putMergeFunction), getIdForItem, getNullSafe, getEmptyValue);
     }
 }

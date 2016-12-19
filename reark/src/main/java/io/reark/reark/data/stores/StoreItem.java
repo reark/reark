@@ -33,8 +33,8 @@ import static io.reark.reark.utils.Preconditions.get;
 /**
  * A class used internally in stores. It behaves much like a Pair.
  *
- * @param <T> Type of the identifiers.
- * @param <U> Type of the data items.
+ * @param <T> Type of the identifier.
+ * @param <U> Type of the data item.
  */
 public class StoreItem<T, U> {
 

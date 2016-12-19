@@ -27,7 +27,7 @@ package io.reark.rxgithubapp.shared.data;
 
 import android.support.annotation.NonNull;
 
-import io.reark.reark.data.stores.StoreInterface;
+import io.reark.reark.data.stores.interfaces.StoreInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
@@ -37,17 +37,17 @@ import static io.reark.reark.utils.Preconditions.get;
 public abstract class DataLayerBase {
 
     @NonNull
-    protected final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore;
+    protected final StoreInterface<Integer, NetworkRequestStatus, NetworkRequestStatus> networkRequestStatusStore;
 
     @NonNull
-    protected final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore;
+    protected final StoreInterface<Integer, GitHubRepository, GitHubRepository> gitHubRepositoryStore;
 
     @NonNull
-    protected final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore;
+    protected final StoreInterface<String, GitHubRepositorySearch, GitHubRepositorySearch> gitHubRepositorySearchStore;
 
-    protected DataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                            @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                            @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore) {
+    protected DataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus, NetworkRequestStatus> networkRequestStatusStore,
+                            @NonNull final StoreInterface<Integer, GitHubRepository, GitHubRepository> gitHubRepositoryStore,
+                            @NonNull final StoreInterface<String, GitHubRepositorySearch, GitHubRepositorySearch> gitHubRepositorySearchStore) {
         this.networkRequestStatusStore = get(networkRequestStatusStore);
         this.gitHubRepositoryStore = get(gitHubRepositoryStore);
         this.gitHubRepositorySearchStore = get(gitHubRepositorySearchStore);

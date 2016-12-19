@@ -30,7 +30,10 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import io.reark.reark.data.stores.StoreItem;
+import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
@@ -50,8 +53,9 @@ import static java.lang.String.format;
  * @param <T> Type of the id used in this store core.
  * @param <U> Type of the data this store core contains.
  */
-public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStoreCoreBase<U>
-        implements StoreCoreInterface<T, U> {
+public abstract class ContentProviderStoreCore<T, U>
+        extends ContentProviderStoreCoreBase<U> implements StoreCoreInterface<T, U> {
+
     private static final String TAG = ContentProviderStoreCore.class.getSimpleName();
 
     @NonNull
@@ -69,7 +73,7 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
             public void onChange(boolean selfChange, Uri uri) {
                 super.onChange(selfChange, uri);
 
-                getOne(uri)
+                getOnce(uri)
                         .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
                         .map(item -> new StoreItem<>(getIdForUri(uri), item))
                         .subscribe(subjectCache::onNext,
@@ -78,12 +82,6 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
         };
     }
 
-    /**
-     * Inserts the given item to the store, or updates the store if an item with the same id
-     * already exists.
-     *
-     * Any open stream Observables for the item's id will emit this new value.
-     */
     @Override
     public void put(@NonNull final T id, @NonNull final U item) {
         checkNotNull(id);
@@ -92,26 +90,24 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
     }
 
     /**
-     * Returns a completing Observable that either emits the first existing item in the store
-     * matching the id, or emits null if the store does not contain the requested id.
+     * Returns an observable that emits all stored values for the given id and completes.
+     *
+     * @param id Store item id.
+     * @return Values associated with the given id.
      */
+    @NonNull
+    public Observable<List<U>> getAllCached(@NonNull final T id) {
+        checkNotNull(id);
+
+        return getAllOnce(getUriForId(id));
+    }
+
     @NonNull
     @Override
     public Observable<U> getCached(@NonNull final T id) {
         checkNotNull(id);
 
-        final Uri uri = getUriForId(id);
-        return getOne(uri);
-    }
-
-    /**
-     * Returns a non-completing Observable of all new and updated items.
-     */
-    @NonNull
-    public Observable<StoreItem<T, U>> getStream() {
-        Log.v(TAG, "getStream()");
-
-        return subjectCache.asObservable();
+        return getOnce(getUriForId(id));
     }
 
     @NonNull
@@ -121,19 +117,24 @@ public abstract class ContentProviderStoreCore<T, U> extends ContentProviderStor
 
         return subjectCache
                 .filter(item -> item.id().equals(id))
-                .doOnNext(item -> Log.v(TAG, "getItemObservable(" + item + ')'))
                 .map(StoreItem::item)
                 .asObservable();
     }
 
     /**
      * Returns unique Uri for the given id in the content provider of this store.
+     *
+     * @param id Store item id for which the Uri should be resolved.
+     * @return Resolved content provider Uri.
      */
     @NonNull
     protected abstract Uri getUriForId(@NonNull final T id);
 
     /**
      * Returns id for the unique Uri in the content provider of this store.
+     *
+     * @param uri Content provider Uri for which the id should be resolved.
+     * @return Resolved store item id.
      */
     @NonNull
     protected abstract T getIdForUri(@NonNull final Uri uri);

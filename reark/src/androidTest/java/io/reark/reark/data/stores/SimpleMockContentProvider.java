@@ -74,7 +74,7 @@ public class SimpleMockContentProvider extends MockContentProvider {
     }
 
     // Crude imitation of the behavior of SQL content provider
-    private Cursor getCursor(Uri uri, String[] projection) {
+    private Cursor getCursor(Uri uri, String... projection) {
         MatrixCursor cursor = new MatrixCursor(projection);
 
         if (values.containsKey(uri)) {

@@ -28,7 +28,7 @@ package io.reark.rxgithubapp.shared.data;
 import android.support.annotation.NonNull;
 
 import io.reark.reark.data.DataStreamNotification;
-import io.reark.reark.data.stores.StoreInterface;
+import io.reark.reark.data.stores.interfaces.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
@@ -43,15 +43,16 @@ import static io.reark.reark.utils.Preconditions.get;
 
 public abstract class ClientDataLayerBase extends DataLayerBase {
     private static final String TAG = ClientDataLayerBase.class.getSimpleName();
+
     public static final int DEFAULT_USER_ID = 0;
 
     @NonNull
-    protected final StoreInterface<Integer, UserSettings> userSettingsStore;
+    protected final StoreInterface<Integer, UserSettings, UserSettings> userSettingsStore;
 
-    protected ClientDataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus> networkRequestStatusStore,
-                                  @NonNull final StoreInterface<Integer, GitHubRepository> gitHubRepositoryStore,
-                                  @NonNull final StoreInterface<String, GitHubRepositorySearch> gitHubRepositorySearchStore,
-                                  @NonNull final StoreInterface<Integer, UserSettings> userSettingsStore) {
+    protected ClientDataLayerBase(@NonNull final StoreInterface<Integer, NetworkRequestStatus, NetworkRequestStatus> networkRequestStatusStore,
+                                  @NonNull final StoreInterface<Integer, GitHubRepository, GitHubRepository> gitHubRepositoryStore,
+                                  @NonNull final StoreInterface<String, GitHubRepositorySearch, GitHubRepositorySearch> gitHubRepositorySearchStore,
+                                  @NonNull final StoreInterface<Integer, UserSettings, UserSettings> userSettingsStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
         this.userSettingsStore = get(userSettingsStore);
@@ -62,12 +63,17 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
         checkNotNull(searchString);
 
         Log.d(TAG, "getGitHubRepositorySearch(" + searchString + ")");
+
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
-                networkRequestStatusStore.getOnceAndStream(
-                        GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode());
+                networkRequestStatusStore
+                        .getOnceAndStream(GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode())
+                        .filter(NetworkRequestStatus::isSome);
+
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
-                gitHubRepositorySearchStore.getOnceAndStream(searchString)
-                        .filter(value -> value != null);
+                gitHubRepositorySearchStore
+                        .getOnceAndStream(searchString)
+                        .filter(GitHubRepositorySearch::isSome);
+
         return DataLayerUtils.createDataStreamNotificationObservable(
                 networkRequestStatusObservable, gitHubRepositorySearchObservable);
     }
@@ -89,7 +95,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
         return gitHubRepositoryStore
                 .getOnceAndStream(repositoryId)
-                .filter(value -> value != null);
+                .filter(GitHubRepository::isSome);
     }
 
     @NonNull
@@ -104,8 +110,9 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {
-        return userSettingsStore.getOnceAndStream(DEFAULT_USER_ID)
-                .filter(value -> value != null);
+        return userSettingsStore
+                .getOnceAndStream(DEFAULT_USER_ID)
+                .filter(UserSettings::isSome);
     }
 
     public void setUserSettings(@NonNull final UserSettings userSettings) {

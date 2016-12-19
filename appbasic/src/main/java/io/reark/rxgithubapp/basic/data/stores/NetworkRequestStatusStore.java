@@ -25,30 +25,15 @@
  */
 package io.reark.rxgithubapp.basic.data.stores;
 
-import android.support.annotation.NonNull;
-
 import io.reark.reark.data.stores.MemoryStore;
 import io.reark.reark.pojo.NetworkRequestStatus;
-import io.reark.reark.utils.Log;
-import rx.Observable;
 
-public class NetworkRequestStatusStore extends MemoryStore<Integer, NetworkRequestStatus> {
-    private static final String TAG = NetworkRequestStatusStore.class.getSimpleName();
+public class NetworkRequestStatusStore
+        extends MemoryStore<Integer, NetworkRequestStatus, NetworkRequestStatus> {
 
     public NetworkRequestStatusStore() {
-        super(networkRequestStatus -> networkRequestStatus.getUri().hashCode());
-    }
-
-    @Override
-    public void put(@NonNull NetworkRequestStatus item) {
-        super.put(item);
-        Log.d(TAG, "network put: " + item.getUri().hashCode());
-    }
-
-    @NonNull
-    @Override
-    public Observable<NetworkRequestStatus> getOnceAndStream(@NonNull Integer id) {
-        Log.d(TAG, "network get: " + id);
-        return super.getOnceAndStream(id);
+        super(status -> status.getUri().hashCode(),
+                status -> status == null ? NetworkRequestStatus.none() : status,
+                NetworkRequestStatus::none);
     }
 }

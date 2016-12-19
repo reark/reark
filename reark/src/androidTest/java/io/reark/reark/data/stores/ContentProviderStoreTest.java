@@ -30,7 +30,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.ProviderTestCase2;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,15 +43,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
+import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
+@RunWith(AndroidJUnit4.class)
 public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
 
     private static final String AUTHORITY = "test.authority";
     private static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
     private static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, "veggies");
     private static final String[] PROJECTION = { DataColumns.KEY, DataColumns.VALUE };
+    private static final String NONE = "";
 
     private TestStore store;
 
@@ -54,16 +62,18 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         super(SimpleMockContentProvider.class, AUTHORITY);
     }
 
+    @Before
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
-        store = new TestStore(getMockContentResolver());
+        TestStoreCore core = new TestStoreCore(getMockContentResolver());
+        store = new TestStore(core);
 
         Action1<String> insert = value ->
                 getProvider().insert(
-                        store.getUriForId(store.getIdFor(value)),
-                        store.getContentValuesForItem(value)
+                        core.getUriForId(TestStore.getIdFor(value)),
+                        core.getContentValuesForItem(value)
                 );
 
         // Prepare the mock content provider with values
@@ -72,13 +82,14 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         insert.call("spinach");
     }
 
-    public void testGetOneWithData() {
+    @Test
+    public void getOnce_WithData_ReturnsData_AndCompletes() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = Collections.singletonList("parsnip");
 
         // ACT
-        store.getOnce(store.getIdFor("parsnip")).subscribe(testSubscriber);
+        store.getOnce(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -87,13 +98,14 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetOneWithoutData() {
+    @Test
+    public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = Collections.singletonList(null);
+        List<String> expected = Collections.singletonList(NONE);
 
         // ACT
-        store.getOnce(store.getIdFor("bacon")).subscribe(testSubscriber);
+        store.getOnce(TestStore.getIdFor("bacon")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -102,13 +114,14 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetWithData() {
+    @Test
+    public void get_WithData_ReturnsData_AndCompletes() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
         List<List<String>> expected = Collections.singletonList(Collections.singletonList("parsnip"));
 
         // ACT
-        store.get(store.getIdFor("parsnip")).subscribe(testSubscriber);
+        store.getAllOnce(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -117,7 +130,8 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetAll() {
+    @Test
+    public void get_WithWildcardQuery_WithData_ReturnsAllData_AndCompletes() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
         List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
@@ -126,7 +140,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
         // this would be an asterisk. The exact wildcard is not important for the test as we just
         // want to make sure the provider stores can return a larger listing of results.
-        store.get(0).subscribe(testSubscriber);
+        store.getAllOnce(0).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
@@ -135,13 +149,14 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetOnceAndStream() {
+    @Test
+    public void getOnceAndStream_WithData_ReturnsData_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
         List<String> expected = Collections.singletonList("spinach");
 
         // ACT
-        store.getOnceAndStream(store.getIdFor("spinach")).subscribe(testSubscriber);
+        store.getOnceAndStream(TestStore.getIdFor("spinach")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
@@ -150,39 +165,47 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
-    public void testGetEmptyStream() {
+    @Test
+    public void getOnceAndStream_WithNoData_ReturnsNoneValue_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        List<String> expected = Collections.singletonList(NONE);
 
         // ACT
-        store.getOnceAndStream(store.getIdFor("bacon")).subscribe(testSubscriber);
+        store.getOnceAndStream(TestStore.getIdFor("bacon")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertNoValues();
+        testSubscriber.assertReceivedOnNext(expected);
     }
 
     /**
      * A simple store containing String values tracked with Integer keys.
      */
-    public static class TestStore extends ContentProviderStore<String, Integer> {
+    public static class TestStore extends ContentProviderStore<Integer, String, String> {
 
-        public TestStore(@NonNull final ContentResolver contentResolver) {
-            super(contentResolver);
+        public TestStore(@NonNull final TestStoreCore core) {
+            super(core,
+                    TestStore::getIdFor,
+                    value -> value != null ? value : NONE,
+                    () -> NONE);
         }
 
         @NonNull
-        @Override
-        public Uri getUriForId(@NonNull final Integer id) {
-            return Uri.withAppendedPath(getContentUri(), String.valueOf(id));
-        }
-
-        @NonNull
-        @Override
-        protected Integer getIdFor(@NonNull final String item) {
+        private static Integer getIdFor(@NonNull final String item) {
             return item.hashCode();
+        }
+    }
+
+    /**
+     * A simple store core implementing the methods content provider requires.
+     */
+    public static class TestStoreCore extends ContentProviderStoreCore<Integer, String> {
+
+        protected TestStoreCore(@NonNull final ContentResolver contentResolver) {
+            super(contentResolver);
         }
 
         @NonNull
@@ -207,9 +230,21 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         @Override
         protected ContentValues getContentValuesForItem(@NonNull final String item) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DataColumns.KEY, getIdFor(item));
+            contentValues.put(DataColumns.KEY, item.hashCode());
             contentValues.put(DataColumns.VALUE, item);
             return contentValues;
+        }
+
+        @NonNull
+        @Override
+        public Uri getUriForId(@NonNull final Integer id) {
+            return Uri.withAppendedPath(getContentUri(), String.valueOf(id));
+        }
+
+        @NonNull
+        @Override
+        protected Integer getIdForUri(@NonNull final Uri uri) {
+            return Integer.valueOf(uri.getLastPathSegment());
         }
     }
 }

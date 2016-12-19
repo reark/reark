@@ -23,23 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores;
-
-import android.support.annotation.NonNull;
+package io.reark.reark.data.stores.interfaces;
 
 /**
- * Interface for stores into which it is possible to insert data. This default interface is the most
- * simple put interface possible.
+ * A combined default interface for a store. A store acts as a data container, in which all data
+ * items are identified with an id that can be deduced from the item itself. Usually this would be
+ * done through a function such as U getId(T item), but it can be defined in the store
+ * implementation itself.
  *
- * @param <T> Type of the data items.
+ * @param <T> Type of the id used in this store.
+ * @param <U> Type of the data this store contains.
+ * @param <R> Non-null type or wrapper for the data this store contains.
  */
-public interface StorePutInterface<T> {
-    /**
-     * The standard store interface for inserting a singular data item. The id of the item is
-     * expected to be deduced from the item itself by the store. This could be done through an
-     * interface such as getId(), though the put interface does not have an opinion of that.
-     *
-     * @param item The data item to insert into the store.
-     */
-    void put(@NonNull final T item);
+public interface StoreInterface<T, U, R> extends StorePutInterface<U>, StoreGetInterface<T, R> {
 }

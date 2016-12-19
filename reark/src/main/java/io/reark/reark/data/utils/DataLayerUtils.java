@@ -46,8 +46,7 @@ public final class DataLayerUtils {
 
         final Observable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable
-                        .map(DataLayerUtils.<T>fromNetworkRequestStatus())
-                        .filter(dataStreamNotification -> dataStreamNotification != null);
+                        .map(DataLayerUtils.<T>fromNetworkRequestStatus());
 
         final Observable<DataStreamNotification<T>> valueStream =
                 valueObservable.map(DataStreamNotification::onNext);

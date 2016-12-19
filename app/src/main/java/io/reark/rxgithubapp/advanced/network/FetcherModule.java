@@ -25,6 +25,8 @@
  */
 package io.reark.rxgithubapp.advanced.network;
 
+import android.net.Uri;
+
 import java.util.Arrays;
 
 import javax.inject.Named;
@@ -46,9 +48,9 @@ public final class FetcherModule {
 
     @Provides
     @Named("gitHubRepository")
-    public Fetcher provideGitHubRepositoryFetcher(NetworkApi networkApi,
-                                                  NetworkRequestStatusStore networkRequestStatusStore,
-                                                  GitHubRepositoryStore gitHubRepositoryStore) {
+    public Fetcher<Uri> provideGitHubRepositoryFetcher(NetworkApi networkApi,
+                                                       NetworkRequestStatusStore networkRequestStatusStore,
+                                                       GitHubRepositoryStore gitHubRepositoryStore) {
         return new GitHubRepositoryFetcher(networkApi,
                                            networkRequestStatusStore::put,
                                            gitHubRepositoryStore);
@@ -56,7 +58,7 @@ public final class FetcherModule {
 
     @Provides
     @Named("gitHubRepositorySearch")
-    public Fetcher provideGitHubRepositorySearchFetcher(NetworkApi networkApi,
+    public Fetcher<Uri> provideGitHubRepositorySearchFetcher(NetworkApi networkApi,
                                                         NetworkRequestStatusStore networkRequestStatusStore,
                                                         GitHubRepositoryStore gitHubRepositoryStore,
                                                         GitHubRepositorySearchStore gitHubRepositorySearchStore) {
@@ -67,8 +69,8 @@ public final class FetcherModule {
     }
 
     @Provides
-    public UriFetcherManager provideUriFetcherManager(@Named("gitHubRepository") Fetcher gitHubRepositoryFetcher,
-                                                      @Named("gitHubRepositorySearch") Fetcher gitHubRepositorySearchFetcher) {
+    public UriFetcherManager provideUriFetcherManager(@Named("gitHubRepository") Fetcher<Uri> gitHubRepositoryFetcher,
+                                                      @Named("gitHubRepositorySearch") Fetcher<Uri> gitHubRepositorySearchFetcher) {
         return new UriFetcherManager.Builder()
                 .fetchers(Arrays.asList(gitHubRepositoryFetcher, gitHubRepositorySearchFetcher))
                 .build();

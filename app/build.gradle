@@ -32,7 +32,7 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("rxgithubapp.jks")
+            storeFile file("../appshared/rxgithubapp.jks")
             storePassword "password"
             keyAlias "rxgithubapp"
             keyPassword "password"
@@ -41,7 +41,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../appshared/proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
@@ -70,8 +70,8 @@ retrolambda {
 }
 
 dependencies {
-    compile project(':reark')
-    compile project(':appshared')
+    debugCompile project(path: ':appshared', configuration: 'debug')
+    releaseCompile project(path: ':appshared', configuration: 'release')
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 

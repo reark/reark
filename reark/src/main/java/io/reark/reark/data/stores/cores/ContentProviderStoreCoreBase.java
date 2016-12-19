@@ -69,6 +69,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final String TAG = getClass().getSimpleName();
 
     @NonNull
+    private static final ContentProviderOperation NO_OPERATION = ContentProviderOperation.newInsert(Uri.EMPTY).build();
+
+    @NonNull
     private final ContentResolver contentResolver;
 
     @NonNull
@@ -160,7 +163,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                         Log.v(TAG, "Locked URI " + uri);
                     } catch (InterruptedException e) {
                         Log.e(TAG, "Thread interrupted", e);
-                        return ContentProviderOperation.newInsert(Uri.EMPTY).build();
+                        return NO_OPERATION;
                     }
 
                     final Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
@@ -195,7 +198,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                         // the Uri lock already here. For the other possible operations the lock
                         // will be released after the created operation has been executed.
                         locker.release(uri);
-                        return ContentProviderOperation.newInsert(Uri.EMPTY).build();
+                        return NO_OPERATION;
                     }
 
                     Log.v(TAG, "Create update operation for " + uri);
@@ -204,8 +207,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
                             .build();
 
                 })
-                // Filtering by null uri is a hack for getting out no-ops.
-                .filter(operation -> operation.getUri() != Uri.EMPTY)
+                // Filter out values that didn't result in a valid operation
+                .filter(operation -> !NO_OPERATION.equals(operation))
                 .subscribeOn(Schedulers.io());
     }
 

@@ -37,6 +37,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import io.reark.reark.utils.Log;
 import io.reark.reark.utils.ObjectLockHandler;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -80,6 +82,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
     @NonNull
     private final ObjectLockHandler<Uri> locker = new ObjectLockHandler<>();
 
+    @Nullable
+    private Subscription updateSubscription;
+
     private final int groupingTimeout;
 
     private final int groupMaxSize;
@@ -108,7 +113,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         // Group the operations to a list that should be executed in one batch. The default
         // grouping logic is suitable for pojo stores, but some stores may need to provide
         // their own grouping logic, if for example buffering delays are undesirable.
-        groupOperations(operationObservable)
+        updateSubscription = groupOperations(operationObservable)
                 .observeOn(Schedulers.computation())
                 .map(ArrayList::new)
                 .doOnNext(list -> Log.v(TAG, "Grouped list of " + list.size()))

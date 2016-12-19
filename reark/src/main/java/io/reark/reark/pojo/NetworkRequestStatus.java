@@ -69,7 +69,7 @@ public final class NetworkRequestStatus {
     }
 
     public static NetworkRequestStatus error(String uri, int errorCode, String errorMessage) {
-        return new NetworkRequestStatus(uri, NETWORK_STATUS_ERROR, 0, errorMessage);
+        return new NetworkRequestStatus(uri, NETWORK_STATUS_ERROR, errorCode, errorMessage);
     }
 
     public static NetworkRequestStatus completed(String uri) {

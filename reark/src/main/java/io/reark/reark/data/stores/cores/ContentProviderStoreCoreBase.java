@@ -108,6 +108,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
         // Observable transforming updates and inserts to ContentProviderOperations
         Observable<ContentProviderOperation> operationObservable = updateSubject
+                .observeOn(Schedulers.io())
                 .flatMap(pair -> createOperation(pair.first, pair.second));
 
         // Group the operations to a list that should be executed in one batch. The default
@@ -213,8 +214,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                 })
                 // Filter out values that didn't result in a valid operation
-                .filter(operation -> !NO_OPERATION.equals(operation))
-                .subscribeOn(Schedulers.io());
+                .filter(operation -> !NO_OPERATION.equals(operation));
     }
 
     protected void put(@NonNull final U item, @NonNull final Uri uri) {

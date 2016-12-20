@@ -90,7 +90,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final int groupMaxSize;
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
-        this(contentResolver, 10, 30);
+        this(contentResolver, 100, 30);
     }
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver,

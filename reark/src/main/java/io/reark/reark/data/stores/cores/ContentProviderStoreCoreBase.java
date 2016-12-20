@@ -213,8 +213,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
                             .build();
 
                 })
-                // Filter out values that didn't result in a valid operation
-                .filter(operation -> !NO_OPERATION.equals(operation));
+                .filter(this::isValidOperation);
+    }
+
+    private boolean isValidOperation(@NonNull final ContentProviderOperation operation) {
+        return !NO_OPERATION.equals(operation);
     }
 
     protected void put(@NonNull final U item, @NonNull final Uri uri) {

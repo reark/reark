@@ -208,7 +208,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private void releaseIfNoOp(@NonNull final ContentProviderOperation operation, @NonNull final Uri uri) {
         if (!isValidOperation(operation)) {
-            locker.release(uri);
+            try {
+                locker.release(uri);
+            } catch (NullPointerException e) {
+                // Release may throw if the lock wasn't successfully acquired.
+            }
         }
     }
 

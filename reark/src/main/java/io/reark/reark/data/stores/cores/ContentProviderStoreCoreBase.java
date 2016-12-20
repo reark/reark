@@ -129,9 +129,10 @@ public abstract class ContentProviderStoreCoreBase<U> {
                 .flatMap(Observable::from)
                 .map(ContentProviderOperation::getUri)
                 .subscribe(locker::release,
-                        // On error we can't release the processing lock. Any further update
-                        // operations for this object will likely be blocked until app is restarted.
-                        error -> Log.e(TAG, "Error while handling data! Processing may be blocked.", error));
+                        // On error we can't release the processing lock, as the Uri reference
+                        // is lost. It's perhaps better to error out of the subscription than
+                        // to leave some of the Uris locked and continue.
+                        error -> Log.e(TAG, "Error while handling data update!", error));
     }
 
     @NonNull

@@ -163,14 +163,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private Observable<ContentProviderOperation> createOperation(@NonNull final U item, @NonNull final Uri uri) {
         return Observable
                 .fromCallable(() -> {
-                    // We block until this Uri is freed for operations
-                    try {
-                        locker.acquire(uri);
-                        Log.v(TAG, "Locked URI " + uri);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "Thread interrupted", e);
-                        return NO_OPERATION;
-                    }
+                    // We block until this Uri is freed for operations. Failure to lock
+                    // will throw, which we'll catch later.
+                    locker.acquire(uri);
 
                     final Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
                     U newItem = item;
@@ -203,7 +198,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
                         // No ContentResolverOperation created, so we need to release and free
                         // the Uri lock already here. For the other possible operations the lock
                         // will be released after the created operation has been executed.
-                        locker.release(uri);
                         return NO_OPERATION;
                     }
 
@@ -213,11 +207,19 @@ public abstract class ContentProviderStoreCoreBase<U> {
                             .build();
 
                 })
+                .onErrorReturn(e -> NO_OPERATION)
+                .doOnNext(operation -> releaseIfNoOp(operation, uri))
                 .filter(this::isValidOperation);
     }
 
     private boolean isValidOperation(@NonNull final ContentProviderOperation operation) {
         return !NO_OPERATION.equals(operation);
+    }
+
+    private void releaseIfNoOp(@NonNull final ContentProviderOperation operation, @NonNull final Uri uri) {
+        if (!isValidOperation(operation)) {
+            locker.release(uri);
+        }
     }
 
     protected void put(@NonNull final U item, @NonNull final Uri uri) {

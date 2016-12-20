@@ -168,7 +168,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
                     locker.acquire(uri);
 
                     final Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
-                    U newItem = item;
 
                     if (cursor == null || !cursor.moveToFirst()) {
                         if (cursor != null) {
@@ -177,35 +176,29 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                         Log.v(TAG, "Create insertion operation for " + uri);
                         return ContentProviderOperation.newInsert(uri)
-                                .withValues(getContentValuesForItem(newItem))
+                                .withValues(getContentValuesForItem(item))
                                 .build();
                     }
 
                     final U currentItem = read(cursor);
-                    boolean valuesEqual = newItem.equals(currentItem);
+                    U newItem = item;
 
-                    if (!valuesEqual) {
+                    if (!newItem.equals(currentItem)) {
                         Log.v(TAG, "Merging values at " + uri);
                         newItem = mergeValues(currentItem, newItem);
-                        valuesEqual = newItem.equals(currentItem);
                     }
 
                     cursor.close();
 
-                    if (valuesEqual) {
-                        Log.v(TAG, "Data already up to date at " + uri);
-
-                        // No ContentResolverOperation created, so we need to release and free
-                        // the Uri lock already here. For the other possible operations the lock
-                        // will be released after the created operation has been executed.
-                        return NO_OPERATION;
+                    if (!newItem.equals(currentItem)) {
+                        Log.v(TAG, "Create update operation for " + uri);
+                        return ContentProviderOperation.newUpdate(uri)
+                                .withValues(getContentValuesForItem(newItem))
+                                .build();
                     }
 
-                    Log.v(TAG, "Create update operation for " + uri);
-                    return ContentProviderOperation.newUpdate(uri)
-                            .withValues(getContentValuesForItem(newItem))
-                            .build();
-
+                    Log.v(TAG, "Data already up to date at " + uri);
+                    return NO_OPERATION;
                 })
                 .onErrorReturn(e -> NO_OPERATION)
                 .doOnNext(operation -> releaseIfNoOp(operation, uri))

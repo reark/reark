@@ -181,12 +181,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                     }
 
                     final U currentItem = read(cursor);
-                    U newItem = item;
-
-                    if (!newItem.equals(currentItem)) {
-                        Log.v(TAG, "Merging values at " + uri);
-                        newItem = mergeValues(currentItem, newItem);
-                    }
+                    final U newItem = mergedItem(currentItem, item);
 
                     cursor.close();
 
@@ -213,6 +208,16 @@ public abstract class ContentProviderStoreCoreBase<U> {
         if (!isValidOperation(operation)) {
             locker.release(uri);
         }
+    }
+
+    @NonNull
+    private U mergedItem(@NonNull final U currentItem, @NonNull final U newItem) {
+        if (newItem.equals(currentItem)) {
+            return newItem;
+        }
+
+        Log.v(TAG, "Merging values");
+        return mergeValues(currentItem, newItem);
     }
 
     protected void put(@NonNull final U item, @NonNull final Uri uri) {

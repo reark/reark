@@ -108,6 +108,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
         // Observable transforming updates and inserts to ContentProviderOperations
         Observable<ContentProviderOperation> operationObservable = updateSubject
+                .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(pair -> createOperation(pair.first, pair.second));
 

@@ -25,6 +25,10 @@
  */
 package io.reark.reark.data.stores;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -32,10 +36,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ProviderTestCase2;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -25,8 +25,6 @@
  */
 package io.reark.reark.utils;
 
-import android.support.annotation.NonNull;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +32,8 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import android.support.annotation.NonNull;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.observers.TestSubscriber;

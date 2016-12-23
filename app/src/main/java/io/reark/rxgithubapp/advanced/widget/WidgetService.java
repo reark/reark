@@ -25,14 +25,14 @@
  */
 package io.reark.rxgithubapp.advanced.widget;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.AppWidgetTarget;
+
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.IBinder;
 import android.widget.RemoteViews;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.AppWidgetTarget;
 
 import javax.inject.Inject;
 

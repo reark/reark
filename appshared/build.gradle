@@ -40,7 +40,6 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
 
     // RxJava
@@ -62,6 +61,7 @@ dependencies {
 
     // Unit test build
     testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:1.7.1'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.powermock:powermock-api-mockito:1.6.4'
     testCompile 'org.powermock:powermock-module-junit4:1.6.4'

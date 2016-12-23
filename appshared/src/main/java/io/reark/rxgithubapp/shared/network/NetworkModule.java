@@ -26,7 +26,9 @@
 package io.reark.rxgithubapp.shared.network;
 
 import com.google.gson.Gson;
+
 import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -42,8 +44,11 @@ public final class NetworkModule {
 
     @Provides
     @Singleton
-    public OkHttpClient provideOkHttpClient(NetworkInstrumentation<OkHttpClient> networkInstrumentation) {
-        return networkInstrumentation.decorateNetwork(new OkHttpClient());
+    public OkHttpClient provideOkHttpClient(NetworkInstrumentation<OkHttpClient.Builder> networkInstrumentation) {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient().newBuilder();
+        networkInstrumentation.decorateNetwork(clientBuilder);
+
+        return clientBuilder.build();
     }
 
     @Provides

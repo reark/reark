@@ -25,10 +25,10 @@
  */
 package io.reark.reark.data.stores;
 
-import android.support.v4.util.Pair;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import android.support.v4.util.Pair;
 
 import java.util.concurrent.TimeUnit;
 

@@ -25,6 +25,8 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,8 +36,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.Collections;
 import java.util.List;

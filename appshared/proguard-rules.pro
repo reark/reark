@@ -46,7 +46,6 @@
    long consumerIndex;
 }
 
-
 # For retrolambda
 -dontwarn java.lang.invoke.*
 

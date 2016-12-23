@@ -26,9 +26,10 @@
 package io.reark.rxgithubapp.shared.network;
 
 import android.support.annotation.NonNull;
+
 import java.util.List;
 import java.util.Map;
-import io.reark.reark.utils.Preconditions;
+
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
 import okhttp3.OkHttpClient;
@@ -44,8 +45,8 @@ public class NetworkApi {
     @NonNull
     private final GitHubService gitHubService;
 
-    public NetworkApi(@NonNull OkHttpClient client) {
-        Preconditions.checkNotNull(client, "Client cannot be null.");
+    public NetworkApi(@NonNull final OkHttpClient client) {
+        checkNotNull(client, "Client cannot be null.");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -53,6 +54,7 @@ public class NetworkApi {
                 .baseUrl("https://api.github.com")
                 .client(client)
                 .build();
+
         gitHubService = retrofit.create(GitHubService.class);
     }
 

@@ -27,13 +27,8 @@ package io.reark.rxgithubapp.shared.injections;
 
 import android.app.Application;
 import android.content.Context;
-
-import com.facebook.stetho.okhttp.StethoInterceptor;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
@@ -42,6 +37,8 @@ import io.reark.rxgithubapp.shared.utils.DebugApplicationInstrumentation;
 import io.reark.rxgithubapp.shared.utils.LeakCanaryTracing;
 import io.reark.rxgithubapp.shared.utils.LeakTracing;
 import io.reark.rxgithubapp.shared.utils.StethoInstrumentation;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 
 @Module
 public class InstrumentationModule {
@@ -73,8 +70,7 @@ public class InstrumentationModule {
 
     @Provides
     @Singleton
-    public Interceptor providesStethoIntercetor() {
+    public Interceptor providesInterceptor() {
         return new StethoInterceptor();
     }
-
 }

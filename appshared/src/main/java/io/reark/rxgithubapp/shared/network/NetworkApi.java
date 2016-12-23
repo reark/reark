@@ -26,16 +26,15 @@
 package io.reark.rxgithubapp.shared.network;
 
 import android.support.annotation.NonNull;
-
 import java.util.List;
 import java.util.Map;
-
+import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
-import retrofit.RestAdapter;
-import retrofit.RestAdapter.Builder;
-import retrofit.RestAdapter.LogLevel;
-import retrofit.client.Client;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
@@ -45,16 +44,16 @@ public class NetworkApi {
     @NonNull
     private final GitHubService gitHubService;
 
-    public NetworkApi(@NonNull final Client client) {
-        checkNotNull(client);
+    public NetworkApi(@NonNull OkHttpClient client) {
+        Preconditions.checkNotNull(client, "Client cannot be null.");
 
-        RestAdapter restAdapter = new Builder()
-                .setClient(client)
-                .setEndpoint("https://api.github.com")
-                .setLogLevel(LogLevel.NONE)
+        Retrofit retrofit = new Retrofit.Builder()
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl("https://api.github.com")
+                .client(client)
                 .build();
-
-        gitHubService = restAdapter.create(GitHubService.class);
+        gitHubService = retrofit.create(GitHubService.class);
     }
 
     @NonNull

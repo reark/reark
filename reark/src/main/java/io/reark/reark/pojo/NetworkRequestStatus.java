@@ -47,6 +47,8 @@ public final class NetworkRequestStatus {
     @Nullable
     private final String errorMessage;
 
+    private final String errorBody;
+
     public enum Status {
         NETWORK_STATUS_NONE("networkStatusNone"),
         NETWORK_STATUS_ONGOING("networkStatusOngoing"),
@@ -67,31 +69,33 @@ public final class NetworkRequestStatus {
     private NetworkRequestStatus(@NonNull final String uri,
                                  @NonNull final Status status,
                                  int errorCode,
-                                 @Nullable final String errorMessage) {
+                                 @Nullable final String errorMessage,
+                                 String error) {
         this.uri = uri;
         this.status = status;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
+        this.errorBody = error;
     }
 
     @NonNull
     public static NetworkRequestStatus none() {
-        return new NetworkRequestStatus("", NETWORK_STATUS_NONE, 0, null);
+        return new NetworkRequestStatus("", NETWORK_STATUS_NONE, 0, null, null);
     }
 
     @NonNull
     public static NetworkRequestStatus ongoing(@NonNull final String uri) {
-        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ONGOING, 0, null);
+        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ONGOING, 0, null, null);
     }
 
     @NonNull
-    public static NetworkRequestStatus error(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
-        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ERROR, errorCode, errorMessage);
+    public static NetworkRequestStatus error(@NonNull final String uri, int errorCode, @Nullable final String errorMessage, @NonNull String error) {
+        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ERROR, errorCode, errorMessage, error);
     }
 
     @NonNull
     public static NetworkRequestStatus completed(@NonNull final String uri) {
-        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_COMPLETED, 0, null);
+        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_COMPLETED, 0, null, null);
     }
 
     @NonNull
@@ -113,6 +117,10 @@ public final class NetworkRequestStatus {
         return errorMessage;
     }
 
+    public String getError() {
+        return errorBody;
+    }
+
     public boolean isSome() {
         return status != NETWORK_STATUS_NONE;
     }
@@ -121,9 +129,6 @@ public final class NetworkRequestStatus {
         return status == NETWORK_STATUS_NONE;
     }
 
-    public boolean isOngoing() {
-        return status == NETWORK_STATUS_ONGOING;
-    }
 
     public boolean isError() {
         return status == NETWORK_STATUS_ERROR;

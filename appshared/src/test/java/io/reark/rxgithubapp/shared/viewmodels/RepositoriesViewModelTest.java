@@ -67,12 +67,12 @@ public class RepositoriesViewModelTest {
 
     @Test
     public void testFetchingErrorReportedAsError() {
-        assertEquals(ERROR, toProgressStatus().call(fetchingError()));
+        assertEquals(ERROR, toProgressStatus().call(fetchingError(401, "", "")));
     }
 
     @Test
     public void testAnyValueReportedAsIdle() {
-        GitHubRepositorySearch value = new GitHubRepositorySearch("", Collections.emptyList());
+        GitHubRepositorySearch value= new GitHubRepositorySearch("", Collections.emptyList());
 
         assertEquals(IDLE, toProgressStatus().call(onNext(value)));
     }

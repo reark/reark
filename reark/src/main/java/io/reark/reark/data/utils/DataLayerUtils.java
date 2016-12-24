@@ -64,7 +64,7 @@ public final class DataLayerUtils {
                 case NETWORK_STATUS_COMPLETED:
                     return DataStreamNotification.fetchingCompleted();
                 case NETWORK_STATUS_ERROR:
-                    return DataStreamNotification.fetchingError();
+                    return DataStreamNotification.fetchingError(networkRequestStatus.getErrorCode(), networkRequestStatus.getErrorMessage(), networkRequestStatus.getError());
             }
 
             throw new IllegalStateException("Unexpected network status " + networkRequestStatus);

@@ -70,6 +70,10 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private final String TAG = getClass().getSimpleName();
 
+    private static final int DEFAULT_GROUPING_TIMEOUT = 100;
+
+    private static final int DEFAULT_GROUP_MAX_SIZE = 30;
+
     @NonNull
     private static final ContentProviderOperation NO_OPERATION = ContentProviderOperation.newInsert(Uri.EMPTY).build();
 
@@ -90,7 +94,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final int groupMaxSize;
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
-        this(contentResolver, 100, 30);
+        this(contentResolver, DEFAULT_GROUPING_TIMEOUT, DEFAULT_GROUP_MAX_SIZE);
     }
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver,
@@ -104,7 +108,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     private void initialize() {
-        this.contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
+        contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
 
         // Observable transforming updates and inserts to ContentProviderOperations
         Observable<ContentProviderOperation> operationObservable = updateSubject
@@ -199,10 +203,10 @@ public abstract class ContentProviderStoreCoreBase<U> {
                 })
                 .onErrorReturn(e -> NO_OPERATION)
                 .doOnNext(operation -> releaseIfNoOp(operation, uri))
-                .filter(this::isValidOperation);
+                .filter(ContentProviderStoreCoreBase::isValidOperation);
     }
 
-    private boolean isValidOperation(@NonNull final ContentProviderOperation operation) {
+    private static boolean isValidOperation(@NonNull final ContentProviderOperation operation) {
         return !NO_OPERATION.equals(operation);
     }
 
@@ -210,8 +214,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
         if (!isValidOperation(operation)) {
             try {
                 locker.release(uri);
-            } catch (NullPointerException e) {
+            } catch (IllegalStateException e) {
                 // Release may throw if the lock wasn't successfully acquired.
+                Log.w(TAG, "Couldn't release lock!", e);
             }
         }
     }

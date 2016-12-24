@@ -36,7 +36,7 @@ public class ObjectLockHandlerTest {
         handler.acquire(null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalStateException.class)
     public void release_BeforeAcquire_Throws() throws InterruptedException {
         ObjectLockHandler<String> handler = new ObjectLockHandler<>();
 
@@ -51,7 +51,7 @@ public class ObjectLockHandlerTest {
         handler.release("object");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalStateException.class)
     public void releaseTwice_WithOnceAcquire_Throws() throws InterruptedException {
         ObjectLockHandler<String> handler = new ObjectLockHandler<>();
 
@@ -60,7 +60,7 @@ public class ObjectLockHandlerTest {
         handler.release("object");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalStateException.class)
     public void release_DifferentFromAcquire_Throws() throws InterruptedException {
         ObjectLockHandler<String> handler = new ObjectLockHandler<>();
 

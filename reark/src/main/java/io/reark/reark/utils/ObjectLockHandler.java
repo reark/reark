@@ -62,6 +62,10 @@ public final class ObjectLockHandler<T> {
     public void release(@NonNull final T object) {
         checkNotNull(object);
 
+        if (!locks.containsKey(object)) {
+            throw new IllegalStateException("Tried to release without acquiring first: " + object);
+        }
+
         locks.get(object).lockObject.release();
 
         freeLock(object);

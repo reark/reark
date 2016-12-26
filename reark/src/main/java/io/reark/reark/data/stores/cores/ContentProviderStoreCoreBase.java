@@ -70,9 +70,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private final String TAG = getClass().getSimpleName();
 
-    private static final int DEFAULT_GROUPING_TIMEOUT = 100;
+    private static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
 
-    private static final int DEFAULT_GROUP_MAX_SIZE = 30;
+    private static final int DEFAULT_GROUP_MAX_SIZE_MS = 30;
 
     @NonNull
     private static final ContentProviderOperation NO_OPERATION = ContentProviderOperation.newInsert(Uri.EMPTY).build();
@@ -94,7 +94,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final int groupMaxSize;
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
-        this(contentResolver, DEFAULT_GROUPING_TIMEOUT, DEFAULT_GROUP_MAX_SIZE);
+        this(contentResolver, DEFAULT_GROUPING_TIMEOUT_MS, DEFAULT_GROUP_MAX_SIZE_MS);
     }
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver,

@@ -26,8 +26,8 @@
 package io.reark.rxgithubapp.advanced.data.stores.cores;
 
 import com.google.gson.Gson;
-import android.content.ContentProviderOperation;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;

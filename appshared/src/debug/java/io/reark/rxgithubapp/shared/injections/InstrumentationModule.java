@@ -25,10 +25,13 @@
  */
 package io.reark.rxgithubapp.shared.injections;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import android.app.Application;
 import android.content.Context;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
@@ -64,7 +67,7 @@ public class InstrumentationModule {
 
     @Provides
     @Singleton
-    public NetworkInstrumentation<OkHttpClient> providesNetworkInstrumentation(StethoInstrumentation instrumentation) {
+    public NetworkInstrumentation<OkHttpClient.Builder> providesNetworkInstrumentation(StethoInstrumentation instrumentation) {
         return instrumentation;
     }
 

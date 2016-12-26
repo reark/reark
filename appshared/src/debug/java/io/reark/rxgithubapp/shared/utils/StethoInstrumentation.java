@@ -28,18 +28,18 @@ package io.reark.rxgithubapp.shared.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import io.reark.reark.utils.Preconditions;
+
 import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+
 import static com.facebook.stetho.Stetho.defaultDumperPluginsProvider;
 import static com.facebook.stetho.Stetho.defaultInspectorModulesProvider;
 import static com.facebook.stetho.Stetho.initialize;
 import static com.facebook.stetho.Stetho.newInitializerBuilder;
-import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
-public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClient> {
+public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClient.Builder> {
 
     @NonNull
     private final Context context;
@@ -47,13 +47,10 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
     @NonNull
     private final Interceptor interceptor;
 
-    public StethoInstrumentation(@NonNull Context context,
-                                 @NonNull Interceptor interceptor) {
-        Preconditions.checkNotNull(context, "Context cannot be null.");
-        Preconditions.checkNotNull(interceptor, "Interceptor cannot be null.");
-
-        this.context = context;
-        this.interceptor = interceptor;
+    public StethoInstrumentation(@NonNull final Context context,
+                                 @NonNull final Interceptor interceptor) {
+        this.context = get(context);
+        this.interceptor = get(interceptor);
     }
 
     @Override
@@ -72,8 +69,7 @@ public class StethoInstrumentation implements NetworkInstrumentation<OkHttpClien
 
     @Override
     @NonNull
-    public OkHttpClient decorateNetwork(@NonNull final OkHttpClient httpClient) {
-        Preconditions.checkNotNull(httpClient, "Http Client cannot be null.");
-        return httpClient.newBuilder().addNetworkInterceptor(interceptor).build();
+    public OkHttpClient.Builder decorateNetwork(@NonNull final OkHttpClient.Builder clientBuilder) {
+        return get(clientBuilder).addNetworkInterceptor(interceptor);
     }
 }

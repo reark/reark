@@ -1,5 +1,12 @@
 package io.reark.rxgithubapp.advanced.data.stores.cores;
 
+import com.google.gson.Gson;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import android.content.ContentProvider;
 import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
@@ -7,13 +14,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
-
-import com.google.gson.Gson;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 

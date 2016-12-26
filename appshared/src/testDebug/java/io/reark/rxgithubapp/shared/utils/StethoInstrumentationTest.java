@@ -25,21 +25,22 @@
  */
 package io.reark.rxgithubapp.shared.utils;
 
-import android.content.Context;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import java.util.List;
-import static org.mockito.Matchers.eq;
+
+import android.content.Context;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class StethoInstrumentationTest {
 
@@ -51,14 +52,26 @@ public class StethoInstrumentationTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
         instrumentation = spy(new StethoInstrumentation(mock(Context.class), interceptor));
     }
 
     @Test
     public void testInitDoesNotThrow() {
         doNothing().when(instrumentation).initStetho();
+
         instrumentation.init();
 
         verify(instrumentation).initStetho();
+    }
+
+    @Test
+    public void testDecorateNetwork() {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+
+        instrumentation.decorateNetwork(clientBuilder);
+
+        assertThat(clientBuilder.networkInterceptors())
+                .containsExactlyElementsOf(singletonList(interceptor));
     }
 }

@@ -25,7 +25,16 @@
  */
 package io.reark.rxgithubapp.shared.utils;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runners.JUnit4;
+
+import okhttp3.OkHttpClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class NullNetworkInstrumentationTest {
 
@@ -36,5 +45,13 @@ public class NullNetworkInstrumentationTest {
         instrumentation = new NullNetworkInstrumentation();
     }
 
+    @Test
+    public void testDecorateNetwork_DoesNotChangeTheHttpClient() {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+
+        instrumentation.decorateNetwork(clientBuilder);
+
+        assertThat(clientBuilder.networkInterceptors()).isEmpty();
+    }
 
 }

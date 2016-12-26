@@ -25,15 +25,15 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.shared.R;

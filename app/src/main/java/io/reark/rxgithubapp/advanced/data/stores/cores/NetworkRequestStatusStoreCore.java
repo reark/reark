@@ -27,18 +27,24 @@ package io.reark.rxgithubapp.advanced.data.stores.cores;
 
 import com.google.gson.Gson;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
+import java.util.List;
+
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.NetworkRequestStatusColumns;
+import rx.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -50,6 +56,19 @@ public class NetworkRequestStatusStoreCore extends ContentProviderStoreCore<Inte
         super(contentResolver);
 
         this.gson = Preconditions.get(gson);
+    }
+
+    @NonNull
+    @Override
+    protected Observable<List<ContentProviderOperation>> groupOperations(@NonNull final Observable<ContentProviderOperation> source) {
+        // NetworkRequestStatus updates should not be grouped to ensure fast processing.
+        return source.map(Collections::singletonList);
+    }
+
+    @NonNull
+    @Override
+    protected String getAuthority() {
+        return GitHubProvider.AUTHORITY;
     }
 
     @NonNull

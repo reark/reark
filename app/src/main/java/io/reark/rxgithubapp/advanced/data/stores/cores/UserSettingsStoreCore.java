@@ -57,6 +57,12 @@ public class UserSettingsStoreCore extends ContentProviderStoreCore<Integer, Use
 
     @NonNull
     @Override
+    protected String getAuthority() {
+        return GitHubProvider.AUTHORITY;
+    }
+
+    @NonNull
+    @Override
     public Uri getContentUri() {
         return GitHubProvider.UserSettings.USER_SETTINGS;
     }

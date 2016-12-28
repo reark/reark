@@ -35,6 +35,7 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.utils.Preconditions;
+import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
@@ -49,6 +50,12 @@ public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer,
         super(contentResolver);
 
         this.gson = Preconditions.get(gson);
+    }
+
+    @NonNull
+    @Override
+    protected String getAuthority() {
+        return GitHubProvider.AUTHORITY;
     }
 
     @NonNull

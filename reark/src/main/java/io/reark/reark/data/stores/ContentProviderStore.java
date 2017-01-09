@@ -27,13 +27,8 @@ package io.reark.reark.data.stores;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.utils.Preconditions;
-import rx.Observable;
-
-import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 /**
  * ContentProviderStore is a convenience implementation of ContentProviderStoreCoreBase for
@@ -45,6 +40,7 @@ import static io.reark.reark.utils.Preconditions.checkNotNull;
  *
  * @param <T> Type of the id used in this store.
  * @param <U> Type of the data this store contains.
+ * @param <R> Non-null type or wrapper for the data this store contains.
  */
 public class ContentProviderStore<T, U, R> extends DefaultStore<T, U, R> {
 
@@ -58,16 +54,5 @@ public class ContentProviderStore<T, U, R> extends DefaultStore<T, U, R> {
         super(core, getIdForItem, getNullSafe, getEmptyValue);
 
         this.core = Preconditions.get(core);
-    }
-
-    /**
-     * Returns a completing Observable of all items matching the id. This method can be used to
-     * request all the contents of this store by providing an empty id.
-     */
-    @NonNull
-    public Observable<List<U>> getAllOnce(@NonNull final T id) {
-        checkNotNull(id);
-
-        return core.getAllCached(id);
     }
 }

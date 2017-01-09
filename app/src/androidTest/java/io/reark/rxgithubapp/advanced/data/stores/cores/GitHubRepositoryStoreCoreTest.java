@@ -1,12 +1,5 @@
 package io.reark.rxgithubapp.advanced.data.stores.cores;
 
-import com.google.gson.Gson;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import android.content.ContentProvider;
 import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
@@ -15,6 +8,14 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 
+import com.google.gson.Gson;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.rxgithubapp.advanced.data.schematicProvider.generated.GitHubProvider;
@@ -23,6 +24,7 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import rx.observers.TestSubscriber;
 
 import static io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
+import static java.util.Arrays.asList;
 
 @RunWith(AndroidJUnit4.class)
 public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvider> {
@@ -130,10 +132,54 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(value);
     }
-    
-    // GET
 
-    // GET ONCE
+    // GET ALL CACHED
+
+    @Test
+    public void getAllCached_ReturnsAllData_AndCompletes() throws InterruptedException {
+        // ARRANGE
+        final GitHubRepository value1 = create(100, "test name 1");
+        final GitHubRepository value2 = create(200, "test name 2");
+        final GitHubRepository value3 = create(300, "test name 3");
+        TestSubscriber<List<GitHubRepository>> testSubscriber = new TestSubscriber<>();
+
+        // ACT
+        gitHubRepositoryStoreCore.put(100, value1);
+        gitHubRepositoryStoreCore.put(200, value2);
+        Thread.sleep(1500);
+        gitHubRepositoryStoreCore.getAllCached().subscribe(testSubscriber);
+        gitHubRepositoryStoreCore.put(300, value3);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(asList(value1, value2));
+    }
+
+    // GET ALL STREAM
+
+    @Test
+    public void getAllStream_ReturnsAllData_AndDoesNotComplete() throws InterruptedException {
+        // ARRANGE
+        final GitHubRepository value1 = create(100, "test name 1");
+        final GitHubRepository value2 = create(200, "test name 2");
+        final GitHubRepository value3 = create(300, "test name 3");
+        TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
+
+        // ACT
+        gitHubRepositoryStoreCore.put(100, value1);
+        Thread.sleep(1500);
+        gitHubRepositoryStoreCore.getAllStream().subscribe(testSubscriber);
+        gitHubRepositoryStoreCore.put(200, value2);
+        gitHubRepositoryStoreCore.put(300, value3);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
+        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(asList(value2, value3));
+    }
 
     @NonNull
     private static GitHubRepository create(Integer id, String name) {

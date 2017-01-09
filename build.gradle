@@ -6,11 +6,17 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.4.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
     }
 }
 
@@ -24,11 +30,5 @@ dependencyUpdates.resolutionStrategy = {
                 selection.reject('Release candidate')
             }
         }
-    }
-}
-
-allprojects {
-    repositories {
-        mavenCentral()
     }
 }

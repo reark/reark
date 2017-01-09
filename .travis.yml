@@ -8,7 +8,7 @@ android:
     - platform-tools
     - tools
     - android-24
-    - build-tools-25.0.0
+    - build-tools-25.0.2
     - extra-google-m2repository
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-24
@@ -21,6 +21,11 @@ before_script:
   - adb shell settings put global transition_animation_scale 0 &
   - adb shell settings put global animator_duration_scale 0 &
   - adb shell input keyevent 82 &
+
+licenses:
+  - 'android-sdk-preview-license-.+'
+  - 'android-sdk-license-.+'
+  - 'google-gdk-license-.+'
 
 script:
   - ./gradlew test spoon

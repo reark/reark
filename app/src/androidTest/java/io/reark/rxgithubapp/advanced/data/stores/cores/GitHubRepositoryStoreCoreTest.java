@@ -151,7 +151,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.put(300, value3);
 
         // ASSERT
-        testSubscriber.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS);
         testSubscriber.assertCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(asList(value1, value2));

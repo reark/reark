@@ -129,9 +129,9 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
                 searchString
-                        .filter(value -> value.length() > 2)
                         .debounce(SEARCH_INPUT_DELAY, TimeUnit.MILLISECONDS)
                         .distinctUntilChanged()
+                        .filter(value -> value.length() > 2)
                         .doOnNext(value -> Log.d(TAG, "Searching with: " + value))
                         .switchMap(getGitHubRepositorySearch::call)
                         .publish();

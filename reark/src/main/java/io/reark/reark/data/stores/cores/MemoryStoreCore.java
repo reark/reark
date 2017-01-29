@@ -60,7 +60,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     private final Map<Integer, U> cache = new ConcurrentHashMap<>(10);
 
     @NonNull
-    private final Subject<StoreItem<T, U>, StoreItem<T, U>> subject = PublishSubject.create();
+    private final PublishSubject<StoreItem<T, U>> subject = PublishSubject.create();
 
     @NonNull
     private final ConcurrentMap<Integer, Subject<U, U>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
@@ -73,6 +73,12 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         this.putMergeFunction = get(putMergeFunction);
     }
 
+    /**
+     * Get a full stream of items with no identifier filtering. Whenever a store receives a new
+     * item with the id, it pushes it to the stream.
+     *
+     * @return An observable that first emits all future items as they are inserted into the store.
+     */
     @NonNull
     protected Observable<StoreItem<T, U>> getStream() {
         return subject.asObservable();

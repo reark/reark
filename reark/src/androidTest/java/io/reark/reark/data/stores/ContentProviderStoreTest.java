@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
+import rx.Observable;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
@@ -56,6 +57,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     private static final String[] PROJECTION = { DataColumns.KEY, DataColumns.VALUE };
     private static final String NONE = "";
 
+    private TestStoreCore core;
     private TestStore store;
 
     public ContentProviderStoreTest() {
@@ -67,7 +69,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void setUp() throws Exception {
         super.setUp();
 
-        TestStoreCore core = new TestStoreCore(getMockContentResolver());
+        core = new TestStoreCore(getMockContentResolver());
         store = new TestStore(core);
 
         Action1<String> insert = value ->
@@ -115,41 +117,6 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     }
 
     @Test
-    public void get_WithData_ReturnsData_AndCompletes() {
-        // ARRANGE
-        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        List<List<String>> expected = Collections.singletonList(Collections.singletonList("parsnip"));
-
-        // ACT
-        store.getAllOnce(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
-
-        // ASSERT
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
-    }
-
-    @Test
-    public void get_WithWildcardQuery_WithData_ReturnsAllData_AndCompletes() {
-        // ARRANGE
-        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
-
-        // ACT
-        // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
-        // this would be an asterisk. The exact wildcard is not important for the test as we just
-        // want to make sure the provider stores can return a larger listing of results.
-        store.getAllOnce(0).subscribe(testSubscriber);
-
-        // ASSERT
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
-    }
-
-    @Test
     public void getOnceAndStream_WithData_ReturnsData_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
@@ -181,6 +148,44 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         testSubscriber.assertReceivedOnNext(expected);
     }
 
+    // The following tests are not part of the public API, but rather test what
+    // the content provider core exposes for extending classes.
+
+    @Test
+    public void core_GetAllOnce_WithData_ReturnsData_AndCompletes() {
+        // ARRANGE
+        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
+        List<List<String>> expected = Collections.singletonList(Collections.singletonList("parsnip"));
+
+        // ACT
+        core.getAllCached(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
+    @Test
+    public void core_GetAllOnce_WithWildcardQuery_WithData_ReturnsAllData_AndCompletes() {
+        // ARRANGE
+        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
+        List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
+
+        // ACT
+        // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
+        // this would be an asterisk. The exact wildcard is not important for the test as we just
+        // want to make sure the provider stores can return a larger listing of results.
+        core.getAllCached(0).subscribe(testSubscriber);
+
+        // ASSERT
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertReceivedOnNext(expected);
+    }
+
     /**
      * A simple store containing String values tracked with Integer keys.
      */
@@ -206,6 +211,11 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
 
         protected TestStoreCore(@NonNull final ContentResolver contentResolver) {
             super(contentResolver);
+        }
+
+        @NonNull
+        public Observable<List<String>> getAllCached(@NonNull Integer id) {
+            return getAllOnce(getUriForId(id));
         }
 
         @NonNull

@@ -78,6 +78,12 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
     @NonNull
     @Override
+    public Observable<R> getStream(@NonNull T id) {
+        return core.getStream(id).map(getNullSafe::call);
+    }
+
+    @NonNull
+    @Override
     public Observable<R> getOnce(@NonNull final T id) {
         checkNotNull(id);
 

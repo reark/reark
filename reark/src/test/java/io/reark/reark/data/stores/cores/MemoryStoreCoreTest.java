@@ -46,26 +46,97 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void put_StoresValue() {
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        memoryStoreCore.put(100, "test value 1");
+        TestSubscriber<Boolean> putSubscriber = new TestSubscriber<>();
+        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
-        memoryStoreCore.getCached(100).subscribe(testSubscriber);
+        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber);
 
-        testSubscriber.assertValue("test value 1");
+        putSubscriber.assertValue(true);
+        getSubscriber.assertValue("test value 1");
     }
 
     @Test
     public void put_WithTwoDifferentIds_StoresTwoValues() {
-        TestSubscriber<String> testSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<String> testSubscriber2 = new TestSubscriber<>();
+        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
+        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
+        TestSubscriber<String> getSubscriber1 = new TestSubscriber<>();
+        TestSubscriber<String> getSubscriber2 = new TestSubscriber<>();
+        memoryStoreCore.getStream(100).subscribe(getSubscriber1);
+        memoryStoreCore.getStream(200).subscribe(getSubscriber2);
+
+        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber1);
+        memoryStoreCore.put(200, "test value 2").subscribe(putSubscriber2);
+
+        putSubscriber1.assertValue(true);
+        putSubscriber2.assertValue(true);
+        getSubscriber1.assertValue("test value 1");
+        getSubscriber2.assertValue("test value 2");
+    }
+
+    @Test
+    public void put_WithTwoSameIds_WithSameValues_StoresValueOnce() {
+        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
+        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
+        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        memoryStoreCore.getStream(100).subscribe(getSubscriber);
+
+        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber1);
+        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber2);
+
+        putSubscriber1.assertValue(true);
+        putSubscriber2.assertValue(false);
+        getSubscriber.assertValue("test value 1");
+    }
+
+    @Test
+    public void put_WithTwoSameIds_WithDifferentValues_StoresValueTwice() {
+        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
+        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
+        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        memoryStoreCore.getStream(100).subscribe(getSubscriber);
+
+        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber1);
+        memoryStoreCore.put(100, "test value 2").subscribe(putSubscriber2);
+
+        putSubscriber1.assertValue(true);
+        putSubscriber2.assertValue(true);
+        getSubscriber.assertValues("test value 1", "test value 2");
+    }
+
+    @Test
+    public void delete_WithNoExistingValue_Completes() {
+        TestSubscriber<Boolean> subscriber = new TestSubscriber<>();
+
+        memoryStoreCore.delete(100).subscribe(subscriber);
+
+        subscriber.assertCompleted();
+    }
+
+    @Test
+    public void delete_WithExistingValue_Completes_AndDeletesValue() {
+        TestSubscriber<Boolean> subscriber = new TestSubscriber<>();
+        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
         memoryStoreCore.put(100, "test value 1");
-        memoryStoreCore.put(200, "test value 2");
 
-        memoryStoreCore.getCached(100).subscribe(testSubscriber1);
-        memoryStoreCore.getCached(200).subscribe(testSubscriber2);
+        memoryStoreCore.delete(100).subscribe(subscriber);
+        memoryStoreCore.getCached(100).subscribe(getSubscriber);
 
-        testSubscriber1.assertValue("test value 1");
-        testSubscriber2.assertValue("test value 2");
+        subscriber.assertCompleted();
+        getSubscriber.assertCompleted();
+        getSubscriber.assertNoValues();
+    }
+
+    @Test
+    public void delete_DoesNotTriggerStream() {
+        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        memoryStoreCore.put(100, "test value 1");
+        memoryStoreCore.getStream(100);
+
+        memoryStoreCore.delete(100);
+
+        getSubscriber.assertNotCompleted();
+        getSubscriber.assertNoValues();
     }
 
     @Test

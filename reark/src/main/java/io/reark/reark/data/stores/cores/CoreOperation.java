@@ -24,7 +24,10 @@ import android.support.annotation.NonNull;
 /**
  * A class used to represent an update.
  */
-public final class UpdateValue<U> {
+public final class CoreOperation {
+
+    public static final CoreOperation EMPTY = new CoreOperation(-1, Uri.EMPTY,
+            ContentProviderOperation.newInsert(Uri.EMPTY).build());
 
     private final int id;
 
@@ -32,22 +35,13 @@ public final class UpdateValue<U> {
     private final Uri uri;
 
     @NonNull
-    private final U item;
+    private final ContentProviderOperation operation;
 
-    private UpdateValue(int id, @NonNull U item, @NonNull Uri uri) {
+    CoreOperation(int id, @NonNull Uri uri,
+                  @NonNull ContentProviderOperation operation) {
         this.id = id;
-        this.item = item;
         this.uri = uri;
-    }
-
-    @NonNull
-    static <U> UpdateValue<U> create(int id, @NonNull U item, @NonNull Uri uri) {
-        return new UpdateValue<>(id, item, uri);
-    }
-
-    @NonNull
-    UpdateOperation toOperation(@NonNull ContentProviderOperation operation) {
-        return new UpdateOperation(id, uri, operation);
+        this.operation = operation;
     }
 
     public int id() {
@@ -60,8 +54,12 @@ public final class UpdateValue<U> {
     }
 
     @NonNull
-    public U item() {
-        return item;
+    public ContentProviderOperation contentOperation() {
+        return operation;
+    }
+
+    public boolean isValid() {
+        return !EMPTY.contentOperation().equals(operation);
     }
 
 }

@@ -20,29 +20,31 @@ package io.reark.reark.data.stores.cores;
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 /**
- * A class used to represent an update.
+ * A class used to represent a change to the database.
  */
-public final class UpdateOperation {
-
-    public static final UpdateOperation EMPTY = new UpdateOperation(-1, Uri.EMPTY,
-            ContentProviderOperation.newInsert(Uri.EMPTY).build());
+public final class CoreDeleteValue<U> implements CoreValue<U> {
 
     private final int id;
 
     @NonNull
     private final Uri uri;
 
-    @NonNull
-    private final ContentProviderOperation operation;
-
-    UpdateOperation(int id, @NonNull Uri uri,
-                            @NonNull ContentProviderOperation operation) {
+    private CoreDeleteValue(int id, @NonNull Uri uri) {
         this.id = id;
         this.uri = uri;
-        this.operation = operation;
+    }
+
+    @NonNull
+    static <U> CoreDeleteValue<U> create(int id, @NonNull Uri uri) {
+        return new CoreDeleteValue<>(id, uri);
+    }
+
+    @NonNull
+    CoreOperation toOperation() {
+        return new CoreOperation(id, uri,
+                ContentProviderOperation.newDelete(uri).build());
     }
 
     public int id() {
@@ -54,13 +56,8 @@ public final class UpdateOperation {
         return uri;
     }
 
-    @NonNull
-    public ContentProviderOperation contentOperation() {
-        return operation;
+    @Override
+    public Type type() {
+        return Type.DELETE;
     }
-
-    public boolean isValid() {
-        return !EMPTY.contentOperation().equals(operation);
-    }
-
 }

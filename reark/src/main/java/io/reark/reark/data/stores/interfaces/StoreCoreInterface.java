@@ -27,6 +27,7 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -56,6 +57,15 @@ public interface StoreCoreInterface<T, U> {
      */
     @NonNull
     Single<Boolean> put(@NonNull final T id, @NonNull final U item);
+
+    /**
+     * Takes an identifier to be deleted.
+     *
+     * @param id Id of the persisted item.
+     * @return Completable that completes when the delete is executed.
+     */
+    @NonNull
+    Completable delete(@NonNull final T id);
 
     /**
      * Takes an identifier and returns an Observable that emits that item as soon as it is read from

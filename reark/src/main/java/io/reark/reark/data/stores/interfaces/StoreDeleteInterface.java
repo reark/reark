@@ -25,15 +25,23 @@
  */
 package io.reark.reark.data.stores.interfaces;
 
+import android.support.annotation.NonNull;
+
+import rx.Completable;
+import rx.Single;
+
 /**
- * A combined default interface for a store. A store acts as a data container, in which all data
- * items are identified with an id that can be deduced from the item itself. Usually this would be
- * done through a function such as U id(T item), but it can be defined in the store
- * implementation itself.
+ * Interface for stores from which it is possible to delete data.
  *
  * @param <T> Type of the id used in this store.
- * @param <U> Type of the data this store contains.
- * @param <R> Non-null type or wrapper for the data this store contains.
  */
-public interface StoreInterface<T, U, R> extends StorePutInterface<U>, StoreGetInterface<T, R>, StoreDeleteInterface<T> {
+public interface StoreDeleteInterface<T> {
+    /**
+     * The standard store interface for deleting a singular data item.
+     *
+     * @param id Id of the item to delete from the store.
+     * @return Completable that completes when the delete is executed.
+     */
+    @NonNull
+    Completable delete(@NonNull final T id);
 }

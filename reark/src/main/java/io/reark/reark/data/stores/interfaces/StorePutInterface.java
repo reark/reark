@@ -27,15 +27,15 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
+import rx.Completable;
 import rx.Single;
 
 /**
- * Interface for stores into which it is possible to insert data. This default interface is the most
- * simple put interface possible.
+ * Interface for stores into which it is possible to insert data.
  *
- * @param <T> Type of the data items.
+ * @param <U> Type of the data items.
  */
-public interface StorePutInterface<T> {
+public interface StorePutInterface<U> {
     /**
      * The standard store interface for inserting a singular data item. The id of the item is
      * expected to be deduced from the item itself by the store. This could be done through an
@@ -45,5 +45,5 @@ public interface StorePutInterface<T> {
      * @return A Single that emits true if value was updated or inserted, and false otherwise.
      */
     @NonNull
-    Single<Boolean> put(@NonNull final T item);
+    Single<Boolean> put(@NonNull final U item);
 }

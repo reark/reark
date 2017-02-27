@@ -25,19 +25,19 @@
  */
 package io.reark.rxgithubapp.advanced.data.stores.cores;
 
-import com.google.gson.Gson;
-
-import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import java.util.Collections;
 import java.util.List;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
+import io.reark.reark.data.stores.cores.UpdateOperation;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
@@ -60,7 +60,7 @@ public class NetworkRequestStatusStoreCore extends ContentProviderStoreCore<Inte
 
     @NonNull
     @Override
-    protected Observable<List<ContentProviderOperation>> groupOperations(@NonNull final Observable<ContentProviderOperation> source) {
+    protected Observable<List<UpdateOperation>> groupOperations(@NonNull final Observable<UpdateOperation> source) {
         // NetworkRequestStatus updates should not be grouped to ensure fast processing.
         return source.map(Collections::singletonList);
     }

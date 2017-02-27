@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import rx.Observable;
+import rx.Single;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -37,7 +38,7 @@ import static io.reark.reark.utils.Preconditions.get;
 /**
  * DefaultStore is a simple implementation of store logic. It can be used with any data types by
  * providing a function for deducing the id of an item. This could be done, for instance, with
- * T getId(U item).
+ * T id(U item).
  *
  * The DefaultStore works with any StoreCore instance.
  *
@@ -69,11 +70,12 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
         this.getEmptyValue = get(getEmptyValue);
     }
 
+    @NonNull
     @Override
-    public void put(@NonNull final U item) {
+    public Single<Boolean> put(@NonNull final U item) {
         checkNotNull(item);
 
-        core.put(getIdForItem.call(item), item);
+        return core.put(getIdForItem.call(item), item);
     }
 
     @NonNull

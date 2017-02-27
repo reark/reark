@@ -38,20 +38,24 @@ import android.os.HandlerThread;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.ObjectLockHandler;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 
+import static io.reark.reark.data.stores.cores.UpdateOperation.EMPTY;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 /**
@@ -75,13 +79,13 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private static final int DEFAULT_GROUP_MAX_SIZE_MS = 30;
 
     @NonNull
-    private static final ContentProviderOperation NO_OPERATION = ContentProviderOperation.newInsert(Uri.EMPTY).build();
-
-    @NonNull
     private final ContentResolver contentResolver;
 
     @NonNull
-    private final PublishSubject<Pair<U, Uri>> updateSubject = PublishSubject.create();
+    private final PublishSubject<UpdateValue<U>> updateSubject = PublishSubject.create();
+
+    @NonNull
+    private final ConcurrentMap<Integer, Subject<Boolean, Boolean>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
 
     @NonNull
     private final ObjectLockHandler<Uri> locker = new ObjectLockHandler<>();
@@ -89,9 +93,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
     @Nullable
     private Subscription updateSubscription;
 
+    private final int groupMaxSize;
+
     private final int groupingTimeout;
 
-    private final int groupMaxSize;
+    private int nextUpdateOperationIndex = 0;
 
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
         this(contentResolver, DEFAULT_GROUPING_TIMEOUT_MS, DEFAULT_GROUP_MAX_SIZE_MS);
@@ -111,33 +117,43 @@ public abstract class ContentProviderStoreCoreBase<U> {
         contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
 
         // Observable transforming updates and inserts to ContentProviderOperations
-        Observable<ContentProviderOperation> operationObservable = updateSubject
+        Observable<UpdateOperation> operationObservable = updateSubject
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
-                .flatMap(pair -> createOperation(pair.first, pair.second));
+                .flatMap(this::createContentOperation);
 
         // Group the operations to a list that should be executed in one batch. The default
         // grouping logic is suitable for pojo stores, but some stores may need to provide
         // their own grouping logic, if for example buffering delays are undesirable.
         updateSubscription = groupOperations(operationObservable)
                 .observeOn(Schedulers.computation())
-                .map(ArrayList::new)
-                .doOnNext(list -> Log.v(TAG, "Grouped list of " + list.size()))
-                .doOnNext(operations -> {
-                    try {
-                        ContentProviderResult[] result = contentResolver.applyBatch(getAuthority(), operations);
-                        Log.v(TAG, String.format("Applied %s operations", result.length));
-                    } catch (RemoteException | OperationApplicationException e) {
-                        Log.e(TAG, "Error applying operations", e);
-                    }
-                })
+                .doOnNext(operations -> Log.v(TAG, "Grouped list of " + operations.size()))
+                .doOnNext(this::applyOperations)
                 .flatMap(Observable::from)
-                .map(ContentProviderOperation::getUri)
-                .subscribe(locker::release,
+                .subscribe(this::release,
                         // On error we can't release the processing lock, as the Uri reference
                         // is lost. It's perhaps better to error out of the subscription than
                         // to leave some of the Uris locked and continue.
                         error -> Log.e(TAG, "Error while handling data update!", error));
+    }
+
+    private void applyOperations(@NonNull List<UpdateOperation> operations) {
+        try {
+            ArrayList<ContentProviderOperation> contentOperations = contentOperations(operations);
+            ContentProviderResult[] result = contentResolver.applyBatch(getAuthority(), contentOperations);
+            Log.v(TAG, String.format("Applied %s operations", result.length));
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e(TAG, "Error applying operations", e);
+        }
+    }
+
+    @NonNull
+    private static ArrayList<ContentProviderOperation> contentOperations(@NonNull List<UpdateOperation> operations) {
+        ArrayList<ContentProviderOperation> contentOperations = new ArrayList<>(operations.size());
+        for (UpdateOperation operation : operations) {
+            contentOperations.add(operation.contentOperation());
+        }
+        return contentOperations;
     }
 
     @NonNull
@@ -156,7 +172,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
      * to pass a too large batch of operations will result in a failed binder transaction.
      */
     @NonNull
-    protected Observable<List<ContentProviderOperation>> groupOperations(@NonNull final Observable<ContentProviderOperation> source) {
+    protected Observable<List<UpdateOperation>> groupOperations(@NonNull final Observable<UpdateOperation> source) {
         return source.publish(stream -> stream.buffer(
                 Observable.amb(
                         stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS),
@@ -166,9 +182,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<ContentProviderOperation> createOperation(@NonNull final U item, @NonNull final Uri uri) {
+    private Observable<UpdateOperation> createContentOperation(@NonNull final UpdateValue<U> value) {
         return Observable
                 .fromCallable(() -> {
+                    Uri uri = value.uri();
+
                     // We block until this Uri is freed for operations. Failure to lock
                     // will throw, which we'll catch later.
                     locker.acquire(uri);
@@ -180,44 +198,51 @@ public abstract class ContentProviderStoreCoreBase<U> {
                             cursor.close();
                         }
 
-                        Log.v(TAG, "Create insertion operation for " + uri);
-                        return ContentProviderOperation.newInsert(uri)
-                                .withValues(getContentValuesForItem(item))
+                        Log.v(TAG, "Create insertion contentOperation for " + uri);
+                        ContentProviderOperation contentOperation = ContentProviderOperation
+                                .newInsert(uri)
+                                .withValues(getContentValuesForItem(value.item()))
                                 .build();
+
+                        return value.toOperation(contentOperation);
                     }
 
                     final U currentItem = read(cursor);
-                    final U newItem = mergedItem(currentItem, item);
+                    final U newItem = mergedItem(currentItem, value.item());
 
                     cursor.close();
 
                     if (!newItem.equals(currentItem)) {
-                        Log.v(TAG, "Create update operation for " + uri);
-                        return ContentProviderOperation.newUpdate(uri)
+                        Log.v(TAG, "Create update contentOperation for " + uri);
+                        ContentProviderOperation contentOperation = ContentProviderOperation
+                                .newUpdate(uri)
                                 .withValues(getContentValuesForItem(newItem))
                                 .build();
+
+                        return value.toOperation(contentOperation);
                     }
 
                     Log.v(TAG, "Data already up to date at " + uri);
-                    return NO_OPERATION;
+                    return EMPTY;
                 })
-                .onErrorReturn(e -> NO_OPERATION)
-                .doOnNext(operation -> releaseIfNoOp(operation, uri))
-                .filter(ContentProviderStoreCoreBase::isValidOperation);
+                .onErrorReturn(e -> EMPTY)
+                .doOnNext(this::releaseIfNoOp)
+                .filter(UpdateOperation::isValid);
     }
 
-    private static boolean isValidOperation(@NonNull final ContentProviderOperation operation) {
-        return !NO_OPERATION.equals(operation);
+    private void releaseIfNoOp(@NonNull final UpdateOperation operation) {
+        if (!operation.isValid()) {
+            release(operation);
+        }
     }
 
-    private void releaseIfNoOp(@NonNull final ContentProviderOperation operation, @NonNull final Uri uri) {
-        if (!isValidOperation(operation)) {
-            try {
-                locker.release(uri);
-            } catch (IllegalStateException e) {
-                // Release may throw if the lock wasn't successfully acquired.
-                Log.w(TAG, "Couldn't release lock!", e);
-            }
+    private void release(@NonNull UpdateOperation operation) {
+        try {
+            locker.release(operation.uri());
+            subjectCache.get(operation.id()).onNext(operation.isValid());
+        } catch (IllegalStateException e) {
+            // Release may throw if the lock wasn't successfully acquired.
+            Log.w(TAG, "Couldn't release lock!", e);
         }
     }
 
@@ -231,11 +256,22 @@ public abstract class ContentProviderStoreCoreBase<U> {
         return mergeValues(currentItem, newItem);
     }
 
-    protected void put(@NonNull final U item, @NonNull final Uri uri) {
+    @NonNull
+    protected Single<Boolean> put(@NonNull final U item, @NonNull final Uri uri) {
         checkNotNull(item);
         checkNotNull(uri);
 
-        updateSubject.onNext(new Pair<>(item, uri));
+        int index = ++nextUpdateOperationIndex;
+
+        subjectCache.put(index, PublishSubject.create());
+
+        updateSubject.onNext(UpdateValue.create(index, item, uri));
+
+        return subjectCache.get(index)
+                .asObservable()
+                .first()
+                .doOnCompleted(() -> subjectCache.remove(index))
+                .toSingle();
     }
 
     @NonNull

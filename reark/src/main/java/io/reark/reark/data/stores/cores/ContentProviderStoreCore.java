@@ -35,6 +35,7 @@ import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
 import rx.Observable;
+import rx.Single;
 import rx.subjects.PublishSubject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
@@ -97,11 +98,12 @@ public abstract class ContentProviderStoreCore<T, U>
         return subjectCache.asObservable();
     }
 
+    @NonNull
     @Override
-    public void put(@NonNull final T id, @NonNull final U item) {
+    public Single<Boolean> put(@NonNull final T id, @NonNull final U item) {
         checkNotNull(id);
 
-        put(Preconditions.get(item), getUriForId(id));
+        return put(Preconditions.get(item), getUriForId(id));
     }
 
     @NonNull

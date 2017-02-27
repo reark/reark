@@ -35,14 +35,15 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 import rx.Observable;
+import rx.Single;
 
 public interface GitHubService {
-    static Uri REPOSITORY_SEARCH = Uri.parse("github/search");
-    static Uri REPOSITORY = Uri.parse("github/repository");
+    Uri REPOSITORY_SEARCH = Uri.parse("github/search");
+    Uri REPOSITORY = Uri.parse("github/repository");
 
     @GET("/search/repositories")
-    Observable<GitHubRepositorySearchResults> search(@QueryMap Map<String, String> search);
+    Single<GitHubRepositorySearchResults> search(@QueryMap Map<String, String> search);
 
     @GET("/repositories/{id}")
-    Observable<GitHubRepository> getRepository(@Path("id") Integer id);
+    Single<GitHubRepository> getRepository(@Path("id") Integer id);
 }

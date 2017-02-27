@@ -39,8 +39,8 @@ import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static io.reark.reark.data.DataStreamNotification.fetchingError;
-import static io.reark.reark.data.DataStreamNotification.fetchingStart;
+import static io.reark.reark.data.DataStreamNotification.completedWithError;
+import static io.reark.reark.data.DataStreamNotification.ongoing;
 import static io.reark.reark.data.DataStreamNotification.onNext;
 import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.ERROR;
 import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
@@ -62,12 +62,12 @@ public class RepositoriesViewModelTest {
 
     @Test
     public void testStartFetchingReportedAsLoading() {
-        assertEquals(LOADING, toProgressStatus().call(fetchingStart()));
+        assertEquals(LOADING, toProgressStatus().call(ongoing()));
     }
 
     @Test
     public void testFetchingErrorReportedAsError() {
-        assertEquals(ERROR, toProgressStatus().call(fetchingError()));
+        assertEquals(ERROR, toProgressStatus().call(completedWithError(null)));
     }
 
     @Test

@@ -37,10 +37,10 @@ public class DebugApplicationInstrumentation implements ApplicationInstrumentati
     @NonNull
     private final Instrumentation instrumentation;
 
-    public DebugApplicationInstrumentation(@NonNull final LeakTracing leakTracing,
-                                           @NonNull final Instrumentation instrumentation) {
+    public DebugApplicationInstrumentation(@NonNull LeakTracing leakTracing,
+                                           @NonNull Instrumentation networkInstrumentation) {
         this.leakTracing = get(leakTracing);
-        this.instrumentation = get(instrumentation);
+        this.instrumentation = get(networkInstrumentation);
     }
 
     @Override

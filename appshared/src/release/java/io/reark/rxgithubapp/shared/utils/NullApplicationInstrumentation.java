@@ -23,13 +23,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.rxgithubapp.shared.network;
+package io.reark.rxgithubapp.shared.utils;
 
 import android.support.annotation.NonNull;
 
-import io.reark.rxgithubapp.shared.utils.Instrumentation;
+public class NullApplicationInstrumentation implements ApplicationInstrumentation {
 
-public interface NetworkInstrumentation<T> extends Instrumentation {
+    @Override
+    public void init() { }
+
     @NonNull
-    T decorateNetwork(@NonNull final T httpClient);
+    @Override
+    public LeakTracing getLeakTracing() {
+        return new NullLeakTracing();
+    }
 }

@@ -39,7 +39,7 @@ import static io.reark.reark.utils.Preconditions.get;
 /**
  * DefaultStore is a simple implementation of store logic. It can be used with any data types by
  * providing a function for deducing the id of an item. This could be done, for instance, with
- * T id(U item).
+ * T getId(U item).
  *
  * The DefaultStore works with any StoreCore instance.
  *

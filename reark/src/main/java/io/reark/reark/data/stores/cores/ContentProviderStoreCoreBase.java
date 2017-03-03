@@ -120,7 +120,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         Observable<CoreOperation> operationObservable = operationSubject
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
-                .flatMap(this::createContentOperation);
+                .flatMap(this::createCoreOperation);
 
         // Group the operations to a list that should be executed in one batch. The default
         // grouping logic is suitable for pojo stores, but some stores may need to provide
@@ -182,19 +182,19 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<CoreOperation> createContentOperation(@NonNull final CoreValue<U> value) {
+    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValue<U> value) {
         switch (value.type()) {
             case UPDATE:
-                return createContentOperation((CoreUpdateValue<U>) value);
+                return createCoreOperation((CoreUpdateValue<U>) value);
             case DELETE:
-                return createContentOperation((CoreDeleteValue<U>) value);
+                return createCoreOperation((CoreDeleteValue<U>) value);
             default:
                 throw new IllegalStateException("Unknown value type " + value.type());
         }
     }
 
     @NonNull
-    private Observable<CoreOperation> createContentOperation(@NonNull final CoreDeleteValue<U> value) {
+    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreDeleteValue<U> value) {
         return Observable
                 .fromCallable(() -> {
                     Uri uri = value.uri();
@@ -213,7 +213,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<CoreOperation> createContentOperation(@NonNull final CoreUpdateValue<U> value) {
+    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreUpdateValue<U> value) {
         return Observable
                 .fromCallable(() -> {
                     Uri uri = value.uri();

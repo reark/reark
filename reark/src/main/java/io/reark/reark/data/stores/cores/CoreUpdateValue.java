@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 /**
  * A class used to represent a change to the database.
  */
-public final class CoreUpdateValue<U> implements CoreValue<U> {
+final class CoreUpdateValue<U> implements CoreValue<U> {
 
     private final int id;
 
@@ -34,20 +34,25 @@ public final class CoreUpdateValue<U> implements CoreValue<U> {
     @NonNull
     private final U item;
 
-    private CoreUpdateValue(int id, @NonNull U item, @NonNull Uri uri) {
+    private CoreUpdateValue(int id, @NonNull Uri uri, @NonNull U item) {
         this.id = id;
         this.item = item;
         this.uri = uri;
     }
 
     @NonNull
-    static <U> CoreUpdateValue<U> create(int id, @NonNull U item, @NonNull Uri uri) {
-        return new CoreUpdateValue<>(id, item, uri);
+    static <U> CoreUpdateValue<U> create(int id, @NonNull Uri uri, @NonNull U item) {
+        return new CoreUpdateValue<>(id, uri, item);
     }
 
     @NonNull
     CoreOperation toOperation(@NonNull ContentProviderOperation operation) {
         return new CoreOperation(id, uri, operation);
+    }
+
+    @NonNull
+    CoreOperation noOperation() {
+        return new CoreOperation(id, uri);
     }
 
     public int id() {
@@ -64,6 +69,7 @@ public final class CoreUpdateValue<U> implements CoreValue<U> {
         return item;
     }
 
+    @NonNull
     @Override
     public Type type() {
         return Type.UPDATE;

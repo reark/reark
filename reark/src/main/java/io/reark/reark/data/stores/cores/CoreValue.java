@@ -17,20 +17,19 @@
  */
 package io.reark.reark.data.stores.cores;
 
-import android.content.ContentProviderOperation;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent a change to the database.
+ * Interface holding the type of data update.
  */
-public interface CoreValue<U> {
+interface CoreValue<U> {
 
     enum Type {
         UPDATE,
         DELETE
     }
 
+    @NonNull
     Type type();
 
 }

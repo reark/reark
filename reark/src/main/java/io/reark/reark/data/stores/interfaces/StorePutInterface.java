@@ -27,7 +27,6 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
-import rx.Completable;
 import rx.Single;
 
 /**

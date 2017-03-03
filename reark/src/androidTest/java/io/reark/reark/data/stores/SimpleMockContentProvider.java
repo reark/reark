@@ -52,7 +52,8 @@ public class SimpleMockContentProvider extends MockContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
-        return 0;
+        insert(uri, contentValues);
+        return 1;
     }
 
     @Override
@@ -64,6 +65,11 @@ public class SimpleMockContentProvider extends MockContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return getCursor(uri, projection);
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        return values.remove(uri) != null ? 1 : 0;
     }
 
     @Nullable

@@ -56,7 +56,6 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-import static io.reark.reark.data.stores.cores.CoreOperation.EMPTY;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
 /**
@@ -208,7 +207,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                     Log.v(TAG, "Create delete contentOperation for " + uri);
                     return value.toOperation();
                 })
-                .onErrorReturn(__ -> EMPTY)
+                .onErrorReturn(__ -> value.noOperation())
                 .doOnNext(this::releaseIfNoOp)
                 .filter(CoreOperation::isValid);
     }
@@ -253,9 +252,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
                     }
 
                     Log.v(TAG, "Data already up to date at " + uri);
-                    return EMPTY;
+                    return value.noOperation();
                 })
-                .onErrorReturn(__ -> EMPTY)
+                .onErrorReturn(__ -> value.noOperation())
                 .doOnNext(this::releaseIfNoOp)
                 .filter(CoreOperation::isValid);
     }
@@ -295,9 +294,10 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
         ongoingOperationCache.put(index, PublishSubject.create());
 
-        operationSubject.onNext(CoreUpdateValue.create(index, item, uri));
+        operationSubject.onNext(CoreUpdateValue.create(index, uri, item));
 
         return ongoingOperationCache.get(index)
+                .first()
                 .toSingle()
                 .doAfterTerminate(() -> ongoingOperationCache.remove(index));
     }
@@ -313,6 +313,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         operationSubject.onNext(CoreDeleteValue.create(index, uri));
 
         return ongoingOperationCache.get(index)
+                .first()
                 .toCompletable()
                 .doAfterTerminate(() -> ongoingOperationCache.remove(index));
     }

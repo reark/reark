@@ -28,7 +28,6 @@ package io.reark.reark.data.stores.interfaces;
 import android.support.annotation.NonNull;
 
 import rx.Completable;
-import rx.Single;
 
 /**
  * Interface for stores from which it is possible to delete data.

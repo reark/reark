@@ -22,12 +22,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent an update.
+ * A class wrapping ContentProviderOperation, the operation Uri, and operation identifier.
  */
 public final class CoreOperation {
 
-    public static final CoreOperation EMPTY = new CoreOperation(-1, Uri.EMPTY,
-            ContentProviderOperation.newInsert(Uri.EMPTY).build());
+    @NonNull
+    private static final ContentProviderOperation NO_OP =
+            ContentProviderOperation.newInsert(Uri.EMPTY).build();
 
     private final int id;
 
@@ -37,8 +38,11 @@ public final class CoreOperation {
     @NonNull
     private final ContentProviderOperation operation;
 
-    CoreOperation(int id, @NonNull Uri uri,
-                  @NonNull ContentProviderOperation operation) {
+    CoreOperation(int id, @NonNull Uri uri) {
+        this(id, uri, NO_OP);
+    }
+
+    CoreOperation(int id, @NonNull Uri uri, @NonNull ContentProviderOperation operation) {
         this.id = id;
         this.uri = uri;
         this.operation = operation;
@@ -54,12 +58,12 @@ public final class CoreOperation {
     }
 
     @NonNull
-    public ContentProviderOperation contentOperation() {
+    ContentProviderOperation contentOperation() {
         return operation;
     }
 
-    public boolean isValid() {
-        return !EMPTY.contentOperation().equals(operation);
+    boolean isValid() {
+        return !NO_OP.equals(operation);
     }
 
 }

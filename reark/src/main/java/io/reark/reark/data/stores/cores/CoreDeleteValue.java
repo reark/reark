@@ -22,9 +22,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent a change to the database.
+ * A class used to represent a deletion from the database.
  */
-public final class CoreDeleteValue<U> implements CoreValue<U> {
+final class CoreDeleteValue<U> implements CoreValue<U> {
 
     private final int id;
 
@@ -47,6 +47,11 @@ public final class CoreDeleteValue<U> implements CoreValue<U> {
                 ContentProviderOperation.newDelete(uri).build());
     }
 
+    @NonNull
+    public CoreOperation noOperation() {
+        return new CoreOperation(id, uri);
+    }
+
     public int id() {
         return id;
     }
@@ -56,6 +61,7 @@ public final class CoreDeleteValue<U> implements CoreValue<U> {
         return uri;
     }
 
+    @NonNull
     @Override
     public Type type() {
         return Type.DELETE;

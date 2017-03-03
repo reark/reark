@@ -53,16 +53,17 @@ public interface StoreCoreInterface<T, U> {
      *
      * @param id Id of the persisted item.
      * @param item The persisted item.
-     * @return A Single that emits true if value was updated or inserted, and false otherwise.
+     * @return Single that emits true if value was updated or inserted, and false otherwise.
      */
     @NonNull
     Single<Boolean> put(@NonNull final T id, @NonNull final U item);
 
     /**
-     * Takes an identifier to be deleted.
+     * Takes an identifier to be deleted, and completes when the operation has been executed. The
+     * completion is identical regardless whether the store contained the item marked for deletion.
      *
      * @param id Id of the persisted item.
-     * @return Completable that completes when the delete is executed.
+     * @return Completable that completes after the delete is executed.
      */
     @NonNull
     Completable delete(@NonNull final T id);

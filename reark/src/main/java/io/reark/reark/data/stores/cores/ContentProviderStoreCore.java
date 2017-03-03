@@ -104,7 +104,7 @@ public abstract class ContentProviderStoreCore<T, U>
     public Single<Boolean> put(@NonNull final T id, @NonNull final U item) {
         checkNotNull(id);
 
-        return put(Preconditions.get(item), getUriForId(id));
+        return put(getUriForId(id), Preconditions.get(item));
     }
 
     @NonNull

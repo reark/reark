@@ -85,7 +85,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final PublishSubject<CoreValue<U>> operationSubject = PublishSubject.create();
 
     @NonNull
-    private final ConcurrentMap<Integer, Subject<Boolean, Boolean>> ongoingOperationCache = new ConcurrentHashMap<>(20, 0.75f, 4);
+    private final ConcurrentMap<Integer, Subject<Boolean, Boolean>> completionNotifiers = new ConcurrentHashMap<>(20, 0.75f, 4);
 
     @NonNull
     private final ObjectLockHandler<Uri> locker = new ObjectLockHandler<>();
@@ -202,7 +202,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                     // We block until this Uri is freed for operations. Failure to lock
                     // will throw, which we'll catch later. This will ensure that we don't try
                     // to execute multiple operations for a same Uri in a same batch.
-                    locker.acquire(uri);
+                    lock(uri);
 
                     Log.v(TAG, "Create delete contentOperation for " + uri);
                     return value.toOperation();
@@ -218,7 +218,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                 .fromCallable(() -> {
                     Uri uri = value.uri();
 
-                    locker.acquire(uri);
+                    lock(uri);
 
                     final Cursor cursor = contentResolver.query(uri, getProjection(), null, null, null);
 
@@ -265,10 +265,15 @@ public abstract class ContentProviderStoreCoreBase<U> {
         }
     }
 
+    private void lock(@NonNull Uri uri) throws InterruptedException {
+        locker.acquire(uri);
+    }
+
     private void release(@NonNull CoreOperation operation) {
         try {
             locker.release(operation.uri());
-            ongoingOperationCache.get(operation.id()).onNext(operation.isValid());
+            // Remove the operation completion listener and emit whether the operation was executed.
+            completionNotifiers.remove(operation.id()).onNext(operation.isValid());
         } catch (IllegalStateException e) {
             // Release may throw if the lock wasn't successfully acquired.
             Log.w(TAG, "Couldn't release lock!", e);
@@ -286,20 +291,18 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    protected Single<Boolean> put(@NonNull final U item, @NonNull final Uri uri) {
+    protected Single<Boolean> put(@NonNull final Uri uri, @NonNull final U item) {
         checkNotNull(item);
         checkNotNull(uri);
 
         int index = ++nextOperationIndex;
 
-        ongoingOperationCache.put(index, PublishSubject.create());
-
+        completionNotifiers.put(index, PublishSubject.create());
         operationSubject.onNext(CoreUpdateValue.create(index, uri, item));
 
-        return ongoingOperationCache.get(index)
+        return completionNotifiers.get(index)
                 .first()
-                .toSingle()
-                .doAfterTerminate(() -> ongoingOperationCache.remove(index));
+                .toSingle();
     }
 
     @NonNull
@@ -308,14 +311,12 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
         int index = ++nextOperationIndex;
 
-        ongoingOperationCache.put(index, PublishSubject.create());
-
+        completionNotifiers.put(index, PublishSubject.create());
         operationSubject.onNext(CoreDeleteValue.create(index, uri));
 
-        return ongoingOperationCache.get(index)
+        return completionNotifiers.get(index)
                 .first()
-                .toCompletable()
-                .doAfterTerminate(() -> ongoingOperationCache.remove(index));
+                .toCompletable();
     }
 
     @NonNull

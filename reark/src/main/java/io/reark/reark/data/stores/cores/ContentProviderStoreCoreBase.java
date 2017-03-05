@@ -269,11 +269,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
         }
     }
 
-    private void lock(@NonNull Uri uri) throws InterruptedException {
+    private void lock(@NonNull final Uri uri) throws InterruptedException {
         locker.acquire(uri);
     }
 
-    private void release(@NonNull CoreOperation operation) {
+    private void release(@NonNull final CoreOperation operation) {
         try {
             locker.release(operation.uri());
             // Remove the operation completion listener and emit whether the operation was executed.

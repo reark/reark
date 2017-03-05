@@ -58,8 +58,9 @@ final class CoreUpdateValue<U> implements CoreValue<U> {
         return new CoreOperation(id, uri, operation);
     }
 
+    @Override
     @NonNull
-    CoreOperation noOperation() {
+    public CoreOperation noOperation() {
         return new CoreOperation(id, uri);
     }
 

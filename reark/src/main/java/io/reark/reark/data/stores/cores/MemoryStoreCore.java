@@ -147,9 +147,9 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
         final U value = cache.get(getHashCodeForId(id));
 
-        return value != null
-                ? Observable.just(value)
-                : Observable.empty();
+        return value == null
+                ? Observable.empty()
+                : Observable.just(value);
     }
 
     protected int getHashCodeForId(@NonNull final T id) {

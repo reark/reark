@@ -54,6 +54,7 @@ final class CoreDeleteValue<U> implements CoreValue<U> {
         return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
     }
 
+    @Override
     @NonNull
     public CoreOperation noOperation() {
         return new CoreOperation(id, uri);

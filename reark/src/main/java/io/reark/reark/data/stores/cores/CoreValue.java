@@ -46,4 +46,7 @@ interface CoreValue<U> {
     @NonNull
     Type type();
 
+    @NonNull
+    CoreOperation noOperation();
+
 }

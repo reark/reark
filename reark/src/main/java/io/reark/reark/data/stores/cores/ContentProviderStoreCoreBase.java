@@ -52,6 +52,7 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.Subscription;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -137,7 +138,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                         error -> Log.e(TAG, "Error while handling data operations!", error));
     }
 
-    private void applyOperations(@NonNull List<CoreOperation> operations) {
+    private void applyOperations(@NonNull final List<CoreOperation> operations) {
         try {
             ArrayList<ContentProviderOperation> contentOperations = contentOperations(operations);
             ContentProviderResult[] result = contentResolver.applyBatch(getAuthority(), contentOperations);
@@ -148,7 +149,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private static ArrayList<ContentProviderOperation> contentOperations(@NonNull List<CoreOperation> operations) {
+    private static ArrayList<ContentProviderOperation> contentOperations(@NonNull final List<CoreOperation> operations) {
         ArrayList<ContentProviderOperation> contentOperations = new ArrayList<>(operations.size());
         for (CoreOperation operation : operations) {
             contentOperations.add(operation.contentOperation());
@@ -183,14 +184,23 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValue<U> value) {
+        Observable<CoreOperation> valueObservable;
+
         switch (value.type()) {
             case UPDATE:
-                return createCoreOperation((CoreUpdateValue<U>) value);
+                valueObservable = createCoreOperation((CoreUpdateValue<U>) value);
+                break;
             case DELETE:
-                return createCoreOperation((CoreDeleteValue<U>) value);
+                valueObservable = createCoreOperation((CoreDeleteValue<U>) value);
+                break;
             default:
                 throw new IllegalStateException("Unknown value type " + value.type());
         }
+
+        return valueObservable
+                .onErrorReturn(__ -> value.noOperation())
+                .doOnNext(this::releaseIfNoOp)
+                .filter(CoreOperation::isValid);
     }
 
     @NonNull
@@ -206,10 +216,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                     Log.v(TAG, "Create delete contentOperation for " + uri);
                     return value.toOperation();
-                })
-                .onErrorReturn(__ -> value.noOperation())
-                .doOnNext(this::releaseIfNoOp)
-                .filter(CoreOperation::isValid);
+                });
     }
 
     @NonNull
@@ -253,10 +260,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                     Log.v(TAG, "Data already up to date at " + uri);
                     return value.noOperation();
-                })
-                .onErrorReturn(__ -> value.noOperation())
-                .doOnNext(this::releaseIfNoOp)
-                .filter(CoreOperation::isValid);
+                });
     }
 
     private void releaseIfNoOp(@NonNull final CoreOperation operation) {
@@ -295,12 +299,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         checkNotNull(item);
         checkNotNull(uri);
 
-        int index = ++nextOperationIndex;
-
-        completionNotifiers.put(index, PublishSubject.create());
-        operationSubject.onNext(CoreUpdateValue.create(index, uri, item));
-
-        return completionNotifiers.get(index)
+        return createModifyingOperation(index -> CoreUpdateValue.create(index, uri, item))
                 .first()
                 .toSingle();
     }
@@ -309,14 +308,19 @@ public abstract class ContentProviderStoreCoreBase<U> {
     protected Completable delete(@NonNull final Uri uri) {
         checkNotNull(uri);
 
+        return createModifyingOperation(index -> CoreDeleteValue.create(index, uri))
+                .first()
+                .toCompletable();
+    }
+
+    @NonNull
+    private Subject<Boolean, Boolean> createModifyingOperation(@NonNull final Func1<Integer, CoreValue<U>> valueFunc) {
         int index = ++nextOperationIndex;
 
         completionNotifiers.put(index, PublishSubject.create());
-        operationSubject.onNext(CoreDeleteValue.create(index, uri));
+        operationSubject.onNext(valueFunc.call(index));
 
-        return completionNotifiers.get(index)
-                .first()
-                .toCompletable();
+        return completionNotifiers.get(index);
     }
 
     @NonNull

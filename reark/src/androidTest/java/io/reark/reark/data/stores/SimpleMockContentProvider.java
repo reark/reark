@@ -69,7 +69,7 @@ public class SimpleMockContentProvider extends MockContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return values.remove(uri) != null ? 1 : 0;
+        return values.remove(uri) == null ? 0 : 1;
     }
 
     @Nullable

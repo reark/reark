@@ -25,31 +25,40 @@
  */
 package io.reark.rxgithubapp.shared.injections;
 
-import android.content.Context;
+import java.util.Collections;
+import java.util.List;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.reark.rxgithubapp.shared.injections.ForApplication;
-import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
 import io.reark.rxgithubapp.shared.utils.ApplicationInstrumentation;
+import io.reark.rxgithubapp.shared.utils.Instrumentation;
+import io.reark.rxgithubapp.shared.utils.NullApplicationInstrumentation;
 import io.reark.rxgithubapp.shared.utils.NullInstrumentation;
-import io.reark.rxgithubapp.shared.utils.NullNetworkInstrumentation;
-import okhttp3.OkHttpClient;
+import okhttp3.Interceptor;
 
 @Module
 public class InstrumentationModule {
 
     @Provides
     @Singleton
-    public ApplicationInstrumentation providesInstrumentation(@ForApplication Context context) {
-        return new NullInstrumentation(context);
+    public ApplicationInstrumentation provideApplicationInstrumentation() {
+        return new NullApplicationInstrumentation();
     }
 
     @Provides
     @Singleton
-    public NetworkInstrumentation<OkHttpClient.Builder> providesNetworkInstrumentation() {
-        return new NullNetworkInstrumentation();
+    @Named("networkInstrumentation")
+    public Instrumentation provideNetworkInstrumentation() {
+        return new NullInstrumentation();
+    }
+
+    @Provides
+    @Singleton
+    @Named("networkInterceptors")
+    public List<Interceptor> provideNetworkInterceptors() {
+        return Collections.emptyList();
     }
 }

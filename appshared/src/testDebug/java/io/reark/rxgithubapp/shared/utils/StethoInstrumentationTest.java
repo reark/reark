@@ -27,16 +27,10 @@ package io.reark.rxgithubapp.shared.utils;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import android.content.Context;
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -46,14 +40,11 @@ public class StethoInstrumentationTest {
 
     private StethoInstrumentation instrumentation;
 
-    @Mock
-    Interceptor interceptor;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        instrumentation = spy(new StethoInstrumentation(mock(Context.class), interceptor));
+        instrumentation = spy(new StethoInstrumentation(mock(Context.class)));
     }
 
     @Test
@@ -63,15 +54,5 @@ public class StethoInstrumentationTest {
         instrumentation.init();
 
         verify(instrumentation).initStetho();
-    }
-
-    @Test
-    public void testDecorateNetwork() {
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-
-        instrumentation.decorateNetwork(clientBuilder);
-
-        assertThat(clientBuilder.networkInterceptors())
-                .containsExactlyElementsOf(singletonList(interceptor));
     }
 }

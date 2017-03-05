@@ -25,18 +25,7 @@
  */
 package io.reark.rxgithubapp.shared.utils;
 
-import android.support.annotation.NonNull;
-
-import io.reark.rxgithubapp.shared.network.NetworkInstrumentation;
-import okhttp3.OkHttpClient;
-
-public class NullNetworkInstrumentation implements NetworkInstrumentation<OkHttpClient.Builder> {
-
-    @NonNull
-    @Override
-    public OkHttpClient.Builder decorateNetwork(@NonNull final OkHttpClient.Builder clientBuilder) {
-        return clientBuilder;
-    }
+public class NullInstrumentation implements Instrumentation {
 
     @Override
     public void init() { }

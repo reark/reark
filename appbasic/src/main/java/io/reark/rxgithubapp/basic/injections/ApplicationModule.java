@@ -47,13 +47,13 @@ public class ApplicationModule {
     @Provides
     @Singleton
     @ForApplication
-    Context providesApplicationContext() {
+    Context provideApplicationContext() {
         return application;
     }
 
     @Provides
     @Singleton
-    Application providesApplication() {
+    Application provideApplication() {
         return application;
     }
 

@@ -47,6 +47,8 @@ public class DataLayer extends ClientDataLayerBase {
 
     private final UriFetcherManager fetcherManager;
 
+    private int nextRequestIndex = 0;
+
     public DataLayer(@NonNull final UriFetcherManager fetcherManager,
                      @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
                      @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
@@ -61,33 +63,43 @@ public class DataLayer extends ClientDataLayerBase {
     }
 
     @Override
-    protected void fetchGitHubRepository(@NonNull final Integer repositoryId) {
+    protected int fetchGitHubRepository(@NonNull final Integer repositoryId) {
         checkNotNull(repositoryId);
+
+        int requestId = ++nextRequestIndex;
 
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
-        intent.putExtra("id", repositoryId);
+        intent.putExtra("repositoryId", repositoryId);
+        intent.putExtra("requestId", requestId);
 
         Fetcher<Uri> fetcher = fetcherManager.findFetcher(GitHubService.REPOSITORY);
 
         if (fetcher != null) {
             fetcher.fetch(intent);
         }
+
+        return requestId;
     }
 
     @Override
-    protected void fetchGitHubRepositorySearch(@NonNull final String searchString) {
+    protected int fetchGitHubRepositorySearch(@NonNull final String searchString) {
         checkNotNull(searchString);
+
+        int requestId = ++nextRequestIndex;
 
         Log.d(TAG, "fetchGitHubRepositorySearch(" + searchString + ")");
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
         intent.putExtra("searchString", searchString);
+        intent.putExtra("requestId", requestId);
 
         Fetcher<Uri> fetcher = fetcherManager.findFetcher(GitHubService.REPOSITORY_SEARCH);
 
         if (fetcher != null) {
             fetcher.fetch(intent);
         }
+
+        return requestId;
     }
 }

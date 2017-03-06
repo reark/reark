@@ -26,12 +26,14 @@
 package io.reark.rxgithubapp.shared.data;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
+import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositoryFetcher;
 import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetcher;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
@@ -58,8 +60,23 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
         this.userSettingsStore = get(userSettingsStore);
     }
 
+    //// REPOSITORY SEARCH
+
     @NonNull
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
+    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(
+            @NonNull final String searchString) {
+
+        checkNotNull(searchString);
+        Log.d(TAG, "fetchAndGetGitHubRepositorySearch(" + searchString + ")");
+
+        int listenerId = fetchGitHubRepositorySearch(searchString);
+        return getGitHubRepositorySearch(listenerId, searchString);
+    }
+
+    @NonNull
+    private Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(
+            @Nullable Integer listenerId, @NonNull final String searchString) {
+
         checkNotNull(searchString);
 
         Log.d(TAG, "getGitHubRepositorySearch(" + searchString + ")");
@@ -67,7 +84,8 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
                 networkRequestStatusStore
                         .getOnceAndStream(GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode())
-                        .filter(NetworkRequestStatus::isSome);
+                        .filter(NetworkRequestStatus::isSome)
+                        .filter(status -> status.forListener(listenerId));
 
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
                 gitHubRepositorySearchStore
@@ -78,35 +96,51 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
                 networkRequestStatusObservable, gitHubRepositorySearchObservable);
     }
 
-    @NonNull
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(@NonNull final String searchString) {
-        checkNotNull(searchString);
-        Log.d(TAG, "fetchAndGetGitHubRepositorySearch(" + searchString + ")");
+    protected abstract int fetchGitHubRepositorySearch(@NonNull final String searchString);
 
-        fetchGitHubRepositorySearch(searchString);
-        return getGitHubRepositorySearch(searchString);
+    //// GET REPOSITORY
+
+    @NonNull
+    public Observable<DataStreamNotification<GitHubRepository>> fetchAndGetGitHubRepository(
+            @NonNull final Integer repositoryId) {
+
+        checkNotNull(repositoryId);
+        Log.d(TAG, "fetchAndGetGitHubRepository(" + repositoryId + ")");
+
+        int listenerId = fetchGitHubRepository(repositoryId);
+        return getGitHubRepository(listenerId, repositoryId);
     }
 
-    protected abstract void fetchGitHubRepositorySearch(@NonNull final String searchString);
+    @NonNull
+    public Observable<DataStreamNotification<GitHubRepository>> getGitHubRepository(
+            @NonNull final Integer repositoryId) {
+        return getGitHubRepository(null, repositoryId);
+    }
 
     @NonNull
-    public Observable<GitHubRepository> getGitHubRepository(@NonNull final Integer repositoryId) {
+    private Observable<DataStreamNotification<GitHubRepository>> getGitHubRepository(
+            @Nullable Integer listenerId, @NonNull final Integer repositoryId) {
+
         checkNotNull(repositoryId);
 
-        return gitHubRepositoryStore
-                .getOnceAndStream(repositoryId)
-                .filter(GitHubRepository::isSome);
+        Log.d(TAG, "getGitHubRepository(" + repositoryId + ")");
+
+        final Observable<NetworkRequestStatus> networkRequestStatusObservable =
+                networkRequestStatusStore
+                        .getOnceAndStream(GitHubRepositoryFetcher.getUniqueId(repositoryId).hashCode())
+                        .filter(NetworkRequestStatus::isSome)
+                        .filter(status -> status.forListener(listenerId));
+
+        final Observable<GitHubRepository> gitHubRepositoryObservable =
+                gitHubRepositoryStore
+                        .getOnceAndStream(repositoryId)
+                        .filter(GitHubRepository::isSome);
+
+        return DataLayerUtils.createDataStreamNotificationObservable(
+                networkRequestStatusObservable, gitHubRepositoryObservable);
     }
 
-    @NonNull
-    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull final Integer repositoryId) {
-        checkNotNull(repositoryId);
-
-        fetchGitHubRepository(repositoryId);
-        return getGitHubRepository(repositoryId);
-    }
-
-    protected abstract void fetchGitHubRepository(@NonNull final Integer repositoryId);
+    protected abstract int fetchGitHubRepository(@NonNull final Integer repositoryId);
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {

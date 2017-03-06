@@ -25,17 +25,18 @@
  */
 package io.reark.rxgithubapp.advanced.widget;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.AppWidgetTarget;
-
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.IBinder;
 import android.widget.RemoteViews;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.AppWidgetTarget;
+
 import javax.inject.Inject;
 
+import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.advanced.RxGitHubApp;
@@ -90,6 +91,8 @@ public class WidgetService extends Service {
                         .map(UserSettings::getSelectedRepositoryId)
                         .doOnNext(repositoryId -> Log.d(TAG, "Changed repository to " + repositoryId))
                         .switchMap(fetchAndGetGitHubRepository::call)
+                        .filter(DataStreamNotification::isOnNext)
+                        .map(DataStreamNotification::getValue)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(repository -> {

@@ -27,11 +27,15 @@ package io.reark.reark.network.fetchers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
+import io.reark.reark.pojo.NetworkRequestStatus.Builder;
 import io.reark.reark.utils.Log;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
@@ -41,6 +45,7 @@ import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
 public abstract class FetcherBase<T> implements Fetcher<T> {
+
     private static final String TAG = FetcherBase.class.getSimpleName();
 
     private static final int NO_ERROR_CODE = -1;
@@ -49,58 +54,89 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Pair<Subscription, List<Integer>>> requestMap = new ConcurrentHashMap<>();
 
     protected FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
     }
 
-    protected void startRequest(@NonNull final String uri) {
+    protected void startRequest(int requestId, int listenerId, @NonNull final String uri) {
         checkNotNull(uri);
-
         Log.v(TAG, "startRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
+
+        updateNetworkRequestStatus.call(new Builder()
+                .uri(uri)
+                .listeners(createListener(listenerId))
+                .ongoing()
+                .build());
     }
 
-    protected void errorRequest(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
+    protected void errorRequest(int requestId, @NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
         checkNotNull(uri);
+        Log.v(TAG, String.format("errorRequest(%s, %s, %s)", uri, errorCode, errorMessage));
 
-        Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
+        updateNetworkRequestStatus.call(new Builder()
+                .uri(uri)
+                .listeners(getListeners(requestId))
+                .error()
+                .errorCode(errorCode)
+                .errorMessage(errorMessage)
+                .build());
     }
 
-    protected void completeRequest(@NonNull final String uri) {
+    protected void completeRequest(int requestId, @NonNull final String uri) {
         checkNotNull(uri);
-
         Log.v(TAG, "completeRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
+
+        updateNetworkRequestStatus.call(new Builder()
+                .uri(uri)
+                .listeners(getListeners(requestId))
+                .completed()
+                .build());
     }
 
     protected boolean isOngoingRequest(int requestId) {
         Log.v(TAG, "isOngoingRequest(" + requestId + ")");
 
         return requestMap.containsKey(requestId)
-                && !requestMap.get(requestId).isUnsubscribed();
+                && !requestMap.get(requestId).first.isUnsubscribed();
     }
 
-    protected void addRequest(int requestId, @NonNull final Subscription subscription) {
-        Log.v(TAG, "addRequest(" + requestId + ")");
+    protected void addListener(int requestId, int listenerId) {
+        Log.v(TAG, String.format("addListener(%s, %s)", requestId, listenerId));
 
-        requestMap.put(requestId, get(subscription));
+        requestMap.get(requestId).second.add(listenerId);
+    }
+
+    protected void addRequest(int requestId, int listenerId, @NonNull final Subscription subscription) {
+        checkNotNull(subscription);
+        Log.v(TAG, String.format("addRequest(%s, %s)", requestId, listenerId));
+
+        requestMap.put(requestId, new Pair<>(subscription, createListener(listenerId)));
     }
 
     @NonNull
-    public Action1<Throwable> doOnError(@NonNull final String uri) {
+    private List<Integer> getListeners(int requestId) {
+        return requestMap.get(requestId).second;
+    }
+
+    @NonNull
+    private static ArrayList<Integer> createListener(int listenerId) {
+        return new ArrayList<Integer>() {{ add(listenerId); }};
+    }
+
+    @NonNull
+    public Action1<Throwable> doOnError(int requestId, @NonNull final String uri) {
         checkNotNull(uri);
 
         return throwable -> {
             if (throwable instanceof HttpException) {
                 HttpException httpException = (HttpException) throwable;
                 int statusCode = httpException.code();
-                errorRequest(uri, statusCode, httpException.getMessage());
+                errorRequest(requestId, uri, statusCode, httpException.getMessage());
             } else {
                 Log.e(TAG, "The error was not a RetroFitError");
-                errorRequest(uri, NO_ERROR_CODE, null);
+                errorRequest(requestId, uri, NO_ERROR_CODE, null);
             }
         };
     }

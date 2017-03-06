@@ -28,19 +28,36 @@ package io.reark.reark.pojo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import io.reark.reark.utils.Log;
+
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_COMPLETED;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ERROR;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_NONE;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ONGOING;
 import static io.reark.reark.utils.Preconditions.get;
 
+/**
+ * Class representing the status of a network request.
+ */
 public final class NetworkRequestStatus {
+
+    private static final String TAG = NetworkRequestStatus.class.getSimpleName();
+
+    private static final NetworkRequestStatus NONE =
+            new NetworkRequestStatus(Collections.emptyList(), "", NETWORK_STATUS_NONE, 0, null);
 
     @NonNull
     private final String uri;
 
     @NonNull
     private final Status status;
+
+    @NonNull
+    private final List<Integer> listeners = new ArrayList<>(1);
 
     private final int errorCode;
 
@@ -55,7 +72,7 @@ public final class NetworkRequestStatus {
 
         private final String status;
 
-        Status(@NonNull final String value) {
+        Status(@NonNull String value) {
             status = value;
         }
 
@@ -64,10 +81,12 @@ public final class NetworkRequestStatus {
         }
     }
 
-    private NetworkRequestStatus(@NonNull final String uri,
-                                 @NonNull final Status status,
+    private NetworkRequestStatus(@NonNull List<Integer> listeners,
+                                 @NonNull String uri,
+                                 @NonNull Status status,
                                  int errorCode,
-                                 @Nullable final String errorMessage) {
+                                 @Nullable String errorMessage) {
+        this.listeners.addAll(get(listeners));
         this.uri = uri;
         this.status = status;
         this.errorCode = errorCode;
@@ -76,22 +95,7 @@ public final class NetworkRequestStatus {
 
     @NonNull
     public static NetworkRequestStatus none() {
-        return new NetworkRequestStatus("", NETWORK_STATUS_NONE, 0, null);
-    }
-
-    @NonNull
-    public static NetworkRequestStatus ongoing(@NonNull final String uri) {
-        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ONGOING, 0, null);
-    }
-
-    @NonNull
-    public static NetworkRequestStatus error(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
-        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_ERROR, errorCode, errorMessage);
-    }
-
-    @NonNull
-    public static NetworkRequestStatus completed(@NonNull final String uri) {
-        return new NetworkRequestStatus(get(uri), NETWORK_STATUS_COMPLETED, 0, null);
+        return NONE;
     }
 
     @NonNull
@@ -111,6 +115,10 @@ public final class NetworkRequestStatus {
     @Nullable
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public boolean forListener(@Nullable Integer listenerId) {
+        return listenerId == null || listeners.contains(listenerId);
     }
 
     public boolean isSome() {
@@ -136,5 +144,79 @@ public final class NetworkRequestStatus {
     @Override
     public String toString() {
         return "NetworkRequestStatus(" + uri + ", " + status + ")";
+    }
+
+    /**
+     * Builder class for the status.
+     */
+    public static class Builder {
+
+        private String uri;
+
+        private Status status;
+
+        private final List<Integer> listeners = new ArrayList<>(0);
+
+        private int errorCode;
+
+        private String errorMessage;
+
+        @NonNull
+        public Builder ongoing() {
+            this.status = NETWORK_STATUS_ONGOING;
+            return this;
+        }
+
+        @NonNull
+        public Builder error() {
+            this.status = NETWORK_STATUS_ERROR;
+            return this;
+        }
+
+        @NonNull
+        public Builder completed() {
+            this.status = NETWORK_STATUS_COMPLETED;
+            return this;
+        }
+
+        @NonNull
+        public Builder uri(@NonNull String uri) {
+            this.uri = get(uri);
+            return this;
+        }
+
+        @NonNull
+        public Builder listeners(@NonNull  List<Integer> listeners) {
+            this.listeners.addAll(get(listeners));
+            return this;
+        }
+
+        @NonNull
+        public Builder errorCode(int errorCode) {
+            this.errorCode = errorCode;
+            return this;
+        }
+
+        @NonNull
+        public Builder errorMessage(@Nullable String errorMessage) {
+            this.errorMessage = errorMessage;
+            return this;
+        }
+
+        @NonNull
+        public NetworkRequestStatus build() {
+            verify();
+
+            return new NetworkRequestStatus(listeners, uri, status, errorCode, errorMessage);
+        }
+
+        private void verify() {
+            if (uri.isEmpty()) {
+                Log.w(TAG, "Uri missing!");
+            }
+            if (listeners.isEmpty()) {
+                Log.w(TAG, "Listeners missing!");
+            }
+        }
     }
 }

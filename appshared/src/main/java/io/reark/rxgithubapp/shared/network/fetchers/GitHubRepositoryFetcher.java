@@ -62,20 +62,19 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
     public void fetch(@NonNull final Intent intent) {
         checkNotNull(intent);
 
-        final int repositoryId = intent.getIntExtra("id", -1);
+        int repositoryId = intent.getIntExtra("repositoryId", -1);
+        int listenerId = intent.getIntExtra("listenerId", -1);
 
-        if (repositoryId >= 0) {
-            fetchGitHubRepository(repositoryId);
-        } else {
-            Log.e(TAG, "No repositoryId provided in the intent extras");
+        if (repositoryId < 0 || listenerId < 0) {
+            Log.e(TAG, String.format("Invalid values: repositoryId %s, listenerId %s", repositoryId, listenerId));
+            return;
         }
-    }
 
-    private void fetchGitHubRepository(final int repositoryId) {
-        Log.d(TAG, "fetchGitHubRepository(" + repositoryId + ")");
+        Log.d(TAG, "fetch(" + repositoryId + ")");
 
         if (isOngoingRequest(repositoryId)) {
             Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
+            addListener(repositoryId, listenerId);
             return;
         }
 
@@ -83,13 +82,13 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
 
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
-                .doOnSubscribe(() -> startRequest(uri))
-                .doOnError(doOnError(uri))
-                .doOnCompleted(() -> completeRequest(uri))
+                .doOnSubscribe(() -> startRequest(repositoryId, listenerId, uri))
+                .doOnError(doOnError(repositoryId, uri))
+                .doOnCompleted(() -> completeRequest(repositoryId, uri))
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
 
-        addRequest(repositoryId, subscription);
+        addRequest(repositoryId, listenerId, subscription);
     }
 
     @NonNull

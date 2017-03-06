@@ -71,22 +71,20 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     public void fetch(@NonNull final Intent intent) {
         checkNotNull(intent);
 
-        final String searchString = intent.getStringExtra("searchString");
+        String searchString = intent.getStringExtra("searchString");
+        int listenerId = intent.getIntExtra("listenerId", -1);
 
-        if (searchString != null) {
-            fetchGitHubSearch(searchString);
-        } else {
-            Log.e(TAG, "No searchString provided in the intent extras");
+        if (searchString == null || listenerId < 0) {
+            Log.e(TAG, String.format("Invalid values: searchString %s, listenerId %s", searchString, listenerId));
+            return;
         }
-    }
 
-    private void fetchGitHubSearch(@NonNull final String searchString) {
-        checkNotNull(searchString);
+        Log.d(TAG, "fetch(" + searchString + ")");
+        int requestId = searchString.hashCode();
 
-        Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
-
-        if (isOngoingRequest(searchString.hashCode())) {
+        if (isOngoingRequest(requestId)) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
+            addListener(requestId, listenerId);
             return;
         }
 
@@ -102,13 +100,13 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
                     }
                     return new GitHubRepositorySearch(searchString, repositoryIds);
                 })
-                .doOnSubscribe(() -> startRequest(uri))
-                .doOnCompleted(() -> completeRequest(uri))
-                .doOnError(doOnError(uri))
+                .doOnSubscribe(() -> startRequest(requestId, listenerId, uri))
+                .doOnCompleted(() -> completeRequest(requestId, uri))
+                .doOnError(doOnError(requestId, uri))
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
 
-        addRequest(searchString.hashCode(), subscription);
+        addRequest(requestId, listenerId, subscription);
     }
 
     @NonNull

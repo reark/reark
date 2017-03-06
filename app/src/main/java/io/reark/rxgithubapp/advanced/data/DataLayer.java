@@ -38,12 +38,13 @@ import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
-import static io.reark.reark.utils.Preconditions.get;
 
 public class DataLayer extends ClientDataLayerBase {
     private static final String TAG = DataLayer.class.getSimpleName();
 
     private final Context context;
+
+    private int nextListenerIndex = 0;
 
     public DataLayer(@NonNull final Context context,
                      @NonNull final UserSettingsStore userSettingsStore,
@@ -62,18 +63,32 @@ public class DataLayer extends ClientDataLayerBase {
     }
 
     @Override
-    protected void fetchGitHubRepository(@NonNull final Integer repositoryId) {
+    protected int fetchGitHubRepository(@NonNull final Integer repositoryId) {
+        checkNotNull(repositoryId);
+
+        int listenerId = ++nextListenerIndex;
+
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
-        intent.putExtra("id", get(repositoryId));
+        intent.putExtra("repositoryId", repositoryId);
+        intent.putExtra("listenerId", listenerId);
         context.startService(intent);
+
+        return listenerId;
     }
 
     @Override
-    protected void fetchGitHubRepositorySearch(@NonNull final String searchString) {
+    protected int fetchGitHubRepositorySearch(@NonNull final String searchString) {
+        checkNotNull(searchString);
+
+        int listenerId = ++nextListenerIndex;
+
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
-        intent.putExtra("searchString", get(searchString));
+        intent.putExtra("searchString", searchString);
+        intent.putExtra("listenerId", listenerId);
         context.startService(intent);
+
+        return listenerId;
     }
 }

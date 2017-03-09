@@ -2,6 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.neenbedankt.android-apt'
 
+apply from: 'env-config.gradle'
+
+def BOOL = "boolean"
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -12,6 +16,8 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+
+        buildConfigField(BOOL, "IS_CI_BUILD", ci_build)
     }
     buildTypes {
         release {

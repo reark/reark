@@ -27,39 +27,34 @@ package io.reark.rxgithubapp.shared.viewmodels;
 
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reark.reark.data.DataStreamNotification;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
 import rx.Observable;
-import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.assertEquals;
+import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
 
 public class RepositoryViewModelTest {
 
+    private final GitHubRepository testRepository =
+            new GitHubRepository(2, "repo", 3, 4, mock(GitHubOwner.class));
+
     @Test(timeout = 1000)
-    public void testRepositoryViewModelFetchesValidGitHubRepository() throws Exception {
-        GitHubRepository gitHubRepository = new GitHubRepository(2,
-                                                                 "repo",
-                                                                 3,
-                                                                 4,
-                                                                 mock(GitHubOwner.class));
+    public void testRepositoryViewModelFetchesValidGitHubRepository() {
         RepositoryViewModel repositoryViewModel = new RepositoryViewModel(
                 () -> Observable.just(new UserSettings(1)),
-                repositoryId -> Observable.just(gitHubRepository));
-        TestSubscriber<GitHubRepository> observer = new TestSubscriber<>();
-        repositoryViewModel.getRepository().subscribe(observer);
-
+                repositoryId -> Observable.just(DataStreamNotification.onNext(testRepository)));
         repositoryViewModel.subscribeToDataStore();
 
-        observer.awaitTerminalEvent();
-        assertEquals("Invalid number of repositories",
-                     1,
-                     observer.getOnNextEvents().size());
-        assertEquals("Provided GitHubRepository does not match",
-                     gitHubRepository,
-                     observer.getOnNextEvents().get(0));
+        repositoryViewModel.getRepository()
+                .test()
+                .awaitTerminalEvent(100, TimeUnit.MILLISECONDS)
+                .assertNoTerminalEvent()
+                .assertReceivedOnNext(singletonList(testRepository));
     }
 
 }

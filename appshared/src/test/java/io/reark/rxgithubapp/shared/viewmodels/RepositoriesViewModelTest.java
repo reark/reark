@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import io.reark.rxgithubapp.shared.data.DataFunctions;
+import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepository;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
@@ -57,7 +57,7 @@ public class RepositoriesViewModelTest {
     public void setUp() {
         viewModel = new RepositoriesViewModel(
                 mock(GetGitHubRepositorySearch.class),
-                repositoryId -> Observable.just(mock(GitHubRepository.class)));
+                __ -> Observable.just(mock(GitHubRepository.class)));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class RepositoriesViewModelTest {
     }
 
     @Test
-    public void testTooLittleRepositoriesReturnThoseRepositories() {
+    public void testTooFewRepositoriesReturnsThoseRepositories() {
         TestSubscriber<List<GitHubRepository>> observer = new TestSubscriber<>();
 
         viewModel.toGitHubRepositoryList()
@@ -132,7 +132,7 @@ public class RepositoriesViewModelTest {
     @Test(expected = NullPointerException.class)
     public void testThrowsNullPointerExceptionConstructedWithNullRepositorySearch() {
         //noinspection ConstantConditions
-        new RepositoriesViewModel(null, mock(DataFunctions.GetGitHubRepository.class));
+        new RepositoriesViewModel(null, mock(GetGitHubRepository.class));
     }
 
     @Test(expected = NullPointerException.class)

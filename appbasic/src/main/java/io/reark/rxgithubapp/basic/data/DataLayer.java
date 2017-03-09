@@ -47,7 +47,7 @@ public class DataLayer extends ClientDataLayerBase {
 
     private final UriFetcherManager fetcherManager;
 
-    private int nextRequestIndex = 0;
+    private int nextListenerId = 0;
 
     public DataLayer(@NonNull final UriFetcherManager fetcherManager,
                      @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
@@ -66,12 +66,12 @@ public class DataLayer extends ClientDataLayerBase {
     protected int fetchGitHubRepository(@NonNull final Integer repositoryId) {
         checkNotNull(repositoryId);
 
-        int requestId = ++nextRequestIndex;
+        int listenerId = ++nextListenerId;
 
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
         intent.putExtra("repositoryId", repositoryId);
-        intent.putExtra("requestId", requestId);
+        intent.putExtra("listenerId", listenerId);
 
         Fetcher<Uri> fetcher = fetcherManager.findFetcher(GitHubService.REPOSITORY);
 
@@ -79,20 +79,20 @@ public class DataLayer extends ClientDataLayerBase {
             fetcher.fetch(intent);
         }
 
-        return requestId;
+        return listenerId;
     }
 
     @Override
     protected int fetchGitHubRepositorySearch(@NonNull final String searchString) {
         checkNotNull(searchString);
 
-        int requestId = ++nextRequestIndex;
+        int listenerId = ++nextListenerId;
 
         Log.d(TAG, "fetchGitHubRepositorySearch(" + searchString + ")");
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());
         intent.putExtra("searchString", searchString);
-        intent.putExtra("requestId", requestId);
+        intent.putExtra("listenerId", listenerId);
 
         Fetcher<Uri> fetcher = fetcherManager.findFetcher(GitHubService.REPOSITORY_SEARCH);
 
@@ -100,6 +100,6 @@ public class DataLayer extends ClientDataLayerBase {
             fetcher.fetch(intent);
         }
 
-        return requestId;
+        return listenerId;
     }
 }

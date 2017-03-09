@@ -67,8 +67,7 @@ public class RepositoryViewModel extends AbstractViewModel {
                         .switchMap(fetchAndGetGitHubRepository::call)
                         .filter(DataStreamNotification::isOnNext)
                         .map(DataStreamNotification::getValue)
-                        .subscribe(repository)
-        );
+                        .subscribe(repository::onNext));
     }
 
     @NonNull

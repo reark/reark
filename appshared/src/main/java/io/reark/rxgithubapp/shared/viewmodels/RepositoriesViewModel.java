@@ -167,8 +167,6 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
         return getGitHubRepository
                 .call(repositoryId)
-                .filter(DataStreamNotification::isOnNext)
-                .map(DataStreamNotification::getValue)
                 .doOnNext((repository) -> Log.v(TAG, "Received repository " + repository.getId()));
     }
 

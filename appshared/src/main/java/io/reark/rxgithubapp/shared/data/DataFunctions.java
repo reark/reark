@@ -45,7 +45,7 @@ public class DataFunctions {
 
     public interface GetGitHubRepository {
         @NonNull
-        Observable<DataStreamNotification<GitHubRepository>> call(int repositoryId);
+        Observable<GitHubRepository> call(int repositoryId);
     }
 
     public interface FetchAndGetGitHubRepository {

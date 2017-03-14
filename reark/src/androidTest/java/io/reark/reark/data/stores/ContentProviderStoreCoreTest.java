@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import io.reark.reark.data.stores.mock.SimpleMockContentProvider;
+import io.reark.reark.data.stores.mock.SimpleMockStore;
+import io.reark.reark.data.stores.mock.SimpleMockStoreCore;
 import rx.functions.Action1;
 
 @RunWith(AndroidJUnit4.class)
@@ -67,7 +70,7 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
     }
 
     @Test
-    public void getCached_WithId_ReturnsData_AndCompletes() {
+    public void getCached_WithId_WithData_ReturnsData_AndCompletes() {
         List<String> expected = Collections.singletonList("parsnip");
 
         core.getCached(SimpleMockStore.getIdFor("parsnip"))
@@ -79,7 +82,7 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
     }
 
     @Test
-    public void getCached_WithNoId_ReturnsAllData_AndCompletes() {
+    public void getCached_WithNoId_WithData_ReturnsAllData_AndCompletes() {
         List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
 
         core.getCached()

@@ -1,4 +1,4 @@
-package io.reark.reark.data.stores;
+package io.reark.reark.data.stores.mock;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import rx.Observable;
 
@@ -23,9 +22,9 @@ public class SimpleMockStoreCore extends ContentProviderStoreCore<Integer, Strin
 
     private static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, "veggies");
 
-    private static final String[] PROJECTION = { DataColumns.KEY, DataColumns.VALUE };
+    private static final String[] PROJECTION = { SimpleMockContentProvider.DataColumns.KEY, SimpleMockContentProvider.DataColumns.VALUE };
 
-    protected SimpleMockStoreCore(@NonNull final ContentResolver contentResolver) {
+    public SimpleMockStoreCore(@NonNull final ContentResolver contentResolver) {
         super(contentResolver);
     }
 
@@ -56,15 +55,15 @@ public class SimpleMockStoreCore extends ContentProviderStoreCore<Integer, Strin
     @NonNull
     @Override
     protected String read(@NonNull final Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(DataColumns.VALUE));
+        return cursor.getString(cursor.getColumnIndex(SimpleMockContentProvider.DataColumns.VALUE));
     }
 
     @NonNull
     @Override
-    protected ContentValues getContentValuesForItem(@NonNull final String item) {
+    public ContentValues getContentValuesForItem(@NonNull final String item) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DataColumns.KEY, item.hashCode());
-        contentValues.put(DataColumns.VALUE, item);
+        contentValues.put(SimpleMockContentProvider.DataColumns.KEY, item.hashCode());
+        contentValues.put(SimpleMockContentProvider.DataColumns.VALUE, item);
         return contentValues;
     }
 

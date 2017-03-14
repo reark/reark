@@ -32,11 +32,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reark.reark.data.stores.mock.SimpleMockContentProvider;
+import io.reark.reark.data.stores.mock.SimpleMockStore;
+import io.reark.reark.data.stores.mock.SimpleMockStoreCore;
 import rx.functions.Action1;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 @RunWith(AndroidJUnit4.class)
 public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
@@ -52,25 +58,12 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        core = new SimpleMockStoreCore(getMockContentResolver());
-        store = new SimpleMockStore(core);
-
-        Action1<String> insert = value ->
-                getProvider().insert(
-                        core.getUriForId(SimpleMockStore.getIdFor(value)),
-                        core.getContentValuesForItem(value)
-                );
-
-        // Prepare the mock content provider with values
-        insert.call("parsnip");
-        insert.call("lettuce");
-        insert.call("spinach");
     }
 
     @Test
-    public void getOnce_WithData_ReturnsData_AndCompletes() {
-        List<String> expected = Collections.singletonList("parsnip");
+    public void getOnce_WithId_WithData_ReturnsData_AndCompletes() {
+        new ArrangeBuilder().withTestData();
+        List<String> expected = singletonList("parsnip");
 
         store.getOnce(SimpleMockStore.getIdFor("parsnip"))
                 .test()
@@ -81,8 +74,22 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     }
 
     @Test
-    public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
-        List<String> expected = Collections.singletonList(SimpleMockStore.NONE);
+    public void getOnce_WithNoId_WithData_ReturnsAllValues_AndCompletes() {
+        new ArrangeBuilder().withTestData();
+        List<List<String>> expected = singletonList(asList("parsnip", "lettuce", "spinach"));
+
+        store.getOnce()
+                .test()
+                .awaitTerminalEvent()
+                .assertCompleted()
+                .assertNoErrors()
+                .assertReceivedOnNext(expected);
+    }
+
+    @Test
+    public void getOnce_WithId_WithNoData_ReturnsNoneValue_AndCompletes() {
+        new ArrangeBuilder();
+        List<String> expected = singletonList(SimpleMockStore.NONE);
 
         store.getOnce(SimpleMockStore.getIdFor("bacon"))
                 .test()
@@ -93,8 +100,22 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     }
 
     @Test
-    public void getOnceAndStream_WithData_ReturnsData_AndDoesNotComplete() {
-        List<String> expected = Collections.singletonList("spinach");
+    public void getOnce_WithNoId_WithNoData_ReturnsEmptyList_AndCompletes() {
+        new ArrangeBuilder();
+        List<List<String>> expected = singletonList(emptyList());
+
+        store.getOnce()
+                .test()
+                .awaitTerminalEvent()
+                .assertCompleted()
+                .assertNoErrors()
+                .assertReceivedOnNext(expected);
+    }
+
+    @Test
+    public void getOnceAndStream_WithId_WithData_ReturnsData_AndDoesNotComplete() {
+        new ArrangeBuilder().withTestData();
+        List<String> expected = singletonList("spinach");
 
         store.getOnceAndStream(SimpleMockStore.getIdFor("spinach"))
                 .test()
@@ -105,8 +126,9 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     }
 
     @Test
-    public void getOnceAndStream_WithNoData_ReturnsNoneValue_AndDoesNotComplete() {
-        List<String> expected = Collections.singletonList(SimpleMockStore.NONE);
+    public void getOnceAndStream_WithId_WithNoData_ReturnsNoneValue_AndDoesNotComplete() {
+        new ArrangeBuilder().withTestData();
+        List<String> expected = singletonList(SimpleMockStore.NONE);
 
         store.getOnceAndStream(SimpleMockStore.getIdFor("bacon"))
                 .test()
@@ -114,6 +136,29 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
                 .assertNotCompleted()
                 .assertNoErrors()
                 .assertReceivedOnNext(expected);
+    }
+
+    private class ArrangeBuilder {
+
+        ArrangeBuilder() {
+            core = new SimpleMockStoreCore(getMockContentResolver());
+            store = new SimpleMockStore(core);
+        }
+
+        ArrangeBuilder withTestData() {
+            Action1<String> insert = value ->
+                    getProvider().insert(
+                            core.getUriForId(SimpleMockStore.getIdFor(value)),
+                            core.getContentValuesForItem(value)
+                    );
+
+            // Prepare the mock content provider with values
+            insert.call("parsnip");
+            insert.call("lettuce");
+            insert.call("spinach");
+
+            return this;
+        }
     }
 
 }

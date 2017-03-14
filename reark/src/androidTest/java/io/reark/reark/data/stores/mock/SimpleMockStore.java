@@ -1,6 +1,8 @@
-package io.reark.reark.data.stores;
+package io.reark.reark.data.stores.mock;
 
 import android.support.annotation.NonNull;
+
+import io.reark.reark.data.stores.ContentProviderStore;
 
 /**
  * A simple store containing String values tracked with Integer keys.

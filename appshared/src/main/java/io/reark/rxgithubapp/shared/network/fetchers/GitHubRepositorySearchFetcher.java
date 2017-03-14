@@ -68,7 +68,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     }
 
     @Override
-    public void fetch(@NonNull final Intent intent) {
+    public synchronized void fetch(@NonNull final Intent intent) {
         checkNotNull(intent);
 
         String searchString = intent.getStringExtra("searchString");

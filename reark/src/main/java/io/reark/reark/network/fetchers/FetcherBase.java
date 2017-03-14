@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.pojo.NetworkRequestStatus.Builder;
 import io.reark.reark.utils.Log;
+import io.reark.reark.utils.ObjectLockHandler;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -44,6 +45,11 @@ import rx.functions.Action1;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
+/**
+ * Base class for Fetchers.
+ *
+ * @param <T> Type of the Service Uri used by the application.
+ */
 public abstract class FetcherBase<T> implements Fetcher<T> {
 
     private static final String TAG = FetcherBase.class.getSimpleName();
@@ -54,26 +60,37 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Pair<Subscription, List<Integer>>> requestMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Pair<Subscription, List<Integer>>> requestMap = new ConcurrentHashMap<>(20, 0.75f, 2);
 
-    protected FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    @NonNull
+    private final ObjectLockHandler<Integer> locker = new ObjectLockHandler<>();
+
+    protected FetcherBase(@NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
     }
 
-    protected void startRequest(int requestId, int listenerId, @NonNull final String uri) {
-        checkNotNull(uri);
-        Log.v(TAG, "startRequest(" + uri + ")");
+    protected void startRequest(int requestId, int listenerId, @NonNull String uri) {
+        Log.v(TAG, String.format("startRequest(%s, %s, %s)", requestId, listenerId, get(uri)));
 
+        lock(requestId);
+
+        // Fetcher calls startRequest before addRequest, so at this point the listenerId is not
+        // yet in the list of listeners for the request Subscription. For that reason we must use
+        // `createListeners` instead of `getListeners` here. A newly created request can in any case
+        // only have one active listener (the one being created), so the outcome isn't affected.
         updateNetworkRequestStatus.call(new Builder()
                 .uri(uri)
                 .listeners(createListener(listenerId))
                 .ongoing()
                 .build());
+
+        release(requestId);
     }
 
-    protected void errorRequest(int requestId, @NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
-        checkNotNull(uri);
-        Log.v(TAG, String.format("errorRequest(%s, %s, %s)", uri, errorCode, errorMessage));
+    protected void errorRequest(int requestId, @NonNull String uri, int errorCode, @Nullable String errorMessage) {
+        Log.v(TAG, String.format("errorRequest(%s, %s, %s, %s)", requestId, get(uri), errorCode, errorMessage));
+
+        lock(requestId);
 
         updateNetworkRequestStatus.call(new Builder()
                 .uri(uri)
@@ -82,37 +99,55 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
                 .errorCode(errorCode)
                 .errorMessage(errorMessage)
                 .build());
+
+        release(requestId);
     }
 
-    protected void completeRequest(int requestId, @NonNull final String uri) {
-        checkNotNull(uri);
-        Log.v(TAG, "completeRequest(" + uri + ")");
+    protected void completeRequest(int requestId, @NonNull String uri) {
+        Log.v(TAG, String.format("completeRequest(%s, %s)", requestId, get(uri)));
+
+        lock(requestId);
 
         updateNetworkRequestStatus.call(new Builder()
                 .uri(uri)
                 .listeners(getListeners(requestId))
                 .completed()
                 .build());
+
+        release(requestId);
     }
 
     protected boolean isOngoingRequest(int requestId) {
-        Log.v(TAG, "isOngoingRequest(" + requestId + ")");
+        Log.v(TAG, String.format("isOngoingRequest(%s)", requestId));
 
-        return requestMap.containsKey(requestId)
+        lock(requestId);
+
+        boolean isOngoing = requestMap.containsKey(requestId)
                 && !requestMap.get(requestId).first.isUnsubscribed();
+
+        release(requestId);
+
+        return isOngoing;
     }
 
     protected void addListener(int requestId, int listenerId) {
         Log.v(TAG, String.format("addListener(%s, %s)", requestId, listenerId));
 
+        lock(requestId);
+
         requestMap.get(requestId).second.add(listenerId);
+
+        release(requestId);
     }
 
-    protected void addRequest(int requestId, int listenerId, @NonNull final Subscription subscription) {
-        checkNotNull(subscription);
+    protected void addRequest(int requestId, int listenerId, @NonNull Subscription subscription) {
         Log.v(TAG, String.format("addRequest(%s, %s)", requestId, listenerId));
 
-        requestMap.put(requestId, new Pair<>(subscription, createListener(listenerId)));
+        lock(requestId);
+
+        requestMap.put(requestId, new Pair<>(get(subscription), createListener(listenerId)));
+
+        release(requestId);
     }
 
     @NonNull
@@ -126,7 +161,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     }
 
     @NonNull
-    public Action1<Throwable> doOnError(int requestId, @NonNull final String uri) {
+    protected Action1<Throwable> doOnError(int requestId, @NonNull String uri) {
         checkNotNull(uri);
 
         return throwable -> {
@@ -135,10 +170,22 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
                 int statusCode = httpException.code();
                 errorRequest(requestId, uri, statusCode, httpException.getMessage());
             } else {
-                Log.e(TAG, "The error was not a RetroFitError");
+                Log.e(TAG, "The error was not a RetrofitError");
                 errorRequest(requestId, uri, NO_ERROR_CODE, null);
             }
         };
+    }
+
+    private void lock(int id) {
+        try {
+            locker.acquire(id);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Lock acquisition failed!", e);
+        }
+    }
+
+    private void release(int id) {
+        locker.release(id);
     }
 
 }

@@ -59,7 +59,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
     }
 
     @Override
-    public void fetch(@NonNull final Intent intent) {
+    public synchronized void fetch(@NonNull final Intent intent) {
         checkNotNull(intent);
 
         int repositoryId = intent.getIntExtra("repositoryId", -1);

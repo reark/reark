@@ -94,10 +94,29 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         testSubscriber2.assertValue(value2);
     }
 
+    // GET CACHED
+
+    @Test
+    public void getCached_WithId_EmitsInitialValues_AndCompletes() throws InterruptedException {
+        final GitHubRepository value1 = create(100, "test name 1");
+        final GitHubRepository value2 = create(100, "test name 2");
+        TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
+
+        gitHubRepositoryStoreCore.put(100, value1);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
+        gitHubRepositoryStoreCore.getCached(100).subscribe(testSubscriber);
+        gitHubRepositoryStoreCore.put(100, value2);
+
+        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
+        testSubscriber.assertCompleted();
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(value1);
+    }
+
     // GET STREAM
 
     @Test
-    public void getStream_EmitsValuesForId_AndDoesNotComplete() {
+    public void getStream_WithId_EmitsValuesForId_AndDoesNotComplete() {
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");
         TestSubscriber<GitHubRepository> testSubscriber1 = new TestSubscriber<>();
@@ -120,18 +139,20 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
     }
 
     @Test
-    public void getStream_DoesNotEmitInitialValue() {
-        final GitHubRepository value = create(100, "test name");
+    public void getStream_DoesNotEmitInitialValue() throws InterruptedException {
+        final GitHubRepository value1 = create(100, "test name 1");
+        final GitHubRepository value2 = create(100, "test name 2");
         TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
 
-        gitHubRepositoryStoreCore.put(100, value);
+        gitHubRepositoryStoreCore.put(100, value1);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
         gitHubRepositoryStoreCore.getStream(100).subscribe(testSubscriber);
-        gitHubRepositoryStoreCore.put(100, value);
+        gitHubRepositoryStoreCore.put(100, value2);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(value);
+        testSubscriber.assertValue(value2);
     }
 
     // GET ALL CACHED
@@ -161,7 +182,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
     // GET ALL STREAM
 
     @Test
-    public void getAllStream_ReturnsAllData_AndDoesNotComplete() throws InterruptedException {
+    public void getStream_WithNoId_ReturnsAllData_AndDoesNotComplete() throws InterruptedException {
         // ARRANGE
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");

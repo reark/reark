@@ -32,14 +32,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import io.reark.reark.data.stores.mock.SimpleMockContentProvider;
 import io.reark.reark.data.stores.mock.SimpleMockStore;
 import io.reark.reark.data.stores.mock.SimpleMockStoreCore;
 import rx.functions.Action1;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 @RunWith(AndroidJUnit4.class)
 public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
@@ -54,24 +56,12 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        core = new SimpleMockStoreCore(getMockContentResolver());
-
-        Action1<String> insert = value ->
-                getProvider().insert(
-                        core.getUriForId(SimpleMockStore.getIdFor(value)),
-                        core.getContentValuesForItem(value)
-                );
-
-        // Prepare the mock content provider with values
-        insert.call("parsnip");
-        insert.call("lettuce");
-        insert.call("spinach");
     }
 
     @Test
     public void getCached_WithId_WithData_ReturnsData_AndCompletes() {
-        List<String> expected = Collections.singletonList("parsnip");
+        new ArrangeBuilder().withTestData();
+        List<String> expected = singletonList("parsnip");
 
         core.getCached(SimpleMockStore.getIdFor("parsnip"))
                 .test()
@@ -82,8 +72,21 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
     }
 
     @Test
+    public void getCached_WithId_WithNoData_ReturnsNoValues_AndCompletes() {
+        new ArrangeBuilder();
+
+        core.getCached(SimpleMockStore.getIdFor("parsnip"))
+                .test()
+                .awaitTerminalEvent()
+                .assertCompleted()
+                .assertNoErrors()
+                .assertNoValues();
+    }
+
+    @Test
     public void getCached_WithNoId_WithData_ReturnsAllData_AndCompletes() {
-        List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
+        new ArrangeBuilder().withTestData();
+        List<List<String>> expected = singletonList(asList("parsnip", "lettuce", "spinach"));
 
         core.getCached()
                 .test()
@@ -91,6 +94,41 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
                 .assertCompleted()
                 .assertNoErrors()
                 .assertReceivedOnNext(expected);
+    }
+
+    @Test
+    public void getCached_WithNoId_WithNoData_ReturnsEmptyList_AndCompletes() {
+        new ArrangeBuilder();
+        List<List<String>> expected = singletonList(emptyList());
+
+        core.getCached()
+                .test()
+                .awaitTerminalEvent()
+                .assertCompleted()
+                .assertNoErrors()
+                .assertReceivedOnNext(expected);
+    }
+
+    private class ArrangeBuilder {
+
+        ArrangeBuilder() {
+            core = new SimpleMockStoreCore(getMockContentResolver());
+        }
+
+        ArrangeBuilder withTestData() {
+            Action1<String> insert = value ->
+                    getProvider().insert(
+                            core.getUriForId(SimpleMockStore.getIdFor(value)),
+                            core.getContentValuesForItem(value)
+                    );
+
+            // Prepare the mock content provider with values
+            insert.call("parsnip");
+            insert.call("lettuce");
+            insert.call("spinach");
+
+            return this;
+        }
     }
 
 }

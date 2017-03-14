@@ -28,9 +28,27 @@ package io.reark.reark.network.fetchers;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+/**
+ * Interface for implementing Fetchers. A Fetcher is a class that fetches and stores data, usually
+ * matching a single backend API endpoint.
+ *
+ * @param <T> Type of the Service Uri used by the application.
+ */
 public interface Fetcher<T> {
+
+    /**
+     * Starts a new fetch operation.
+     *
+     * @param intent Details of the fetch.
+     */
     void fetch(@NonNull final Intent intent);
 
+    /**
+     * Returns a Service Uri of this fetcher. Service Uri is an identifier for the endpoint
+     * to which this fetcher connects.
+     *
+     * @return Service Uri of this fetcher
+     */
     @NonNull
     T getServiceUri();
 }

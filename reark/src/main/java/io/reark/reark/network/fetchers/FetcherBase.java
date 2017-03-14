@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
-import io.reark.reark.pojo.NetworkRequestStatus.Builder;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.ObjectLockHandler;
 import retrofit2.adapter.rxjava.HttpException;
@@ -46,7 +45,8 @@ import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
 /**
- * Base class for Fetchers.
+ * Base class for Fetchers. The class implements tracking of request listeners and duplicate
+ * requests.
  *
  * @param <T> Type of the Service Uri used by the application.
  */
@@ -60,7 +60,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Pair<Subscription, List<Integer>>> requestMap = new ConcurrentHashMap<>(20, 0.75f, 2);
+    private final Map<Integer, Pair<Subscription, ArrayList<Integer>>> requestMap = new ConcurrentHashMap<>(20, 0.75f, 2);
 
     @NonNull
     private final ObjectLockHandler<Integer> locker = new ObjectLockHandler<>();
@@ -74,30 +74,14 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
 
         lock(requestId);
 
-        // Fetcher calls startRequest before addRequest, so at this point the listenerId is not
-        // yet in the list of listeners for the request Subscription. For that reason we must use
-        // `createListeners` instead of `getListeners` here. A newly created request can in any case
-        // only have one active listener (the one being created), so the outcome isn't affected.
-        updateNetworkRequestStatus.call(new Builder()
+        // Fetcher calls startRequest before addRequest, so at this point the listenerId is not yet
+        // in the list of listeners for the request Subscription and we must use `createListeners`
+        // instead of `getListeners`. A newly created request can in any case only have one active
+        // listener (the one being created), so the outcome isn't affected.
+        updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
                 .uri(uri)
                 .listeners(createListener(listenerId))
                 .ongoing()
-                .build());
-
-        release(requestId);
-    }
-
-    protected void errorRequest(int requestId, @NonNull String uri, int errorCode, @Nullable String errorMessage) {
-        Log.v(TAG, String.format("errorRequest(%s, %s, %s, %s)", requestId, get(uri), errorCode, errorMessage));
-
-        lock(requestId);
-
-        updateNetworkRequestStatus.call(new Builder()
-                .uri(uri)
-                .listeners(getListeners(requestId))
-                .error()
-                .errorCode(errorCode)
-                .errorMessage(errorMessage)
                 .build());
 
         release(requestId);
@@ -108,10 +92,26 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
 
         lock(requestId);
 
-        updateNetworkRequestStatus.call(new Builder()
+        updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
                 .uri(uri)
                 .listeners(getListeners(requestId))
                 .completed()
+                .build());
+
+        release(requestId);
+    }
+
+    protected void errorRequest(int requestId, @NonNull String uri, int errorCode, @Nullable String errorMessage) {
+        Log.v(TAG, String.format("errorRequest(%s, %s, %s, %s)", requestId, get(uri), errorCode, errorMessage));
+
+        lock(requestId);
+
+        updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
+                .uri(uri)
+                .listeners(getListeners(requestId))
+                .error()
+                .errorCode(errorCode)
+                .errorMessage(errorMessage)
                 .build());
 
         release(requestId);

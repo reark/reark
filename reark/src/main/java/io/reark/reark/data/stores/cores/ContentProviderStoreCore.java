@@ -115,7 +115,7 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
-    public Observable<List<U>> getAllCached() {
+    public Observable<List<U>> getCached() {
         return getAllOnce(getContentUri());
     }
 
@@ -131,7 +131,7 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
-    public Observable<U> getAllStream() {
+    public Observable<U> getStream() {
         return subjectCache.asObservable()
                 .map(StoreItem::item);
     }

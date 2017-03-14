@@ -148,7 +148,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.put(100, value1);
         gitHubRepositoryStoreCore.put(200, value2);
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getAllCached().subscribe(testSubscriber);
+        gitHubRepositoryStoreCore.getCached().subscribe(testSubscriber);
         gitHubRepositoryStoreCore.put(300, value3);
 
         // ASSERT
@@ -171,7 +171,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         // ACT
         gitHubRepositoryStoreCore.put(100, value1);
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getAllStream().subscribe(testSubscriber);
+        gitHubRepositoryStoreCore.getStream().subscribe(testSubscriber);
         gitHubRepositoryStoreCore.put(200, value2);
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
         gitHubRepositoryStoreCore.put(300, value3);

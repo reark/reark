@@ -89,7 +89,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
     @NonNull
     @Override
-    public Observable<List<U>> getAllCached() {
+    public Observable<List<U>> getCached() {
         return Observable.from(() -> cache.keySet().iterator())
                 .map(cache::get)
                 .toList();
@@ -109,7 +109,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
     @NonNull
     @Override
-    public Observable<U> getAllStream() {
+    public Observable<U> getStream() {
         return subject.asObservable()
                 .map(StoreItem::item);
     }

@@ -87,11 +87,11 @@ public interface StoreCoreInterface<T, U> {
      * the store uses an in-memory strategy this could mean the items are emitted synchronously).
      * In case no items exist, the Observable completes without emitting any items.
      *
-     * @return An Observable that emits all data items and completes, or, in case no data item is
-     * in the cache, it simply completes without emitting any items.
+     * @return An Observable that emits a list all data items and completes. In case no items are
+     * in the cache, an empty list is emitted.
      */
     @NonNull
-    Observable<List<U>> getAllCached();
+    Observable<List<U>> getCached();
 
     /**
      * Takes an identifier and returns an Observable that emits all matching _future_ items that are
@@ -108,12 +108,12 @@ public interface StoreCoreInterface<T, U> {
 
     /**
      * Returns an Observable that emits all _future_ items that are put into the core. Unlike most
-     * store getStream equivalents, the StoreCore getAllStream does not attempt to insert the last
+     * store getStream equivalents, the StoreCore getStream does not attempt to insert the last
      * cached value into the stream. This is simply a stream for all future data items.
      *
      * @return An Observable that does not immediately return anything, but emits all future items
      * that are put into the core.
      */
     @NonNull
-    Observable<U> getAllStream();
+    Observable<U> getStream();
 }

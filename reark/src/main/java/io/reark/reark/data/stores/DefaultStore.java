@@ -27,6 +27,8 @@ package io.reark.reark.data.stores;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import rx.Observable;
@@ -88,12 +90,20 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
     @NonNull
     @Override
-    public Observable<R> getOnce(@NonNull final T id) {
+    public Single<R> getOnce(@NonNull final T id) {
         checkNotNull(id);
 
         return core.getCached(id)
                 .map(getNullSafe::call)
-                .defaultIfEmpty(getEmptyValue.call());
+                .defaultIfEmpty(getEmptyValue.call())
+                .toSingle();
+    }
+
+    @NonNull
+    @Override
+    public Single<List<U>> getOnce() {
+        return core.getCached()
+                .toSingle();
     }
 
     @NonNull
@@ -102,7 +112,7 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
         checkNotNull(id);
 
         return Observable.concat(
-                getOnce(id),
+                getOnce(id).toObservable(),
                 core.getStream(id).map(getNullSafe::call));
     }
 

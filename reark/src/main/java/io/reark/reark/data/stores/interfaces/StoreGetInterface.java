@@ -27,7 +27,10 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import rx.Observable;
+import rx.Single;
 
 /**
  * Interface for stores from which one can get data in the form of a single item or a stream of
@@ -39,9 +42,10 @@ import rx.Observable;
  * used.
  *
  * @param <T> Type of the id used in this store.
+ * @param <U> Type of the data this store contains.
  * @param <R> Non-null type or wrapper for the data this store contains.
  */
-public interface StoreGetInterface<T, R> {
+public interface StoreGetInterface<T, U, R> {
     /**
      * Get the latest item in the store with a specific identifier. The returned observable always
      * completes, unlike in its sibling getOnceAndStream.
@@ -51,14 +55,23 @@ public interface StoreGetInterface<T, R> {
      * completes, or in case no item is found, a value representing empty data.
      */
     @NonNull
-    Observable<R> getOnce(@NonNull final T id);
+    Single<R> getOnce(@NonNull final T id);
+
+    /**
+     * Get all current items in the store. The returned observable always completes, unlike in its
+     * sibling getOnceAndStream.
+     *
+     * @return An observable that either returns a list of all current items and completes.
+     */
+    @NonNull
+    Single<List<U>> getOnce();
 
     /**
      * Get a full stream of items with the specified identifier. Whenever a store receives a new
      * item with the id, it pushes it to the stream.
      *
-     * Depending on the store implementation, it is recommended that getStreams emits the last item
-     * _immediately_ as part of the stream. The emitted item cannot be null.
+     * Depending on the store implementation, it is recommended that getOnceAndStream emits the last
+     * item _immediately_ as part of the stream. The emitted item cannot be null.
      *
      * @param id The identifier of the requested object, as defined by the store.
      * @return An observable that first emits the latest item (or a value representing no data in

@@ -35,5 +35,5 @@ package io.reark.reark.data.stores.interfaces;
  * @param <U> Type of the data this store contains.
  * @param <R> Non-null type or wrapper for the data this store contains.
  */
-public interface StoreInterface<T, U, R> extends StorePutInterface<U>, StoreGetInterface<T, R>, StoreDeleteInterface<T> {
+public interface StoreInterface<T, U, R> extends StorePutInterface<U>, StoreGetInterface<T, U, R>, StoreDeleteInterface<T> {
 }

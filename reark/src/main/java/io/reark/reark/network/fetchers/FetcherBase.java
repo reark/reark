@@ -29,9 +29,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
@@ -60,7 +60,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Pair<Subscription, ArrayList<Integer>>> requestMap = new ConcurrentHashMap<>(20, 0.75f, 2);
+    private final Map<Integer, Pair<Subscription, Set<Integer>>> requestMap = new ConcurrentHashMap<>(20, 0.75f, 2);
 
     @NonNull
     private final ObjectLockHandler<Integer> locker = new ObjectLockHandler<>();
@@ -117,6 +117,40 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         release(requestId);
     }
 
+    protected void addRequest(int requestId, int listenerId, @NonNull Subscription subscription) {
+        Log.v(TAG, String.format("addRequest(%s, %s)", requestId, listenerId));
+
+        lock(requestId);
+
+        Set<Integer> listeners = createListener(listenerId);
+
+        if (requestMap.containsKey(requestId)) {
+            Pair<Subscription, Set<Integer>> oldRequest = requestMap.remove(requestId);
+
+            if (!oldRequest.first.isUnsubscribed()) {
+                Log.w(TAG, "Unexpected subscribed ");
+                oldRequest.first.unsubscribe();
+            }
+
+            // Old listeners are still potentially interested in new fetches
+            listeners.addAll(oldRequest.second);
+        }
+
+        requestMap.put(requestId, new Pair<>(get(subscription), listeners));
+
+        release(requestId);
+    }
+
+    protected void addListener(int requestId, int listenerId) {
+        Log.v(TAG, String.format("addListener(%s, %s)", requestId, listenerId));
+
+        lock(requestId);
+
+        requestMap.get(requestId).second.add(listenerId);
+
+        release(requestId);
+    }
+
     protected boolean isOngoingRequest(int requestId) {
         Log.v(TAG, String.format("isOngoingRequest(%s)", requestId));
 
@@ -130,34 +164,16 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         return isOngoing;
     }
 
-    protected void addListener(int requestId, int listenerId) {
-        Log.v(TAG, String.format("addListener(%s, %s)", requestId, listenerId));
-
-        lock(requestId);
-
-        requestMap.get(requestId).second.add(listenerId);
-
-        release(requestId);
-    }
-
-    protected void addRequest(int requestId, int listenerId, @NonNull Subscription subscription) {
-        Log.v(TAG, String.format("addRequest(%s, %s)", requestId, listenerId));
-
-        lock(requestId);
-
-        requestMap.put(requestId, new Pair<>(get(subscription), createListener(listenerId)));
-
-        release(requestId);
-    }
-
     @NonNull
-    private List<Integer> getListeners(int requestId) {
+    private Set<Integer> getListeners(int requestId) {
         return requestMap.get(requestId).second;
     }
 
     @NonNull
-    private static ArrayList<Integer> createListener(int listenerId) {
-        return new ArrayList<Integer>() {{ add(listenerId); }};
+    private static Set<Integer> createListener(int listenerId) {
+        Set<Integer> set = new HashSet<>(1);
+        set.add(listenerId);
+        return set;
     }
 
     @NonNull

@@ -30,7 +30,9 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.reark.reark.utils.Log;
 
@@ -48,7 +50,7 @@ public final class NetworkRequestStatus {
     private static final String TAG = NetworkRequestStatus.class.getSimpleName();
 
     private static final NetworkRequestStatus NONE =
-            new NetworkRequestStatus(Collections.emptyList(), "", NETWORK_STATUS_NONE, 0, null);
+            new NetworkRequestStatus(Collections.emptySet(), "", NETWORK_STATUS_NONE, 0, null);
 
     @NonNull
     private final String uri;
@@ -81,7 +83,7 @@ public final class NetworkRequestStatus {
         }
     }
 
-    private NetworkRequestStatus(@NonNull List<Integer> listeners,
+    private NetworkRequestStatus(@NonNull Set<Integer> listeners,
                                  @NonNull String uri,
                                  @NonNull Status status,
                                  int errorCode,
@@ -155,7 +157,7 @@ public final class NetworkRequestStatus {
 
         private Status status;
 
-        private final List<Integer> listeners = new ArrayList<>(0);
+        private final Set<Integer> listeners = new HashSet<>(1);
 
         private int errorCode;
 
@@ -186,7 +188,7 @@ public final class NetworkRequestStatus {
         }
 
         @NonNull
-        public Builder listeners(@NonNull  List<Integer> listeners) {
+        public Builder listeners(@NonNull Set<Integer> listeners) {
             this.listeners.addAll(get(listeners));
             return this;
         }

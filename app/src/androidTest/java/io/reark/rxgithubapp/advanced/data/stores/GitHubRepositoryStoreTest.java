@@ -78,7 +78,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     }
 
     @Test
-    public void getOne_WithData_ReturnsData_AndCompletes() throws InterruptedException {
+    public void getOnce_WithData_ReturnsData_AndCompletes() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value); // TODO synchronous init with contentProvider
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
@@ -93,7 +93,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     }
 
     @Test
-    public void getOne_WithNoData_ReturnsNoneValue_AndCompletes() {
+    public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
         // getOnce is expected to emit empty value in case no actual value exists.
         gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
 

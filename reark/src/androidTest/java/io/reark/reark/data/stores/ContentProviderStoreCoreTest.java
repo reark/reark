@@ -32,19 +32,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import rx.functions.Action1;
 
 @RunWith(AndroidJUnit4.class)
-public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
+public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
 
-    private SimpleMockStore store;
     private SimpleMockStoreCore core;
 
-    public ContentProviderStoreTest() {
+    public ContentProviderStoreCoreTest() {
         super(SimpleMockContentProvider.class, SimpleMockStoreCore.AUTHORITY);
     }
 
@@ -54,7 +53,6 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         super.setUp();
 
         core = new SimpleMockStoreCore(getMockContentResolver());
-        store = new SimpleMockStore(core);
 
         Action1<String> insert = value ->
                 getProvider().insert(
@@ -69,10 +67,10 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     }
 
     @Test
-    public void getOnce_WithData_ReturnsData_AndCompletes() {
+    public void getCached_WithId_ReturnsData_AndCompletes() {
         List<String> expected = Collections.singletonList("parsnip");
 
-        store.getOnce(SimpleMockStore.getIdFor("parsnip"))
+        core.getCached(SimpleMockStore.getIdFor("parsnip"))
                 .test()
                 .awaitTerminalEvent()
                 .assertCompleted()
@@ -81,37 +79,13 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     }
 
     @Test
-    public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
-        List<String> expected = Collections.singletonList(SimpleMockStore.NONE);
+    public void getCached_WithNoId_ReturnsAllData_AndCompletes() {
+        List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
 
-        store.getOnce(SimpleMockStore.getIdFor("bacon"))
+        core.getCached()
                 .test()
                 .awaitTerminalEvent()
                 .assertCompleted()
-                .assertNoErrors()
-                .assertReceivedOnNext(expected);
-    }
-
-    @Test
-    public void getOnceAndStream_WithData_ReturnsData_AndDoesNotComplete() {
-        List<String> expected = Collections.singletonList("spinach");
-
-        store.getOnceAndStream(SimpleMockStore.getIdFor("spinach"))
-                .test()
-                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
-                .assertNoErrors()
-                .assertReceivedOnNext(expected);
-    }
-
-    @Test
-    public void getOnceAndStream_WithNoData_ReturnsNoneValue_AndDoesNotComplete() {
-        List<String> expected = Collections.singletonList(SimpleMockStore.NONE);
-
-        store.getOnceAndStream(SimpleMockStore.getIdFor("bacon"))
-                .test()
-                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
                 .assertNoErrors()
                 .assertReceivedOnNext(expected);
     }

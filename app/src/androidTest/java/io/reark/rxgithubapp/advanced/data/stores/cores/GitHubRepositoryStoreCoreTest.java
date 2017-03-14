@@ -137,7 +137,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
     // GET ALL CACHED
 
     @Test
-    public void getAllCached_ReturnsAllData_AndCompletes() throws InterruptedException {
+    public void getCached_WithNoId_ReturnsAllData_AndCompletes() throws InterruptedException {
         // ARRANGE
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");

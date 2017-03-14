@@ -57,16 +57,6 @@ public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer,
     }
 
     @NonNull
-    public Observable<List<GitHubRepository>> getAllCached() {
-        return getAllOnce(getContentUri());
-    }
-
-    @NonNull
-    public Observable<GitHubRepository> getAllStream() {
-        return getStream().map(StoreItem::item);
-    }
-
-    @NonNull
     @Override
     protected String getAuthority() {
         return GitHubProvider.AUTHORITY;

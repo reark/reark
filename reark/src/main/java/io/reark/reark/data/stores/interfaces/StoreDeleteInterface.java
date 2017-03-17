@@ -27,7 +27,7 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
-import rx.Completable;
+import rx.Single;
 
 /**
  * Interface for stores from which it is possible to delete data.
@@ -39,8 +39,8 @@ public interface StoreDeleteInterface<T> {
      * The standard store interface for deleting a singular data item.
      *
      * @param id Id of the item to delete from the store.
-     * @return Completable that completes when the delete is executed.
+     * @return Single that emits true if value was deleted, and false otherwise.
      */
     @NonNull
-    Completable delete(@NonNull final T id);
+    Single<Boolean> delete(@NonNull final T id);
 }

@@ -23,39 +23,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.cores;
+package io.reark.reark.data.stores.cores.operations;
 
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent a change to the database.
+ * A class used to represent a deletion from the database.
  */
-final class CoreUpdateValue<U> implements CoreValue<U> {
+public final class CoreDeleteValue<U> implements CoreValue<U> {
 
     private final int id;
 
     @NonNull
     private final Uri uri;
 
-    @NonNull
-    private final U item;
-
-    private CoreUpdateValue(int id, @NonNull Uri uri, @NonNull U item) {
+    private CoreDeleteValue(int id, @NonNull Uri uri) {
         this.id = id;
         this.uri = uri;
-        this.item = item;
     }
 
     @NonNull
-    static <U> CoreUpdateValue<U> create(int id, @NonNull Uri uri, @NonNull U item) {
-        return new CoreUpdateValue<>(id, uri, item);
+    public static <U> CoreDeleteValue<U> create(int id, @NonNull Uri uri) {
+        return new CoreDeleteValue<>(id, uri);
     }
 
     @NonNull
-    CoreOperation toOperation(@NonNull ContentProviderOperation operation) {
-        return new CoreOperation(id, uri, operation);
+    public CoreOperation toOperation() {
+        return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
     }
 
     @Override
@@ -76,14 +72,9 @@ final class CoreUpdateValue<U> implements CoreValue<U> {
     }
 
     @NonNull
-    public U item() {
-        return item;
-    }
-
-    @NonNull
     @Override
     public Type type() {
-        return Type.UPDATE;
+        return Type.DELETE;
     }
 
 }

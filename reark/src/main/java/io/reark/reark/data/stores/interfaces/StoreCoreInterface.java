@@ -27,7 +27,6 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
-import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -63,10 +62,10 @@ public interface StoreCoreInterface<T, U> {
      * completion is identical regardless whether the store contained the item marked for deletion.
      *
      * @param id Id of the persisted item.
-     * @return Completable that completes after the delete is executed.
+     * @return Single that emits true if value was deleted, and false otherwise.
      */
     @NonNull
-    Completable delete(@NonNull final T id);
+    Single<Boolean> delete(@NonNull final T id);
 
     /**
      * Takes an identifier and returns an Observable that emits that item as soon as it is read from

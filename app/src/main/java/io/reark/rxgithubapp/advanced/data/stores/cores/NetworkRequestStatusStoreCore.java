@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
-import io.reark.reark.data.stores.cores.CoreOperation;
+import io.reark.reark.data.stores.cores.operations.CoreOperation;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;

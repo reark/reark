@@ -23,30 +23,67 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.cores;
+package io.reark.reark.data.stores.cores.operations;
 
+import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * Interface holding the type of data update.
+ * A class used to represent a change to the database.
  */
-interface CoreValue<U> {
+public final class CoreUpdateValue<U> implements CoreValue<U> {
 
-    enum Type {
-        UPDATE,
-        DELETE
+    private final int id;
+
+    @NonNull
+    private final Uri uri;
+
+    @NonNull
+    private final U item;
+
+    private CoreUpdateValue(int id, @NonNull Uri uri, @NonNull U item) {
+        this.id = id;
+        this.uri = uri;
+        this.item = item;
     }
 
-    int id();
+    @NonNull
+    public static <U> CoreUpdateValue<U> create(int id, @NonNull Uri uri, @NonNull U item) {
+        return new CoreUpdateValue<>(id, uri, item);
+    }
 
     @NonNull
-    Uri uri();
+    public CoreOperation toOperation(@NonNull ContentProviderOperation operation) {
+        return new CoreOperation(id, uri, operation);
+    }
+
+    @Override
+    @NonNull
+    public CoreOperation noOperation() {
+        return new CoreOperation(id, uri);
+    }
+
+    @Override
+    public int id() {
+        return id;
+    }
+
+    @Override
+    @NonNull
+    public Uri uri() {
+        return uri;
+    }
 
     @NonNull
-    Type type();
+    public U item() {
+        return item;
+    }
 
     @NonNull
-    CoreOperation noOperation();
+    @Override
+    public Type type() {
+        return Type.UPDATE;
+    }
 
 }

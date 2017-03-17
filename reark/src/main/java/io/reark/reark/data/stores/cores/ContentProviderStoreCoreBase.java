@@ -26,16 +26,13 @@
 package io.reark.reark.data.stores.cores;
 
 import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.OperationApplicationException;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -45,10 +42,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import io.reark.reark.data.stores.cores.operations.CoreDeleteValue;
+import io.reark.reark.data.stores.cores.operations.CoreOperation;
+import io.reark.reark.data.stores.cores.operations.CoreOperationResult;
+import io.reark.reark.data.stores.cores.operations.CoreUpdateValue;
+import io.reark.reark.data.stores.cores.operations.CoreValue;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.ObjectLockHandler;
 import io.reark.reark.utils.Preconditions;
-import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.Subscription;
@@ -129,8 +130,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         updateSubscription = groupOperations(operationObservable)
                 .observeOn(Schedulers.computation())
                 .doOnNext(operations -> Log.v(TAG, "Grouped list of " + operations.size()))
-                .doOnNext(this::applyOperations)
-                .flatMap(Observable::from)
+                .flatMap(this::applyOperations)
                 .subscribe(this::release,
                         // On error we can't release the processing lock, as the Uri reference
                         // is lost. It's perhaps better to error out of the subscription than
@@ -138,14 +138,15 @@ public abstract class ContentProviderStoreCoreBase<U> {
                         error -> Log.e(TAG, "Error while handling data operations!", error));
     }
 
-    private void applyOperations(@NonNull final List<CoreOperation> operations) {
-        try {
-            ArrayList<ContentProviderOperation> contentOperations = contentOperations(operations);
-            ContentProviderResult[] result = contentResolver.applyBatch(getAuthority(), contentOperations);
-            Log.v(TAG, String.format("Applied %s operations", result.length));
-        } catch (RemoteException | OperationApplicationException e) {
-            Log.e(TAG, "Error applying operations", e);
-        }
+    @NonNull
+    private Observable<CoreOperationResult> applyOperations(@NonNull final List<CoreOperation> operations) {
+        return Observable
+                .fromCallable(() -> {
+                    ArrayList<ContentProviderOperation> contentOperations = contentOperations(operations);
+                    return contentResolver.applyBatch(getAuthority(), contentOperations);
+                })
+                .flatMap(Observable::from)
+                .zipWith(operations, CoreOperationResult::new);
     }
 
     @NonNull
@@ -265,7 +266,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private void releaseIfNoOp(@NonNull final CoreOperation operation) {
         if (!operation.isValid()) {
-            release(operation);
+            release(new CoreOperationResult(operation, false));
         }
     }
 
@@ -273,11 +274,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
         locker.acquire(uri);
     }
 
-    private void release(@NonNull final CoreOperation operation) {
+    private void release(@NonNull final CoreOperationResult operation) {
         try {
             locker.release(operation.uri());
             // Remove the operation completion listener and emit whether the operation was executed.
-            completionNotifiers.remove(operation.id()).onNext(operation.isValid());
+            completionNotifiers.remove(operation.id()).onNext(operation.success());
         } catch (IllegalStateException e) {
             // Release may throw if the lock wasn't successfully acquired.
             Log.w(TAG, "Couldn't release lock!", e);
@@ -299,28 +300,26 @@ public abstract class ContentProviderStoreCoreBase<U> {
         checkNotNull(item);
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreUpdateValue.create(index, uri, item))
-                .first()
-                .toSingle();
+        return createModifyingOperation(index -> CoreUpdateValue.create(index, uri, item));
     }
 
     @NonNull
-    protected Completable delete(@NonNull final Uri uri) {
+    protected Single<Boolean> delete(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreDeleteValue.create(index, uri))
-                .first()
-                .toCompletable();
+        return createModifyingOperation(index -> CoreDeleteValue.create(index, uri));
     }
 
     @NonNull
-    private Subject<Boolean, Boolean> createModifyingOperation(@NonNull final Func1<Integer, CoreValue<U>> valueFunc) {
+    private Single<Boolean> createModifyingOperation(@NonNull final Func1<Integer, CoreValue<U>> valueFunc) {
         int index = ++nextOperationIndex;
 
         completionNotifiers.put(index, PublishSubject.create());
         operationSubject.onNext(valueFunc.call(index));
 
-        return completionNotifiers.get(index);
+        return completionNotifiers.get(index)
+                .first()
+                .toSingle();
     }
 
     @NonNull

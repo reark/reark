@@ -105,33 +105,32 @@ public class MemoryStoreCoreTest {
     }
 
     @Test
-    public void delete_WithNoExistingValue_Completes() {
-        TestSubscriber<Boolean> subscriber = new TestSubscriber<>();
-
-        memoryStoreCore.delete(100).subscribe(subscriber);
-
-        subscriber.assertCompleted();
+    public void delete_WithNoExistingValue_EmitsFalse() {
+        memoryStoreCore.delete(100)
+                .test()
+                .assertCompleted()
+                .assertValue(false);
     }
 
     @Test
-    public void delete_WithExistingValue_Completes_AndDeletesValue() {
-        TestSubscriber<Boolean> subscriber = new TestSubscriber<>();
-        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+    public void delete_WithExistingValue_DeletesValue_AndEmitsTrue() {
         memoryStoreCore.put(100, "test value 1");
 
-        memoryStoreCore.delete(100).subscribe(subscriber);
-        memoryStoreCore.getCached(100).subscribe(getSubscriber);
-
-        subscriber.assertCompleted();
-        getSubscriber.assertCompleted();
-        getSubscriber.assertNoValues();
+        memoryStoreCore.delete(100)
+                .test()
+                .assertCompleted()
+                .assertValue(true);
+        memoryStoreCore.getCached(100)
+                .test()
+                .assertCompleted()
+                .assertNoValues();
     }
 
     @Test
     public void delete_DoesNotTriggerStream() {
         TestSubscriber<String> getSubscriber = new TestSubscriber<>();
         memoryStoreCore.put(100, "test value 1");
-        memoryStoreCore.getStream(100);
+        memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
         memoryStoreCore.delete(100);
 

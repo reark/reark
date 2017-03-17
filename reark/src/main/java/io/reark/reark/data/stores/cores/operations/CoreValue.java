@@ -23,55 +23,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.cores;
+package io.reark.reark.data.stores.cores.operations;
 
-import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class wrapping ContentProviderOperation, the operation Uri, and operation identifier.
+ * Interface holding the type of data update.
  */
-public final class CoreOperation {
+public interface CoreValue<U> {
+
+    enum Type {
+        UPDATE,
+        DELETE
+    }
+
+    int id();
 
     @NonNull
-    private static final ContentProviderOperation NO_OP =
-            ContentProviderOperation.newInsert(Uri.EMPTY).build();
-
-    private final int id;
+    Uri uri();
 
     @NonNull
-    private final Uri uri;
+    Type type();
 
     @NonNull
-    private final ContentProviderOperation operation;
-
-    CoreOperation(int id, @NonNull Uri uri) {
-        this(id, uri, NO_OP);
-    }
-
-    CoreOperation(int id, @NonNull Uri uri, @NonNull ContentProviderOperation operation) {
-        this.id = id;
-        this.uri = uri;
-        this.operation = operation;
-    }
-
-    public int id() {
-        return id;
-    }
-
-    @NonNull
-    public Uri uri() {
-        return uri;
-    }
-
-    @NonNull
-    ContentProviderOperation contentOperation() {
-        return operation;
-    }
-
-    boolean isValid() {
-        return !NO_OP.equals(operation);
-    }
+    CoreOperation noOperation();
 
 }

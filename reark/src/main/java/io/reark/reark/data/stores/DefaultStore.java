@@ -29,7 +29,6 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
-import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -81,7 +80,7 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
     @NonNull
     @Override
-    public Completable delete(@NonNull final T id) {
+    public Single<Boolean> delete(@NonNull final T id) {
         checkNotNull(id);
 
         return core.delete(id);

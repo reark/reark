@@ -23,58 +23,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.cores;
+package io.reark.reark.data.stores.cores.operations;
 
 import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent a deletion from the database.
+ * A class wrapping ContentProviderOperation, the operation Uri, and operation identifier.
  */
-final class CoreDeleteValue<U> implements CoreValue<U> {
+public final class CoreOperation {
+
+    @NonNull
+    private static final ContentProviderOperation NO_OP =
+            ContentProviderOperation.newInsert(Uri.EMPTY).build();
 
     private final int id;
 
     @NonNull
     private final Uri uri;
 
-    private CoreDeleteValue(int id, @NonNull Uri uri) {
+    @NonNull
+    private final ContentProviderOperation operation;
+
+    CoreOperation(int id, @NonNull Uri uri) {
+        this(id, uri, NO_OP);
+    }
+
+    CoreOperation(int id, @NonNull Uri uri, @NonNull ContentProviderOperation operation) {
         this.id = id;
         this.uri = uri;
+        this.operation = operation;
     }
 
-    @NonNull
-    static <U> CoreDeleteValue<U> create(int id, @NonNull Uri uri) {
-        return new CoreDeleteValue<>(id, uri);
-    }
-
-    @NonNull
-    CoreOperation toOperation() {
-        return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
-    }
-
-    @Override
-    @NonNull
-    public CoreOperation noOperation() {
-        return new CoreOperation(id, uri);
-    }
-
-    @Override
     public int id() {
         return id;
     }
 
-    @Override
     @NonNull
     public Uri uri() {
         return uri;
     }
 
     @NonNull
-    @Override
-    public Type type() {
-        return Type.DELETE;
+    public ContentProviderOperation contentOperation() {
+        return operation;
+    }
+
+    public boolean isValid() {
+        return !NO_OP.equals(operation);
     }
 
 }

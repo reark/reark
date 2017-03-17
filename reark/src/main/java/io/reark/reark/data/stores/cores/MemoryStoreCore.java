@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentMap;
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
-import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Func2;
@@ -136,8 +135,8 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
     @NonNull
     @Override
-    public Completable delete(@NonNull final T id) {
-        return Completable.fromCallable(() -> cache.remove(getHashCodeForId(id)));
+    public Single<Boolean> delete(@NonNull final T id) {
+        return Single.fromCallable(() -> cache.remove(getHashCodeForId(id)) != null);
     }
 
     @NonNull

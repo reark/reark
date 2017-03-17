@@ -25,10 +25,10 @@
  */
 package io.reark.reark.data.stores;
 
+import android.support.v4.util.Pair;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import android.support.v4.util.Pair;
 
 import java.util.concurrent.TimeUnit;
 
@@ -203,28 +203,29 @@ public class MemoryStoreTest {
     }
 
     @Test
-    public void delete_WithNoData_Completes() {
+    public void delete_WithNoData_EmitsFalse() {
         memoryStore.delete(765)
                 .test()
                 .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
                 .assertCompleted()
-                .assertNoErrors();
+                .assertValue(false);
     }
 
     @Test
-    public void delete_WithData_DeletesData_AndCompletes() {
+    public void delete_WithData_DeletesData_AndEmitsTrue() {
         final Pair<Integer, String> value = new Pair<>(100, "test string 1");
         memoryStore.put(value);
 
-        AssertableSubscriber<Void> ts1 = memoryStore.delete(100).test();
-        AssertableSubscriber<Pair<Integer, String>> ts2 = memoryStore.getOnce(100).test();
-
-        ts1.awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
+        memoryStore.delete(100)
+                .test()
+                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
                 .assertCompleted()
-                .assertNoErrors();
-        ts2.assertCompleted()
+                .assertValue(true);
+        memoryStore.getOnce(100)
+                .test()
+                .assertCompleted()
                 .assertNoErrors()
-                .assertReceivedOnNext(singletonList(NONE));
+                .assertReceivedOnNext(singletonList(NONE));;
     }
 
     @Test

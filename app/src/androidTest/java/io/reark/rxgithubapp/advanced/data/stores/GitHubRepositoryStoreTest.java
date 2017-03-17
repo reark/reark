@@ -207,7 +207,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         gitHubRepositoryStore.put(value)
                 .test()
-                .awaitTerminalEvent(1500, TimeUnit.MILLISECONDS)
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertValue(true);
     }
 
@@ -216,11 +216,11 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         final GitHubRepository value1 = create(100, "repository1");
         final GitHubRepository value2 = create(100, "repository2");
         gitHubRepositoryStore.put(value1);
-        Thread.sleep(1500);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
         gitHubRepositoryStore.put(value2)
                 .test()
-                .awaitTerminalEvent(1500, TimeUnit.MILLISECONDS)
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertValue(true);
     }
 
@@ -228,36 +228,36 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void put_WithIdenticalData_OverExistingData_EmitsFalse() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value);
-        Thread.sleep(1500);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
         gitHubRepositoryStore.put(value)
                 .test()
-                .awaitTerminalEvent(1500, TimeUnit.MILLISECONDS)
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertValue(false);
     }
 
     @Test
-    public void delete_WithNoData_Completes() {
+    public void delete_WithNoData_EmitsFalse() {
         gitHubRepositoryStore.delete(765)
                 .test()
-                .awaitTerminalEvent(1500, TimeUnit.MILLISECONDS)
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertCompleted()
-                .assertNoErrors();
+                .assertValue(false);
     }
 
     @Test
-    public void delete_WithData_DeletesData_AndCompletes() throws InterruptedException {
+    public void delete_WithData_DeletesData_AndEmitsTrue() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value);
-        Thread.sleep(1500);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
-        AssertableSubscriber<Void> ts1 = gitHubRepositoryStore.delete(100).test();
-        Thread.sleep(1500);
+        AssertableSubscriber<Boolean> ts1 = gitHubRepositoryStore.delete(100).test();
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
         AssertableSubscriber<GitHubRepository> ts2 = gitHubRepositoryStore.getOnce(100).test();
 
         ts1.assertCompleted()
-                .assertNoErrors();
-        ts2.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS)
+                .assertValue(true);
+        ts2.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertCompleted()
                 .assertNoErrors()
                 .assertReceivedOnNext(singletonList(none()));
@@ -267,12 +267,12 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void getOnceAndStream_ThenDelete_DoesNotEmit() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
         gitHubRepositoryStore.put(value);
-        Thread.sleep(1500);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
         AssertableSubscriber<GitHubRepository> ts = gitHubRepositoryStore.getOnceAndStream(100).test();
         gitHubRepositoryStore.delete(100);
 
-        ts.awaitTerminalEvent(1500, TimeUnit.MILLISECONDS)
+        ts.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertNotCompleted()
                 .assertNoErrors()
                 .assertReceivedOnNext(singletonList(value));

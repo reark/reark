@@ -118,7 +118,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private void initialize() {
         contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
 
-        // Observable transforming updates and inserts to ContentProviderOperations
+        // Observable transforming inserts, updates and deletes to ContentProviderOperations
         Observable<CoreOperation> operationObservable = operationSubject
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
@@ -126,7 +126,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
         // Group the operations to a list that should be executed in one batch. The default
         // grouping logic is suitable for pojo stores, but some stores may need to provide
-        // their own grouping logic, if for example buffering delays are undesirable.
+        // their own grouping logic if for example buffering delays are undesirable.
         updateSubscription = groupOperations(operationObservable)
                 .observeOn(Schedulers.computation())
                 .doOnNext(operations -> Log.v(TAG, "Grouped list of " + operations.size()))
@@ -140,11 +140,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     private Observable<CoreOperationResult> applyOperations(@NonNull final List<CoreOperation> operations) {
-        return Observable
-                .fromCallable(() -> {
+        return Observable.fromCallable(() -> {
                     ArrayList<ContentProviderOperation> contentOperations = contentOperations(operations);
                     return contentResolver.applyBatch(getAuthority(), contentOperations);
                 })
+                .doOnNext(result -> Log.v(TAG, String.format("Applied %s operations", result.length)))
                 .flatMap(Observable::from)
                 .zipWith(operations, CoreOperationResult::new);
     }
@@ -169,8 +169,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     /**
      * Implements grouping logic for batching the content provider operations. The default
-     * logic buffers the operations with debounced timer, while applying a hard limit for the
-     * number of operations. The data is serialized into a binder transaction, and an attempt
+     * logic buffers the operations with debounced timer while applying a hard limit for the
+     * number of operations. The data is serialized into a binder transaction. An attempt
      * to pass a too large batch of operations will result in a failed binder transaction.
      */
     @NonNull

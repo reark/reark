@@ -26,32 +26,48 @@
 package io.reark.reark.data.stores.cores.operations;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent a deletion from the database.
+ * A class used to represent a change to the database.
  */
-public final class CoreDeleteValue<U> implements CoreValue<U> {
+public final class CoreValuePut<U> implements CoreValue<U> {
 
     private final int id;
 
     @NonNull
     private final Uri uri;
 
-    private CoreDeleteValue(int id, @NonNull Uri uri) {
+    @NonNull
+    private final U item;
+
+    private CoreValuePut(int id, @NonNull Uri uri, @NonNull U item) {
         this.id = id;
         this.uri = uri;
+        this.item = item;
     }
 
     @NonNull
-    public static <U> CoreDeleteValue<U> create(int id, @NonNull Uri uri) {
-        return new CoreDeleteValue<>(id, uri);
+    public static <U> CoreValuePut<U> create(int id, @NonNull Uri uri, @NonNull U item) {
+        return new CoreValuePut<>(id, uri, item);
     }
 
     @NonNull
-    public CoreOperation toOperation() {
-        return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
+    public CoreOperation toInsertOperation(@NonNull ContentValues values) {
+        return new CoreOperation(id, uri, ContentProviderOperation
+                .newInsert(uri)
+                .withValues(values)
+                .build());
+    }
+
+    @NonNull
+    public CoreOperation toUpdateOperation(@NonNull ContentValues values) {
+        return new CoreOperation(id, uri, ContentProviderOperation
+                .newUpdate(uri)
+                .withValues(values)
+                .build());
     }
 
     @Override
@@ -72,9 +88,14 @@ public final class CoreDeleteValue<U> implements CoreValue<U> {
     }
 
     @NonNull
+    public U item() {
+        return item;
+    }
+
+    @NonNull
     @Override
     public Type type() {
-        return Type.DELETE;
+        return Type.UPDATE;
     }
 
 }

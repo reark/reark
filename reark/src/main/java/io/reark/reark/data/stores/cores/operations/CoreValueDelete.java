@@ -30,32 +30,28 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * A class used to represent a change to the database.
+ * A class used to represent a deletion from the database.
  */
-public final class CoreUpdateValue<U> implements CoreValue<U> {
+public final class CoreValueDelete<U> implements CoreValue<U> {
 
     private final int id;
 
     @NonNull
     private final Uri uri;
 
-    @NonNull
-    private final U item;
-
-    private CoreUpdateValue(int id, @NonNull Uri uri, @NonNull U item) {
+    private CoreValueDelete(int id, @NonNull Uri uri) {
         this.id = id;
         this.uri = uri;
-        this.item = item;
     }
 
     @NonNull
-    public static <U> CoreUpdateValue<U> create(int id, @NonNull Uri uri, @NonNull U item) {
-        return new CoreUpdateValue<>(id, uri, item);
+    public static <U> CoreValueDelete<U> create(int id, @NonNull Uri uri) {
+        return new CoreValueDelete<>(id, uri);
     }
 
     @NonNull
-    public CoreOperation toOperation(@NonNull ContentProviderOperation operation) {
-        return new CoreOperation(id, uri, operation);
+    public CoreOperation toDeleteOperation() {
+        return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
     }
 
     @Override
@@ -76,14 +72,9 @@ public final class CoreUpdateValue<U> implements CoreValue<U> {
     }
 
     @NonNull
-    public U item() {
-        return item;
-    }
-
-    @NonNull
     @Override
     public Type type() {
-        return Type.UPDATE;
+        return Type.DELETE;
     }
 
 }

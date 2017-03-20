@@ -42,11 +42,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import io.reark.reark.data.stores.cores.operations.CoreDeleteValue;
 import io.reark.reark.data.stores.cores.operations.CoreOperation;
 import io.reark.reark.data.stores.cores.operations.CoreOperationResult;
-import io.reark.reark.data.stores.cores.operations.CoreUpdateValue;
 import io.reark.reark.data.stores.cores.operations.CoreValue;
+import io.reark.reark.data.stores.cores.operations.CoreValueDelete;
+import io.reark.reark.data.stores.cores.operations.CoreValuePut;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.ObjectLockHandler;
 import io.reark.reark.utils.Preconditions;
@@ -189,10 +189,10 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
         switch (value.type()) {
             case UPDATE:
-                valueObservable = createCoreOperation((CoreUpdateValue<U>) value);
+                valueObservable = createCoreOperation((CoreValuePut<U>) value);
                 break;
             case DELETE:
-                valueObservable = createCoreOperation((CoreDeleteValue<U>) value);
+                valueObservable = createCoreOperation((CoreValueDelete<U>) value);
                 break;
             default:
                 throw new IllegalStateException("Unknown value type " + value.type());
@@ -205,7 +205,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreDeleteValue<U> value) {
+    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValueDelete<U> value) {
         return Observable
                 .fromCallable(() -> {
                     Uri uri = value.uri();
@@ -216,12 +216,12 @@ public abstract class ContentProviderStoreCoreBase<U> {
                     lock(uri);
 
                     Log.v(TAG, "Create delete contentOperation for " + uri);
-                    return value.toOperation();
+                    return value.toDeleteOperation();
                 });
     }
 
     @NonNull
-    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreUpdateValue<U> value) {
+    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValuePut<U> value) {
         return Observable
                 .fromCallable(() -> {
                     Uri uri = value.uri();
@@ -236,12 +236,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
                         }
 
                         Log.v(TAG, "Create insertion contentOperation for " + uri);
-                        ContentProviderOperation contentOperation = ContentProviderOperation
-                                .newInsert(uri)
-                                .withValues(getContentValuesForItem(value.item()))
-                                .build();
-
-                        return value.toOperation(contentOperation);
+                        return value.toInsertOperation(getContentValuesForItem(value.item()));
                     }
 
                     final U currentItem = read(cursor);
@@ -251,12 +246,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
                     if (!newItem.equals(currentItem)) {
                         Log.v(TAG, "Create update contentOperation for " + uri);
-                        ContentProviderOperation contentOperation = ContentProviderOperation
-                                .newUpdate(uri)
-                                .withValues(getContentValuesForItem(newItem))
-                                .build();
-
-                        return value.toOperation(contentOperation);
+                        return value.toUpdateOperation(getContentValuesForItem(newItem));
                     }
 
                     Log.v(TAG, "Data already up to date at " + uri);
@@ -300,14 +290,14 @@ public abstract class ContentProviderStoreCoreBase<U> {
         checkNotNull(item);
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreUpdateValue.create(index, uri, item));
+        return createModifyingOperation(index -> CoreValuePut.create(index, uri, item));
     }
 
     @NonNull
     protected Single<Boolean> delete(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreDeleteValue.create(index, uri));
+        return createModifyingOperation(index -> CoreValueDelete.create(index, uri));
     }
 
     @NonNull

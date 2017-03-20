@@ -95,7 +95,7 @@ public final class CoreValuePut<U> implements CoreValue<U> {
     @NonNull
     @Override
     public Type type() {
-        return Type.UPDATE;
+        return Type.PUT;
     }
 
 }

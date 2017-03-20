@@ -34,7 +34,7 @@ import android.support.annotation.NonNull;
 public interface CoreValue<U> {
 
     enum Type {
-        UPDATE,
+        PUT,
         DELETE
     }
 

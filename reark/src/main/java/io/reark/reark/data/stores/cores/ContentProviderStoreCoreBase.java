@@ -188,7 +188,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         Observable<CoreOperation> valueObservable;
 
         switch (value.type()) {
-            case UPDATE:
+            case PUT:
                 valueObservable = createCoreOperation((CoreValuePut<U>) value);
                 break;
             case DELETE:

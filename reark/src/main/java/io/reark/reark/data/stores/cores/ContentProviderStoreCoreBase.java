@@ -130,7 +130,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         updateSubscription = groupOperations(operationObservable)
                 .observeOn(Schedulers.computation())
                 .doOnNext(operations -> Log.v(TAG, "Grouped list of " + operations.size()))
-                .flatMap(this::applyOperations)
+                .concatMap(this::applyOperations)
                 .subscribe(this::release,
                         // On error we can't release the processing lock, as the Uri reference
                         // is lost. It's perhaps better to error out of the subscription than

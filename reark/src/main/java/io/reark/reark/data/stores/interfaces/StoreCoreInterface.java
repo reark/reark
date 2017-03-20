@@ -58,8 +58,8 @@ public interface StoreCoreInterface<T, U> {
     Single<Boolean> put(@NonNull final T id, @NonNull final U item);
 
     /**
-     * Takes an identifier to be deleted, and completes when the operation has been executed. The
-     * completion is identical regardless whether the store contained the item marked for deletion.
+     * Takes an identifier to be deleted, and returns Single that emits when the operation has been
+     * executed.
      *
      * @param id Id of the persisted item.
      * @return Single that emits true if value was deleted, and false otherwise.

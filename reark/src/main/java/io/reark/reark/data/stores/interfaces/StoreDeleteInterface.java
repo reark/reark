@@ -36,7 +36,8 @@ import rx.Single;
  */
 public interface StoreDeleteInterface<T> {
     /**
-     * The standard store interface for deleting a singular data item.
+     * The standard store interface for deleting a singular data item. Takes an identifier to be
+     * deleted, and returns Single that emits when the operation has been executed.
      *
      * @param id Id of the item to delete from the store.
      * @return Single that emits true if value was deleted, and false otherwise.

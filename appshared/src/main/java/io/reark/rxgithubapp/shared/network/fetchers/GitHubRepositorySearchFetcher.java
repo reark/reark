@@ -71,16 +71,16 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     public synchronized void fetch(@NonNull final Intent intent) {
         checkNotNull(intent);
 
-        String searchString = intent.getStringExtra("searchString");
-        int listenerId = intent.getIntExtra("listenerId", -1);
-
-        if (searchString == null || listenerId < 0) {
-            Log.e(TAG, String.format("Invalid values: searchString %s, listenerId %s", searchString, listenerId));
+        if (!intent.hasExtra("searchString") || !intent.hasExtra("listenerId")) {
+            Log.e(TAG, "Missing required fetch parameters!");
             return;
         }
 
-        Log.d(TAG, "fetch(" + searchString + ")");
+        String searchString = intent.getStringExtra("searchString");
+        int listenerId = intent.getIntExtra("listenerId", -1);
         int requestId = searchString.hashCode();
+
+        Log.d(TAG, "fetch(" + searchString + ")");
 
         if (isOngoingRequest(requestId)) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);

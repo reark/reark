@@ -62,13 +62,13 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
     public synchronized void fetch(@NonNull final Intent intent) {
         checkNotNull(intent);
 
-        int repositoryId = intent.getIntExtra("repositoryId", -1);
-        int listenerId = intent.getIntExtra("listenerId", -1);
-
-        if (repositoryId < 0 || listenerId < 0) {
-            Log.e(TAG, String.format("Invalid values: repositoryId %s, listenerId %s", repositoryId, listenerId));
+        if (!intent.hasExtra("repositoryId") || !intent.hasExtra("listenerId")) {
+            Log.e(TAG, "Missing required fetch parameters!");
             return;
         }
+
+        int repositoryId = intent.getIntExtra("repositoryId", 0);
+        int listenerId = intent.getIntExtra("listenerId", 0);
 
         Log.d(TAG, "fetch(" + repositoryId + ")");
 

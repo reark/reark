@@ -35,6 +35,7 @@ import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
 import rx.Observable;
+import rx.Single;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -95,8 +96,9 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
                 .asObservable();
     }
 
+    @NonNull
     @Override
-    public void put(@NonNull final T id, @NonNull final U item) {
+    public Single<Boolean> put(@NonNull final T id, @NonNull final U item) {
         checkNotNull(id);
         checkNotNull(item);
 
@@ -118,7 +120,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
         if (valuesEqual) {
             Log.v(TAG, "Data already up to date at " + id);
-            return;
+            return Single.just(false);
         }
 
         cache.put(hash, newItem);
@@ -127,6 +129,14 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         if (subjectCache.containsKey(hash)) {
             subjectCache.get(hash).onNext(newItem);
         }
+
+        return Single.just(true);
+    }
+
+    @NonNull
+    @Override
+    public Single<Boolean> delete(@NonNull final T id) {
+        return Single.fromCallable(() -> cache.remove(getHashCodeForId(id)) != null);
     }
 
     @NonNull
@@ -134,7 +144,11 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     public Observable<U> getCached(@NonNull final T id) {
         checkNotNull(id);
 
-        return Observable.just(cache.get(getHashCodeForId(id)));
+        final U value = cache.get(getHashCodeForId(id));
+
+        return value == null
+                ? Observable.empty()
+                : Observable.just(value);
     }
 
     protected int getHashCodeForId(@NonNull final T id) {

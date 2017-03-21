@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013-2016 reark project contributors
+ * Copyright (c) 2013-2017 reark project contributors
  *
  * https://github.com/reark/reark/graphs/contributors
  *
@@ -23,26 +23,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.interfaces;
+package io.reark.reark.data.stores.cores.operations;
 
+import android.content.ContentProviderOperation;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import rx.Single;
-
 /**
- * Interface for stores into which it is possible to insert data.
- *
- * @param <U> Type of the data items.
+ * A class wrapping ContentProviderOperation, the operation Uri, and operation identifier.
  */
-public interface StorePutInterface<U> {
-    /**
-     * The standard store interface for inserting a singular data item. The id of the item is
-     * expected to be deduced from the item itself by the store. This could be done through an
-     * interface such as getId(), though the put interface does not have an opinion of that.
-     *
-     * @param item The data item to insert into the store.
-     * @return Single that emits true if value was updated or inserted, and false otherwise.
-     */
+public final class CoreOperation {
+
     @NonNull
-    Single<Boolean> put(@NonNull final U item);
+    private static final ContentProviderOperation NO_OP =
+            ContentProviderOperation.newInsert(Uri.EMPTY).build();
+
+    private final int id;
+
+    @NonNull
+    private final Uri uri;
+
+    @NonNull
+    private final ContentProviderOperation operation;
+
+    CoreOperation(int id, @NonNull Uri uri) {
+        this(id, uri, NO_OP);
+    }
+
+    CoreOperation(int id, @NonNull Uri uri, @NonNull ContentProviderOperation operation) {
+        this.id = id;
+        this.uri = uri;
+        this.operation = operation;
+    }
+
+    public int id() {
+        return id;
+    }
+
+    @NonNull
+    public Uri uri() {
+        return uri;
+    }
+
+    @NonNull
+    public ContentProviderOperation contentOperation() {
+        return operation;
+    }
+
+    public boolean isValid() {
+        return !NO_OP.equals(operation);
+    }
+
 }

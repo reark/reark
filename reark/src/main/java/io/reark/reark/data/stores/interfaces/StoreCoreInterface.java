@@ -28,6 +28,7 @@ package io.reark.reark.data.stores.interfaces;
 import android.support.annotation.NonNull;
 
 import rx.Observable;
+import rx.Single;
 
 /**
  * StoreCore is the underlying persistence mechanism of a store. It is not mandatory for a store to
@@ -51,30 +52,42 @@ public interface StoreCoreInterface<T, U> {
      *
      * @param id Id of the persisted item.
      * @param item The persisted item.
+     * @return Single that emits true if value was updated or inserted, and false otherwise.
      */
-    void put(@NonNull final T id, @NonNull final U item);
+    @NonNull
+    Single<Boolean> put(@NonNull final T id, @NonNull final U item);
 
     /**
-     * Takes an identifier and returns an observable that emits that item as soon as it is read from
+     * Takes an identifier to be deleted, and returns Single that emits when the operation has been
+     * executed.
+     *
+     * @param id Id of the persisted item.
+     * @return Single that emits true if value was deleted, and false otherwise.
+     */
+    @NonNull
+    Single<Boolean> delete(@NonNull final T id);
+
+    /**
+     * Takes an identifier and returns an Observable that emits that item as soon as it is read from
      * the underlying persisting structure (in case the store uses an in-memory strategy this could
      * mean the item is emitted synchronously. In case no item with the specified id is available,
-     * the observable completes without emitting any items.
+     * the Observable completes without emitting any items.
      *
      * @param id Identifier for the data item to be retrieved from cache.
-     * @return An observable that emits the data item for the given id and completes, or, in case no
+     * @return An Observable that emits the data item for the given id and completes, or, in case no
      * data item is in the cache, it simply completes without emitting any items.
      */
     @NonNull
     Observable<U> getCached(@NonNull final T id);
 
     /**
-     * Takes an identifier and returns an observable that emits all _future_ items that are put into
+     * Takes an identifier and returns an Observable that emits all _future_ items that are put into
      * the core. Unlike most store getStream equivalents, the StoreCore getStream does not attempt
      * to insert the last cached value into the stream. This is simply a stream for all future data
      * items.
      *
      * @param id Identifier for the stream of data items.
-     * @return An observable that does not immediately return anything, but emits all future items
+     * @return An Observable that does not immediately return anything, but emits all future items
      * that are put into the core.
      */
     @NonNull

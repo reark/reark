@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013-2016 reark project contributors
+ * Copyright (c) 2013-2017 reark project contributors
  *
  * https://github.com/reark/reark/graphs/contributors
  *
@@ -23,26 +23,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.interfaces;
+package io.reark.reark.data.stores.cores.operations;
 
+import android.content.ContentProviderOperation;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import rx.Single;
-
 /**
- * Interface for stores into which it is possible to insert data.
- *
- * @param <U> Type of the data items.
+ * A class used to represent a deletion from the database.
  */
-public interface StorePutInterface<U> {
-    /**
-     * The standard store interface for inserting a singular data item. The id of the item is
-     * expected to be deduced from the item itself by the store. This could be done through an
-     * interface such as getId(), though the put interface does not have an opinion of that.
-     *
-     * @param item The data item to insert into the store.
-     * @return Single that emits true if value was updated or inserted, and false otherwise.
-     */
+public final class CoreValueDelete<U> implements CoreValue<U> {
+
+    private final int id;
+
     @NonNull
-    Single<Boolean> put(@NonNull final U item);
+    private final Uri uri;
+
+    private CoreValueDelete(int id, @NonNull Uri uri) {
+        this.id = id;
+        this.uri = uri;
+    }
+
+    @NonNull
+    public static <U> CoreValueDelete<U> create(int id, @NonNull Uri uri) {
+        return new CoreValueDelete<>(id, uri);
+    }
+
+    @NonNull
+    public CoreOperation toDeleteOperation() {
+        return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
+    }
+
+    @Override
+    @NonNull
+    public CoreOperation noOperation() {
+        return new CoreOperation(id, uri);
+    }
+
+    @Override
+    public int id() {
+        return id;
+    }
+
+    @Override
+    @NonNull
+    public Uri uri() {
+        return uri;
+    }
+
+    @NonNull
+    @Override
+    public Type type() {
+        return Type.DELETE;
+    }
+
 }

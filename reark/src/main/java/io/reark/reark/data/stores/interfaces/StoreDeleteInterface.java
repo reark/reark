@@ -30,19 +30,18 @@ import android.support.annotation.NonNull;
 import rx.Single;
 
 /**
- * Interface for stores into which it is possible to insert data.
+ * Interface for stores from which it is possible to delete data.
  *
- * @param <U> Type of the data items.
+ * @param <T> Type of the id used in this store.
  */
-public interface StorePutInterface<U> {
+public interface StoreDeleteInterface<T> {
     /**
-     * The standard store interface for inserting a singular data item. The id of the item is
-     * expected to be deduced from the item itself by the store. This could be done through an
-     * interface such as getId(), though the put interface does not have an opinion of that.
+     * The standard store interface for deleting a singular data item. Takes an identifier to be
+     * deleted, and returns Single that emits when the operation has been executed.
      *
-     * @param item The data item to insert into the store.
-     * @return Single that emits true if value was updated or inserted, and false otherwise.
+     * @param id Id of the item to delete from the store.
+     * @return Single that emits true if value was deleted, and false otherwise.
      */
     @NonNull
-    Single<Boolean> put(@NonNull final U item);
+    Single<Boolean> delete(@NonNull final T id);
 }

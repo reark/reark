@@ -25,14 +25,15 @@
  */
 package io.reark.reark.data.stores;
 
+import android.support.v4.util.Pair;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import android.support.v4.util.Pair;
 
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.observers.AssertableSubscriber;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
@@ -58,7 +59,7 @@ public class MemoryStoreTest {
     }
 
     @Test
-    public void getOne_WithData_ReturnsData_AndCompletes() {
+    public void getOnce_WithData_ReturnsData_AndCompletes() {
         final Pair<Integer, String> value = new Pair<>(100, "test string 1");
 
         // getOnce is expected to return a observable that emits the value and then completes.
@@ -71,7 +72,7 @@ public class MemoryStoreTest {
     }
 
     @Test
-    public void getOne_WithNoData_ReturnsNoneValue_AndCompletes() {
+    public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
         // getOnce is expected to return null observable in case it does not have the value.
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
@@ -169,5 +170,75 @@ public class MemoryStoreTest {
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(singletonList(value1));
+    }
+
+    @Test
+    public void put_WithNewData_EmitsTrue() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
+
+        memoryStore.put(value)
+                .test()
+                .assertValue(true);
+    }
+
+    @Test
+    public void put_WithDifferentData_OverExistingData_EmitsTrue() {
+        final Pair<Integer, String> value1 = new Pair<>(100, "test string 1");
+        final Pair<Integer, String> value2 = new Pair<>(100, "test string 2");
+        memoryStore.put(value1);
+
+        memoryStore.put(value2)
+                .test()
+                .assertValue(true);
+    }
+
+    @Test
+    public void put_WithIdenticalData_OverExistingData_EmitsFalse() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
+        memoryStore.put(value);
+
+        memoryStore.put(value)
+                .test()
+                .assertValue(false);
+    }
+
+    @Test
+    public void delete_WithNoData_EmitsFalse() {
+        memoryStore.delete(765)
+                .test()
+                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
+                .assertCompleted()
+                .assertValue(false);
+    }
+
+    @Test
+    public void delete_WithData_DeletesData_AndEmitsTrue() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
+        memoryStore.put(value);
+
+        memoryStore.delete(100)
+                .test()
+                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
+                .assertCompleted()
+                .assertValue(true);
+        memoryStore.getOnce(100)
+                .test()
+                .assertCompleted()
+                .assertNoErrors()
+                .assertReceivedOnNext(singletonList(NONE));;
+    }
+
+    @Test
+    public void getOnceAndStream_ThenDelete_DoesNotEmit() {
+        final Pair<Integer, String> value = new Pair<>(100, "test string 1");
+        memoryStore.put(value);
+
+        AssertableSubscriber<Pair<Integer, String>> ts = memoryStore.getOnceAndStream(100).test();
+        memoryStore.delete(100);
+
+        ts.awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
+                .assertNotCompleted()
+                .assertNoErrors()
+                .assertReceivedOnNext(singletonList(value));
     }
 }

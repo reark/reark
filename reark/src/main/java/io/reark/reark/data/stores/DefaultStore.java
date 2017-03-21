@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import rx.Observable;
+import rx.Single;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -69,11 +70,20 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
         this.getEmptyValue = get(getEmptyValue);
     }
 
+    @NonNull
     @Override
-    public void put(@NonNull final U item) {
+    public Single<Boolean> put(@NonNull final U item) {
         checkNotNull(item);
 
-        core.put(getIdForItem.call(item), item);
+        return core.put(getIdForItem.call(item), item);
+    }
+
+    @NonNull
+    @Override
+    public Single<Boolean> delete(@NonNull final T id) {
+        checkNotNull(id);
+
+        return core.delete(id);
     }
 
     @NonNull

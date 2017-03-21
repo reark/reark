@@ -40,8 +40,9 @@ public interface Fetcher<T> {
      * Starts a new fetch operation.
      *
      * @param intent Details of the fetch.
+     * @param listenerId Id of the request status listener.
      */
-    void fetch(@NonNull final Intent intent);
+    void fetch(@NonNull final Intent intent, int listenerId);
 
     /**
      * Returns a Service Uri of this fetcher. Service Uri is an identifier for the endpoint

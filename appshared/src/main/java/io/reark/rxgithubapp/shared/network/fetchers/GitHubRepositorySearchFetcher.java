@@ -68,19 +68,17 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     }
 
     @Override
-    public synchronized void fetch(@NonNull final Intent intent) {
+    public synchronized void fetch(@NonNull final Intent intent, int listenerId) {
         checkNotNull(intent);
 
-        if (!intent.hasExtra("searchString") || !intent.hasExtra("listenerId")) {
+        if (!intent.hasExtra("searchString")) {
             Log.e(TAG, "Missing required fetch parameters!");
             return;
         }
 
         String searchString = intent.getStringExtra("searchString");
-        int listenerId = intent.getIntExtra("listenerId", -1);
+        String uri = getUniqueId(searchString);
         int requestId = searchString.hashCode();
-
-        Log.d(TAG, "fetch(" + searchString + ")");
 
         if (isOngoingRequest(requestId)) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
@@ -88,7 +86,7 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
             return;
         }
 
-        final String uri = getUniqueId(searchString);
+        Log.d(TAG, "fetch(" + searchString + ")");
 
         Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())

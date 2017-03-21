@@ -28,6 +28,8 @@ package io.reark.rxgithubapp.shared.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.UUID;
+
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
@@ -58,6 +60,10 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
         this.userSettingsStore = get(userSettingsStore);
+    }
+
+    protected static int createListenerId() {
+        return UUID.randomUUID().hashCode();
     }
 
     //// REPOSITORY SEARCH
@@ -142,6 +148,8 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     }
 
     protected abstract int fetchGitHubRepository(@NonNull final Integer repositoryId);
+
+    //// GET USER SETTINGS
 
     @NonNull
     public Observable<UserSettings> getUserSettings() {

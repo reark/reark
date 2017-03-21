@@ -47,8 +47,6 @@ public class DataLayer extends ClientDataLayerBase {
 
     private final UriFetcherManager fetcherManager;
 
-    private int nextListenerId = 0;
-
     public DataLayer(@NonNull final UriFetcherManager fetcherManager,
                      @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
                      @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
@@ -66,7 +64,7 @@ public class DataLayer extends ClientDataLayerBase {
     protected int fetchGitHubRepository(@NonNull final Integer repositoryId) {
         checkNotNull(repositoryId);
 
-        int listenerId = ++nextListenerId;
+        int listenerId = createListenerId();
 
         Intent intent = new Intent();
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
@@ -86,7 +84,7 @@ public class DataLayer extends ClientDataLayerBase {
     protected int fetchGitHubRepositorySearch(@NonNull final String searchString) {
         checkNotNull(searchString);
 
-        int listenerId = ++nextListenerId;
+        int listenerId = createListenerId();
 
         Log.d(TAG, "fetchGitHubRepositorySearch(" + searchString + ")");
         Intent intent = new Intent();

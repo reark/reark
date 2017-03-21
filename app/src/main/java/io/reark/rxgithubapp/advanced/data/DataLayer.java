@@ -44,8 +44,6 @@ public class DataLayer extends ClientDataLayerBase {
 
     private final Context context;
 
-    private int nextListenerIndex = 0;
-
     public DataLayer(@NonNull final Context context,
                      @NonNull final UserSettingsStore userSettingsStore,
                      @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
@@ -66,7 +64,7 @@ public class DataLayer extends ClientDataLayerBase {
     protected int fetchGitHubRepository(@NonNull final Integer repositoryId) {
         checkNotNull(repositoryId);
 
-        int listenerId = ++nextListenerIndex;
+        int listenerId = createListenerId();
 
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY.toString());
@@ -81,7 +79,7 @@ public class DataLayer extends ClientDataLayerBase {
     protected int fetchGitHubRepositorySearch(@NonNull final String searchString) {
         checkNotNull(searchString);
 
-        int listenerId = ++nextListenerIndex;
+        int listenerId = createListenerId();
 
         Intent intent = new Intent(context, NetworkService.class);
         intent.putExtra("serviceUriString", GitHubService.REPOSITORY_SEARCH.toString());

@@ -42,6 +42,17 @@ import rx.Observable;
  * @param <R> Non-null type or wrapper for the data this store contains.
  */
 public interface StoreGetInterface<T, R> {
+
+    /**
+     * Whenever a store receives a new
+     * item with the id, it pushes it to the stream.
+     *
+     * @param id The identifier of the requested object, as defined by the store.
+     * @return An observable that either returns the item with the requested id.
+     */
+    @NonNull
+    Observable<R> getStream(@NonNull final T id);
+
     /**
      * Get the latest item in the store with a specific identifier. The returned observable always
      * completes, unlike in its sibling getOnceAndStream.

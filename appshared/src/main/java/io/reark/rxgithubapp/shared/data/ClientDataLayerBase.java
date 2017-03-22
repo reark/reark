@@ -66,7 +66,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
 
         final Observable<NetworkRequestStatus> networkRequestStatusObservable =
                 networkRequestStatusStore
-                        .getOnceAndStream(GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode())
+                        .getStream(GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode())
                         .filter(NetworkRequestStatus::isSome);
 
         final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =

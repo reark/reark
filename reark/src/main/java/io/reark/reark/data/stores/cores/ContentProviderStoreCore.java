@@ -30,13 +30,13 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.processors.PublishProcessor;
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import rx.Observable;
-import rx.Single;
-import rx.subjects.PublishSubject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static java.lang.String.format;
@@ -58,7 +58,7 @@ public abstract class ContentProviderStoreCore<T, U>
     private static final String TAG = ContentProviderStoreCore.class.getSimpleName();
 
     @NonNull
-    private final PublishSubject<StoreItem<T, U>> subjectCache = PublishSubject.create();
+    private final PublishProcessor<StoreItem<T, U>> subjectCache = PublishProcessor.create();
 
     protected ContentProviderStoreCore(@NonNull final ContentResolver contentResolver) {
         super(contentResolver);
@@ -94,8 +94,8 @@ public abstract class ContentProviderStoreCore<T, U>
      * @return An observable that first emits all future items as they are inserted into the store.
      */
     @NonNull
-    protected Observable<StoreItem<T, U>> getStream() {
-        return subjectCache.asObservable();
+    protected Flowable<StoreItem<T, U>> getStream() {
+        return subjectCache.hide();
     }
 
     @NonNull
@@ -116,7 +116,7 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
-    public Observable<U> getCached(@NonNull final T id) {
+    public Flowable<U> getCached(@NonNull final T id) {
         checkNotNull(id);
 
         return getOnce(getUriForId(id));
@@ -124,13 +124,13 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
-    public Observable<U> getStream(@NonNull final T id) {
+    public Flowable<U> getStream(@NonNull final T id) {
         checkNotNull(id);
 
         return subjectCache
                 .filter(item -> item.id().equals(id))
                 .map(StoreItem::item)
-                .asObservable();
+                .hide();
     }
 
     /**

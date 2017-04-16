@@ -28,21 +28,21 @@ package io.reark.reark.viewmodels;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reark.reark.utils.Log;
-import rx.subscriptions.CompositeSubscription;
 
 public abstract class AbstractViewModel {
     private static final String TAG = AbstractViewModel.class.getSimpleName();
 
     @Nullable
-    private CompositeSubscription compositeSubscription;
+    private CompositeDisposable compositeDisposable;
 
     public void subscribeToDataStore() {
         Log.v(TAG, "subscribeToDataStore");
 
         if (!isSubscribed()) {
-            compositeSubscription = new CompositeSubscription();
-            subscribeToDataStoreInternal(compositeSubscription);
+            compositeDisposable = new CompositeDisposable();
+            subscribeToDataStoreInternal(compositeDisposable);
         }
     }
 
@@ -57,18 +57,18 @@ public abstract class AbstractViewModel {
         }
     }
 
-    public abstract void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription);
+    public abstract void subscribeToDataStoreInternal(@NonNull final CompositeDisposable compositeDisposable);
 
     public void unsubscribeFromDataStore() {
         Log.v(TAG, "unsubscribeToDataStore");
 
         if (isSubscribed()) {
-            compositeSubscription.clear();
-            compositeSubscription = null;
+            compositeDisposable.clear();
+            compositeDisposable = null;
         }
     }
 
     private boolean isSubscribed() {
-        return compositeSubscription != null;
+        return compositeDisposable != null;
     }
 }

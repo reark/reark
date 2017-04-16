@@ -30,7 +30,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -42,8 +42,8 @@ public final class RxUtils {
     }
 
     @NonNull
-    public static <T> Observable<List<T>> toObservableList(@NonNull final List<Observable<T>> observables) {
-        return Observable.combineLatest(get(observables), RxUtils::toList);
+    public static <T> Flowable<List<T>> toFlowableList(@NonNull final List<Flowable<T>> observables) {
+        return Flowable.combineLatest(get(observables), RxUtils::toList);
     }
 
     @NonNull

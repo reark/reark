@@ -29,10 +29,10 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.widget.TextView;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -42,13 +42,13 @@ public final class SubscriptionUtils {
     }
 
     @NonNull
-    public static Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
-                                                     @NonNull final TextView textView) {
+    public static Disposable subscribeTextViewText(@NonNull final Flowable<String> observable,
+                                                   @NonNull final TextView textView) {
         return subscribeTextViewText(observable, textView, AndroidSchedulers.mainThread());
     }
 
     @NonNull
-    public static Subscription subscribeTextViewText(@NonNull final Observable<String> observable,
+    public static Disposable subscribeTextViewText(@NonNull final Flowable<String> observable,
                                                      @NonNull final TextView textView,
                                                      @NonNull final Scheduler scheduler) {
         checkNotNull(observable);

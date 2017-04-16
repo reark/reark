@@ -37,35 +37,29 @@ android {
 dependencies {
     debugCompile project(path: ':reark', configuration: 'debug')
     releaseCompile project(path: ':reark', configuration: 'release')
-
     // Support libraries
     compile 'com.android.support:recyclerview-v7:25.1.0'
-
     // Retrofit
     compile 'com.squareup.okhttp3:okhttp-android-support:3.5.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     // Glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
-
     // Dagger
     apt 'com.google.guava:guava:20.0'
     compile 'com.google.dagger:dagger:2.8'
     apt 'com.google.dagger:dagger-compiler:2.8'
-
     // Stetho
     debugCompile 'com.facebook.stetho:stetho:1.4.2'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
-
     // Leak tracing
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
-
     // Unit test build
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.6.1'
     testCompile 'org.powermock:powermock-api-mockito:1.6.6'
     testCompile 'org.powermock:powermock-module-junit4:1.6.6'
+
 }

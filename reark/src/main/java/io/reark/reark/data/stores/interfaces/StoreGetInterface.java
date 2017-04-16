@@ -27,7 +27,7 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 /**
  * Interface for stores from which one can get data in the form of a single item or a stream of
@@ -51,7 +51,7 @@ public interface StoreGetInterface<T, R> {
      * completes, or in case no item is found, a value representing empty data.
      */
     @NonNull
-    Observable<R> getOnce(@NonNull final T id);
+    Flowable<R> getOnce(@NonNull final T id);
 
     /**
      * Get a full stream of items with the specified identifier. Whenever a store receives a new
@@ -66,5 +66,5 @@ public interface StoreGetInterface<T, R> {
      * inserted into the store.
      */
     @NonNull
-    Observable<R> getOnceAndStream(@NonNull final T id);
+    Flowable<R> getOnceAndStream(@NonNull final T id);
 }

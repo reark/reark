@@ -29,20 +29,20 @@ import android.net.Uri;
 
 import java.util.Map;
 
+import io.reactivex.Single;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
-import rx.Observable;
 
 public interface GitHubService {
     static Uri REPOSITORY_SEARCH = Uri.parse("github/search");
     static Uri REPOSITORY = Uri.parse("github/repository");
 
     @GET("/search/repositories")
-    Observable<GitHubRepositorySearchResults> search(@QueryMap Map<String, String> search);
+    Single<GitHubRepositorySearchResults> search(@QueryMap Map<String, String> search);
 
     @GET("/repositories/{id}")
-    Observable<GitHubRepository> getRepository(@Path("id") Integer id);
+    Single<GitHubRepository> getRepository(@Path("id") Integer id);
 }

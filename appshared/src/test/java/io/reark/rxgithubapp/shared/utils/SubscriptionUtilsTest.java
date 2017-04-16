@@ -35,9 +35,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import android.graphics.Color;
 import android.widget.TextView;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
@@ -52,13 +54,13 @@ public class SubscriptionUtilsTest {
     public void setUp() {
         // Mocking AndroidSchedulers.mainThread() as loopers are not mocked by android unit tests
         PowerMockito.stub(PowerMockito.method(AndroidSchedulers.class, "mainThread"))
-                .toReturn(Schedulers.immediate());
+                .toReturn(Schedulers.single());
     }
 
     @Test
     public void testTextViewIsUpdatedWhenValueComes() {
         TextView textView = mock(TextView.class);
-        Observable<String> observable = Observable.just("String");
+        Flowable<String> observable = Flowable.just("String");
 
         SubscriptionUtils.subscribeTextViewText(observable, textView);
 
@@ -68,7 +70,7 @@ public class SubscriptionUtilsTest {
     @Test
     public void testTextViewIsUpdatedWithErrorMessageOnError() {
         TextView textView = mock(TextView.class);
-        Observable<String> observable = Observable.error(new NullPointerException());
+        Flowable<String> observable = Flowable.error(new NullPointerException());
 
         SubscriptionUtils.subscribeTextViewText(observable, textView);
 

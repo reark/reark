@@ -27,14 +27,14 @@ package io.reark.rxgithubapp.shared.viewmodels;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.Flowable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.processors.BehaviorProcessor;
 import io.reark.reark.viewmodels.AbstractViewModel;
 import io.reark.rxgithubapp.shared.data.DataFunctions.FetchAndGetGitHubRepository;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetUserSettings;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
-import rx.subscriptions.CompositeSubscription;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -48,7 +48,7 @@ public class RepositoryViewModel extends AbstractViewModel {
     private final FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
     @NonNull
-    private final BehaviorSubject<GitHubRepository> repository = BehaviorSubject.create();
+    private final BehaviorProcessor<GitHubRepository> repository = BehaviorProcessor.create();
 
     public RepositoryViewModel(@NonNull final GetUserSettings getUserSettings,
                                @NonNull final FetchAndGetGitHubRepository fetchAndGetGitHubRepository) {
@@ -57,19 +57,18 @@ public class RepositoryViewModel extends AbstractViewModel {
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
-        checkNotNull(compositeSubscription);
-
-        compositeSubscription.add(
+    public void subscribeToDataStoreInternal(@NonNull final CompositeDisposable compositeDisposable) {
+        checkNotNull(compositeDisposable);
+                compositeDisposable.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
                         .switchMap(fetchAndGetGitHubRepository::call)
-                        .subscribe(repository)
+                        .subscribe(repository::onNext)
         );
     }
 
     @NonNull
-    public Observable<GitHubRepository> getRepository() {
-        return repository.asObservable();
+    public Flowable<GitHubRepository> getRepository() {
+        return repository.hide();
     }
 }

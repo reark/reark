@@ -31,11 +31,11 @@ import android.support.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Subscription;
-import rx.functions.Action1;
+import retrofit2.HttpException;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -46,12 +46,12 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private static final int NO_ERROR_CODE = -1;
 
     @NonNull
-    private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
+    private final Consumer<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Disposable> requestMap = new ConcurrentHashMap<>();
 
-    protected FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    protected FetcherBase(@NonNull final Consumer<NetworkRequestStatus> updateNetworkRequestStatus) {
         this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
     }
 
@@ -59,38 +59,50 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         checkNotNull(uri);
 
         Log.v(TAG, "startRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
+        try {
+            updateNetworkRequestStatus.accept(NetworkRequestStatus.ongoing(uri));
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     protected void errorRequest(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
         checkNotNull(uri);
 
         Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
+        try {
+            updateNetworkRequestStatus.accept(NetworkRequestStatus.error(uri, errorCode, errorMessage));
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     protected void completeRequest(@NonNull final String uri) {
         checkNotNull(uri);
 
         Log.v(TAG, "completeRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
+        try {
+            updateNetworkRequestStatus.accept(NetworkRequestStatus.completed(uri));
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     protected boolean isOngoingRequest(int requestId) {
         Log.v(TAG, "isOngoingRequest(" + requestId + ")");
 
         return requestMap.containsKey(requestId)
-                && !requestMap.get(requestId).isUnsubscribed();
+                && !requestMap.get(requestId).isDisposed();
     }
 
-    protected void addRequest(int requestId, @NonNull final Subscription subscription) {
+    protected void addRequest(int requestId, @NonNull final Disposable disposable) {
         Log.v(TAG, "addRequest(" + requestId + ")");
 
-        requestMap.put(requestId, get(subscription));
+        requestMap.put(requestId, get(disposable));
     }
 
     @NonNull
-    public Action1<Throwable> doOnError(@NonNull final String uri) {
+    public Consumer<Throwable> doOnError(@NonNull final String uri) {
         checkNotNull(uri);
 
         return throwable -> {

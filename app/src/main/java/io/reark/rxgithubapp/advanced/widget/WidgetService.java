@@ -36,14 +36,14 @@ import android.widget.RemoteViews;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.R;
 import io.reark.rxgithubapp.advanced.RxGitHubApp;
 import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 public class WidgetService extends Service {
     private static final String TAG = WidgetService.class.getSimpleName();
@@ -54,7 +54,7 @@ public class WidgetService extends Service {
     @Inject
     DataFunctions.FetchAndGetGitHubRepository fetchAndGetGitHubRepository;
 
-    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public WidgetService() {
         RxGitHubApp.getInstance().getGraph().inject(this);
@@ -83,9 +83,9 @@ public class WidgetService extends Service {
         remoteViews.setTextViewText(R.id.widget_layout_title, "Loading repository..");
         appWidgetManager.updateAppWidget(widgetId, remoteViews);
 
-        clearSubscriptions();
+        clearDisposable();
 
-        subscriptions.add(
+        compositeDisposable.add(
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
                         .doOnNext(repositoryId -> Log.d(TAG, "Changed repository to " + repositoryId))
@@ -112,8 +112,8 @@ public class WidgetService extends Service {
                         }));
     }
 
-    private void clearSubscriptions() {
-        subscriptions.clear();
+    private void clearDisposable() {
+        compositeDisposable.clear();
     }
 
     @Override

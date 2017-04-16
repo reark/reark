@@ -32,12 +32,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.shared.data.DataFunctions;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
-import rx.Observable;
-import rx.observers.TestSubscriber;
+
 
 import static io.reark.reark.data.DataStreamNotification.fetchingError;
 import static io.reark.reark.data.DataStreamNotification.fetchingStart;
@@ -46,7 +48,8 @@ import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.Progr
 import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.IDLE;
 import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus.LOADING;
 import static io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.toProgressStatus;
-import static org.junit.Assert.assertEquals;
+
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class RepositoriesViewModelTest {
@@ -57,52 +60,46 @@ public class RepositoriesViewModelTest {
     public void setUp() {
         viewModel = new RepositoriesViewModel(
                 mock(GetGitHubRepositorySearch.class),
-                repositoryId -> Observable.just(mock(GitHubRepository.class)));
+                repositoryId -> Flowable.just(mock(GitHubRepository.class)));
     }
 
     @Test
-    public void testStartFetchingReportedAsLoading() {
-        assertEquals(LOADING, toProgressStatus().call(fetchingStart()));
+    public void testStartFetchingReportedAsLoading() throws Exception {
+            assertEquals(LOADING, toProgressStatus().apply(fetchingStart()));
     }
 
     @Test
-    public void testFetchingErrorReportedAsError() {
-        assertEquals(ERROR, toProgressStatus().call(fetchingError()));
+    public void testFetchingErrorReportedAsError() throws Exception {
+            assertEquals(ERROR, toProgressStatus().apply(fetchingError()));
     }
 
     @Test
-    public void testAnyValueReportedAsIdle() {
+    public void testAnyValueReportedAsIdle() throws Exception {
         GitHubRepositorySearch value = new GitHubRepositorySearch("", Collections.emptyList());
-
-        assertEquals(IDLE, toProgressStatus().call(onNext(value)));
+        assertEquals(IDLE, toProgressStatus().apply(onNext(value)));
     }
 
     @Test
     public void testTooManyRepositoriesAreCappedToFive() {
         TestSubscriber<List<GitHubRepository>> observer = new TestSubscriber<>();
-
-        viewModel.toGitHubRepositoryList()
-                 .call(Arrays.asList(1, 2, 3, 4, 5, 6))
-                 .subscribe(observer);
-
+        try {
+            viewModel.toGitHubRepositoryList()
+                     .apply(Arrays.asList(1, 2, 3, 4, 5, 6))
+                     .subscribe(observer);
+        } catch (Exception e) {
+            Log.e("RepositoriesViewModelTest", e.getMessage());
+        }
         observer.awaitTerminalEvent();
-        assertEquals("Invalid number of repositories",
-                     5,
-                     observer.getOnNextEvents().get(0).size());
+        assertEquals("Invalid number of repositories", 5, ((List)observer.getEvents().get(0).get(0)).size());
     }
 
     @Test
-    public void testTooLittleRepositoriesReturnThoseRepositories() {
+    public void testTooLittleRepositoriesReturnThoseRepositories() throws Exception {
         TestSubscriber<List<GitHubRepository>> observer = new TestSubscriber<>();
-
         viewModel.toGitHubRepositoryList()
-                 .call(Arrays.asList(1, 2, 3))
+                 .apply(Arrays.asList(1, 2, 3, 4, 5))
                  .subscribe(observer);
-
-        observer.awaitTerminalEvent();
-        assertEquals("Invalid number of repositories",
-                     3,
-                     observer.getOnNextEvents().get(0).size());
+        assertEquals("Invalid number of repositories", 5, ((List)observer.getEvents().get(0).get(0)).size());
     }
 
     @Test(expected = NullPointerException.class)

@@ -42,11 +42,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.subscribers.TestSubscriber;
 import io.reark.reark.data.stores.SimpleMockContentProvider.DataColumns;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
-import rx.Observable;
-import rx.functions.Action1;
-import rx.observers.TestSubscriber;
 
 @RunWith(AndroidJUnit4.class)
 public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
@@ -72,80 +72,77 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         core = new TestStoreCore(getMockContentResolver());
         store = new TestStore(core);
 
-        Action1<String> insert = value ->
+        Consumer<String> insert = value ->
                 getProvider().insert(
                         core.getUriForId(TestStore.getIdFor(value)),
                         core.getContentValuesForItem(value)
                 );
 
         // Prepare the mock content provider with values
-        insert.call("parsnip");
-        insert.call("lettuce");
-        insert.call("spinach");
+        insert.accept("parsnip");
+        insert.accept("lettuce");
+        insert.accept("spinach");
     }
 
     @Test
     public void getOnce_WithData_ReturnsData_AndCompletes() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = Collections.singletonList("parsnip");
+        String expected = "parsnip";
 
         // ACT
         store.getOnce(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertResult(expected);
     }
 
     @Test
     public void getOnce_WithNoData_ReturnsNoneValue_AndCompletes() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = Collections.singletonList(NONE);
-
         // ACT
         store.getOnce(TestStore.getIdFor("bacon")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertResult(NONE);
     }
 
     @Test
     public void getOnceAndStream_WithData_ReturnsData_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = Collections.singletonList("spinach");
+        String expected = "spinach";
 
         // ACT
         store.getOnceAndStream(TestStore.getIdFor("spinach")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertResult(expected);
     }
 
     @Test
     public void getOnceAndStream_WithNoData_ReturnsNoneValue_AndDoesNotComplete() {
         // ARRANGE
         TestSubscriber<String> testSubscriber = new TestSubscriber<>();
-        List<String> expected = Collections.singletonList(NONE);
 
         // ACT
         store.getOnceAndStream(TestStore.getIdFor("bacon")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertResult(NONE);
     }
 
     // The following tests are not part of the public API, but rather test what
@@ -155,23 +152,23 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
     public void core_GetAllOnce_WithData_ReturnsData_AndCompletes() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        List<List<String>> expected = Collections.singletonList(Collections.singletonList("parsnip"));
+        List<String> expected = Arrays.asList("parsnip");
 
         // ACT
         core.getAllCached(TestStore.getIdFor("parsnip")).subscribe(testSubscriber);
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertResult(expected);
     }
 
     @Test
     public void core_GetAllOnce_WithWildcardQuery_WithData_ReturnsAllData_AndCompletes() {
         // ARRANGE
         TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        List<List<String>> expected = Collections.singletonList(Arrays.asList("parsnip", "lettuce", "spinach"));
+        List<String> expected = (Arrays.asList("parsnip", "lettuce", "spinach"));
 
         // ACT
         // Wildcard depends on content provider. For tests we just use 0 while on SQL backend
@@ -181,9 +178,9 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
 
         // ASSERT
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(expected);
+        testSubscriber.assertResult(expected);
     }
 
     /**
@@ -214,7 +211,7 @@ public class ContentProviderStoreTest extends ProviderTestCase2<SimpleMockConten
         }
 
         @NonNull
-        public Observable<List<String>> getAllCached(@NonNull Integer id) {
+        public Flowable<List<String>> getAllCached(@NonNull Integer id) {
             return getAllOnce(getUriForId(id));
         }
 

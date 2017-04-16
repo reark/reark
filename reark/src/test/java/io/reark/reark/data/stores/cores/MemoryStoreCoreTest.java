@@ -28,12 +28,13 @@ package io.reark.reark.data.stores.cores;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 import io.reark.reark.data.stores.StoreItem;
-import rx.Observable;
-import rx.observers.TestSubscriber;
+
 
 public class MemoryStoreCoreTest {
 
@@ -46,7 +47,7 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void put_StoresValue() {
-        TestSubscriber<Boolean> putSubscriber = new TestSubscriber<>();
+        TestObserver<Boolean> putSubscriber = new TestObserver<>();
         TestSubscriber<String> getSubscriber = new TestSubscriber<>();
         memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
@@ -58,8 +59,8 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void put_WithTwoDifferentIds_StoresTwoValues() {
-        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
+        TestObserver<Boolean> putSubscriber1 = new TestObserver<>();
+        TestObserver<Boolean> putSubscriber2 = new TestObserver<>();
         TestSubscriber<String> getSubscriber1 = new TestSubscriber<>();
         TestSubscriber<String> getSubscriber2 = new TestSubscriber<>();
         memoryStoreCore.getStream(100).subscribe(getSubscriber1);
@@ -76,8 +77,8 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void put_WithTwoSameIds_WithSameValues_StoresValueOnce() {
-        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
+        TestObserver<Boolean> putSubscriber1 = new TestObserver<>();
+        TestObserver<Boolean> putSubscriber2 = new TestObserver<>();
         TestSubscriber<String> getSubscriber = new TestSubscriber<>();
         memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
@@ -91,8 +92,8 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void put_WithTwoSameIds_WithDifferentValues_StoresValueTwice() {
-        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
+        TestObserver<Boolean> putSubscriber1 = new TestObserver<>();
+        TestObserver<Boolean> putSubscriber2 = new TestObserver<>();
         TestSubscriber<String> getSubscriber = new TestSubscriber<>();
         memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
@@ -108,7 +109,7 @@ public class MemoryStoreCoreTest {
     public void delete_WithNoExistingValue_EmitsFalse() {
         memoryStoreCore.delete(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(false);
     }
 
@@ -118,11 +119,11 @@ public class MemoryStoreCoreTest {
 
         memoryStoreCore.delete(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(true);
         memoryStoreCore.getCached(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertNoValues();
     }
 
@@ -134,7 +135,7 @@ public class MemoryStoreCoreTest {
 
         memoryStoreCore.delete(100);
 
-        getSubscriber.assertNotCompleted();
+        getSubscriber.assertNotComplete();
         getSubscriber.assertNoValues();
     }
 
@@ -147,13 +148,12 @@ public class MemoryStoreCoreTest {
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.put(200, "test value 2");
 
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
+        testSubscriber.assertValues(
                         new StoreItem<>(100, "test value 1"),
                         new StoreItem<>(200, "test value 2")
-                ));
+                );
     }
 
     @Test
@@ -166,13 +166,12 @@ public class MemoryStoreCoreTest {
         memoryStoreCore.put(200, "test value 2");
         memoryStoreCore.put(300, "test value 3");
 
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
+        testSubscriber.assertValues(
                         new StoreItem<>(200, "test value 2"),
                         new StoreItem<>(300, "test value 3")
-                ));
+                );
     }
 
     @Test
@@ -180,19 +179,18 @@ public class MemoryStoreCoreTest {
         // MemoryStoreCore does not provide cached values as part of the stream.
         TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
 
-        Observable<StoreItem<Integer, String>> stream = memoryStoreCore.getStream();
+        Flowable<StoreItem<Integer, String>> stream = memoryStoreCore.getStream();
         memoryStoreCore.put(100, "test value 1");
         stream.subscribe(testSubscriber);
         memoryStoreCore.put(200, "test value 2");
         memoryStoreCore.put(300, "test value 3");
 
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
+        testSubscriber.assertValues(
                         new StoreItem<>(200, "test value 2"),
                         new StoreItem<>(300, "test value 3")
-                ));
+                );
     }
 
     @Test
@@ -207,12 +205,12 @@ public class MemoryStoreCoreTest {
         memoryStoreCore.put(200, "test value 2");
 
         testSubscriber1.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber1.assertNotCompleted();
+        testSubscriber1.assertNotComplete();
         testSubscriber1.assertNoErrors();
         testSubscriber1.assertValue("test value 1");
 
         testSubscriber2.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber2.assertNotCompleted();
+        testSubscriber2.assertNotComplete();
         testSubscriber2.assertNoErrors();
         testSubscriber2.assertValue("test value 2");
     }
@@ -226,7 +224,7 @@ public class MemoryStoreCoreTest {
         memoryStoreCore.getStream(100).subscribe(testSubscriber);
         memoryStoreCore.put(100, "test value 2");
 
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue("test value 2");
     }

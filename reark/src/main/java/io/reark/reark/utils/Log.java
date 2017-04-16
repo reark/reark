@@ -25,7 +25,8 @@
  */
 package io.reark.reark.utils;
 
-import rx.functions.Action1;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Thread-aware logging util
@@ -60,11 +61,11 @@ public class Log {
         android.util.Log.e(getThreadSignature(tag), msg, tr);
     }
 
-    public static Action1<Throwable> onError(String tag) {
+    public static Consumer<Throwable> onError(String tag) {
         return onError(tag, "Error");
     }
 
-    public static Action1<Throwable> onError(String tag, String msg) {
+    public static Consumer<Throwable> onError(String tag, String msg) {
         return error -> Log.e(tag, msg, error);
     }
 

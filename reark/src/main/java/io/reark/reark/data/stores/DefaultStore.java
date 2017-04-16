@@ -29,8 +29,8 @@ import android.support.annotation.NonNull;
 
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -88,7 +88,7 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
     @NonNull
     @Override
-    public Observable<R> getOnce(@NonNull final T id) {
+    public Flowable<R> getOnce(@NonNull final T id) {
         checkNotNull(id);
 
         return core.getCached(id)
@@ -98,10 +98,10 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
     @NonNull
     @Override
-    public Observable<R> getOnceAndStream(@NonNull final T id) {
+    public Flowable<R> getOnceAndStream(@NonNull final T id) {
         checkNotNull(id);
 
-        return Observable.concat(
+        return Flowable.concat(
                 getOnce(id),
                 core.getStream(id).map(getNullSafe::call));
     }

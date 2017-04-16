@@ -46,7 +46,7 @@ public final class CoreOperation {
     @NonNull
     private final ContentProviderOperation operation;
 
-    CoreOperation(int id, @NonNull Uri uri) {
+    public CoreOperation(int id, @NonNull Uri uri) {
         this(id, uri, NO_OP);
     }
 

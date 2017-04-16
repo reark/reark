@@ -30,14 +30,11 @@ import android.support.v4.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.observers.AssertableSubscriber;
-import rx.observers.TestSubscriber;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class MemoryStoreTest {
 
@@ -66,9 +63,10 @@ public class MemoryStoreTest {
         memoryStore.put(value);
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value));
+
+        testSubscriber.assertValue(value);
     }
 
     @Test
@@ -76,7 +74,7 @@ public class MemoryStoreTest {
         // getOnce is expected to return null observable in case it does not have the value.
         memoryStore.getOnce(100).subscribe(testSubscriber);
 
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(NONE);
     }
@@ -91,9 +89,9 @@ public class MemoryStoreTest {
         memoryStore.put(value2);
 
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(NONE, value1));
+        testSubscriber.assertValues(NONE, value1);
     }
 
     @Test
@@ -108,9 +106,9 @@ public class MemoryStoreTest {
         memoryStore.put(value3);
 
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(NONE, value1, value2, value3));
+        testSubscriber.assertValues(NONE, value1, value2, value3);
     }
 
     @Test
@@ -123,9 +121,9 @@ public class MemoryStoreTest {
         memoryStore.put(value);
 
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(NONE, value));
+        testSubscriber.assertValues(NONE, value);
     }
 
     @Test
@@ -136,9 +134,9 @@ public class MemoryStoreTest {
         memoryStore.getOnceAndStream(100).subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value));
+        testSubscriber.assertValues(value);
     }
 
     @Test
@@ -156,7 +154,7 @@ public class MemoryStoreTest {
         memoryStore.put(value1);
 
         // Create the stream observable but do not subscribe immediately.
-        Observable<Pair<Integer, String>> stream = memoryStore.getOnceAndStream(100);
+        Flowable<Pair<Integer, String>> stream = memoryStore.getOnceAndStream(100);
 
         // Put new value into the store.
         memoryStore.put(value2);
@@ -167,9 +165,9 @@ public class MemoryStoreTest {
         // Observe that the stream actually gives as the first item the cached value at the time of
         // creating the stream observable.
         testSubscriber.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value1));
+        testSubscriber.assertValues(value1);
     }
 
     @Test
@@ -206,8 +204,7 @@ public class MemoryStoreTest {
     public void delete_WithNoData_EmitsFalse() {
         memoryStore.delete(765)
                 .test()
-                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(false);
     }
 
@@ -218,14 +215,13 @@ public class MemoryStoreTest {
 
         memoryStore.delete(100)
                 .test()
-                .awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(true);
         memoryStore.getOnce(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(singletonList(NONE));;
+                .assertValues(NONE);
     }
 
     @Test
@@ -233,12 +229,11 @@ public class MemoryStoreTest {
         final Pair<Integer, String> value = new Pair<>(100, "test string 1");
         memoryStore.put(value);
 
-        AssertableSubscriber<Pair<Integer, String>> ts = memoryStore.getOnceAndStream(100).test();
+        TestSubscriber<Pair<Integer, String>> ts = memoryStore.getOnceAndStream(100).test();
         memoryStore.delete(100);
 
-        ts.awaitTerminalEvent(50, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+        ts.assertNotComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(singletonList(value));
+                .assertValues(value);
     }
 }

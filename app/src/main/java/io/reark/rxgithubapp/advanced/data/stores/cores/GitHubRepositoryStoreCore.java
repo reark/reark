@@ -35,6 +35,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.utils.Preconditions;
@@ -42,7 +43,7 @@ import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import rx.Observable;
+
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -57,12 +58,12 @@ public class GitHubRepositoryStoreCore extends ContentProviderStoreCore<Integer,
     }
 
     @NonNull
-    public Observable<List<GitHubRepository>> getAllCached() {
+    public Flowable<List<GitHubRepository>> getAllCached() {
         return getAllOnce(getContentUri());
     }
 
     @NonNull
-    public Observable<GitHubRepository> getAllStream() {
+    public Flowable<GitHubRepository> getAllStream() {
         return getStream().map(StoreItem::item);
     }
 

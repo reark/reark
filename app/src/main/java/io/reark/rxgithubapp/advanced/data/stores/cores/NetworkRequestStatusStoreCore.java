@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
 import io.reark.reark.data.stores.cores.operations.CoreOperation;
 import io.reark.reark.pojo.NetworkRequestStatus;
@@ -44,7 +45,7 @@ import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.NetworkRequestStatusColumns;
-import rx.Observable;
+
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -60,7 +61,7 @@ public class NetworkRequestStatusStoreCore extends ContentProviderStoreCore<Inte
 
     @NonNull
     @Override
-    protected Observable<List<CoreOperation>> groupOperations(@NonNull final Observable<CoreOperation> source) {
+    protected Flowable<List<CoreOperation>> groupOperations(@NonNull final Flowable<CoreOperation> source) {
         // NetworkRequestStatus updates should not be grouped to ensure fast processing.
         return source.map(Collections::singletonList);
     }

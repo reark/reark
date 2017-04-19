@@ -80,9 +80,10 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
         String uri = getUniqueId(searchString);
         int requestId = searchString.hashCode();
 
+        addListener(requestId, listenerId);
+
         if (isOngoingRequest(requestId)) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
-            addListener(requestId, listenerId);
             return;
         }
 
@@ -98,13 +99,13 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
                     }
                     return new GitHubRepositorySearch(searchString, repositoryIds);
                 })
-                .doOnSubscribe(() -> startRequest(requestId, listenerId, uri))
+                .doOnSubscribe(() -> startRequest(requestId, uri))
                 .doOnCompleted(() -> completeRequest(requestId, uri))
                 .doOnError(doOnError(requestId, uri))
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
 
-        addRequest(requestId, listenerId, subscription);
+        addRequest(requestId, subscription);
     }
 
     @NonNull

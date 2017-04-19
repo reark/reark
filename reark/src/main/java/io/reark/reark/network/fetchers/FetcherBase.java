@@ -60,7 +60,10 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Pair<Subscription, Set<Integer>>> requestMap = new ConcurrentHashMap<>(20, 0.75f, 2);
+    private final Map<Integer, Set<Integer>> listeners = new ConcurrentHashMap<>(20, 0.75f, 2);
+
+    @NonNull
+    private final Map<Integer, Subscription> requests = new ConcurrentHashMap<>(20, 0.75f, 2);
 
     @NonNull
     private final ObjectLockHandler<Integer> locker = new ObjectLockHandler<>();
@@ -69,18 +72,14 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
     }
 
-    protected void startRequest(int requestId, int listenerId, @NonNull String uri) {
-        Log.v(TAG, String.format("startRequest(%s, %s, %s)", requestId, listenerId, get(uri)));
+    protected void startRequest(int requestId, @NonNull String uri) {
+        Log.v(TAG, String.format("startRequest(%s, %s)", requestId, get(uri)));
 
         lock(requestId);
 
-        // Fetcher calls startRequest before addRequest, so at this point the listenerId is not yet
-        // in the list of listeners for the request Subscription and we must use `createListeners`
-        // instead of `getListeners`. A newly created request can in any case only have one active
-        // listener (the one being created), so the outcome isn't affected.
         updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
                 .uri(uri)
-                .listeners(createListener(listenerId))
+                .listeners(getListeners(requestId))
                 .ongoing()
                 .build());
 
@@ -117,26 +116,22 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         release(requestId);
     }
 
-    protected void addRequest(int requestId, int listenerId, @NonNull Subscription subscription) {
-        Log.v(TAG, String.format("addRequest(%s, %s)", requestId, listenerId));
+    protected void addRequest(int requestId, @NonNull Subscription subscription) {
+        Log.v(TAG, String.format("addRequest(%s)", requestId));
+        checkNotNull(subscription);
 
         lock(requestId);
 
-        Set<Integer> listeners = createListener(listenerId);
+        if (requests.containsKey(requestId)) {
+            Subscription oldRequest = requests.remove(requestId);
 
-        if (requestMap.containsKey(requestId)) {
-            Pair<Subscription, Set<Integer>> oldRequest = requestMap.remove(requestId);
-
-            if (!oldRequest.first.isUnsubscribed()) {
-                Log.w(TAG, "Unexpected subscribed ");
-                oldRequest.first.unsubscribe();
+            if (!oldRequest.isUnsubscribed()) {
+                Log.w(TAG, "Unexpected subscribed request " + requestId);
+                oldRequest.unsubscribe();
             }
-
-            // Old listeners are still potentially interested in new fetches
-            listeners.addAll(oldRequest.second);
         }
 
-        requestMap.put(requestId, new Pair<>(get(subscription), listeners));
+        requests.put(requestId, subscription);
 
         release(requestId);
     }
@@ -146,7 +141,13 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
 
         lock(requestId);
 
-        requestMap.get(requestId).second.add(listenerId);
+        Set<Integer> newListeners = createListener(listenerId);
+
+        if (requests.containsKey(requestId)) {
+            newListeners.addAll(listeners.get(requestId));
+        }
+
+        listeners.put(requestId, newListeners);
 
         release(requestId);
     }
@@ -156,8 +157,8 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
 
         lock(requestId);
 
-        boolean isOngoing = requestMap.containsKey(requestId)
-                && !requestMap.get(requestId).first.isUnsubscribed();
+        boolean isOngoing = requests.containsKey(requestId)
+                && !requests.get(requestId).isUnsubscribed();
 
         release(requestId);
 
@@ -166,7 +167,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
 
     @NonNull
     private Set<Integer> getListeners(int requestId) {
-        return requestMap.get(requestId).second;
+        return listeners.get(requestId);
     }
 
     @NonNull
@@ -186,7 +187,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
                 int statusCode = httpException.code();
                 errorRequest(requestId, uri, statusCode, httpException.getMessage());
             } else {
-                Log.e(TAG, "The error was not a RetrofitError");
+                Log.w(TAG, "The error was not a RetrofitError");
                 errorRequest(requestId, uri, NO_ERROR_CODE, null);
             }
         };

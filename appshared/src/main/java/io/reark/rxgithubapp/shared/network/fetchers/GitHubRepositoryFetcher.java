@@ -70,9 +70,10 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
         int repositoryId = intent.getIntExtra("repositoryId", 0);
         final String uri = getUniqueId(repositoryId);
 
+        addListener(repositoryId, listenerId);
+
         if (isOngoingRequest(repositoryId)) {
             Log.d(TAG, "Found an ongoing request for repository " + repositoryId);
-            addListener(repositoryId, listenerId);
             return;
         }
 
@@ -80,13 +81,13 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
 
         Subscription subscription = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
-                .doOnSubscribe(() -> startRequest(repositoryId, listenerId, uri))
+                .doOnSubscribe(() -> startRequest(repositoryId, uri))
                 .doOnError(doOnError(repositoryId, uri))
                 .doOnCompleted(() -> completeRequest(repositoryId, uri))
                 .subscribe(gitHubRepositoryStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository " + repositoryId, e));
 
-        addRequest(repositoryId, listenerId, subscription);
+        addRequest(repositoryId, subscription);
     }
 
     @NonNull

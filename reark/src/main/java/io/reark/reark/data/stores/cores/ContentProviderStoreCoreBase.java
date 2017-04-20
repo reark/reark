@@ -291,29 +291,29 @@ public abstract class ContentProviderStoreCoreBase<U> {
         checkNotNull(item);
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreValuePut.create(index, uri, item));
+        return createModifyingOperation(id -> CoreValuePut.create(id, uri, item));
     }
 
     @NonNull
     protected Single<Boolean> delete(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreValueDelete.create(index, uri));
+        return createModifyingOperation(id -> CoreValueDelete.create(id, uri));
     }
 
     @NonNull
     private Single<Boolean> createModifyingOperation(@NonNull final Func1<Integer, CoreValue<U>> valueFunc) {
-        int index = createIndex();
+        int id = createId();
 
-        completionNotifiers.put(index, PublishSubject.create());
-        operationSubject.onNext(valueFunc.call(index));
+        completionNotifiers.put(id, PublishSubject.create());
+        operationSubject.onNext(valueFunc.call(id));
 
-        return completionNotifiers.get(index)
+        return completionNotifiers.get(id)
                 .first()
                 .toSingle();
     }
 
-    private static int createIndex() {
+    private static int createId() {
         return UUID.randomUUID().hashCode();
     }
 

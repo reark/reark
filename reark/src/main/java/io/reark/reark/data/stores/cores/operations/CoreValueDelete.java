@@ -29,40 +29,44 @@ import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import rx.subjects.Subject;
+
 /**
  * A class used to represent a deletion from the database.
  */
 public final class CoreValueDelete<U> implements CoreValue<U> {
 
-    private final int id;
-
     @NonNull
     private final Uri uri;
 
-    private CoreValueDelete(int id, @NonNull Uri uri) {
-        this.id = id;
+    @NonNull
+    private final Subject<Boolean, Boolean> subject;
+
+    private CoreValueDelete(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> subject) {
         this.uri = uri;
+        this.subject = subject;
     }
 
     @NonNull
-    public static <U> CoreValueDelete<U> create(int id, @NonNull Uri uri) {
-        return new CoreValueDelete<>(id, uri);
+    public static <U> CoreValueDelete<U> create(@NonNull Subject<Boolean, Boolean> subject, @NonNull Uri uri) {
+        return new CoreValueDelete<>(uri, subject);
     }
 
     @NonNull
     public CoreOperation toDeleteOperation() {
-        return new CoreOperation(id, uri, ContentProviderOperation.newDelete(uri).build());
+        return new CoreOperation(uri, subject, ContentProviderOperation.newDelete(uri).build());
     }
 
     @Override
     @NonNull
     public CoreOperation noOperation() {
-        return new CoreOperation(id, uri);
+        return new CoreOperation(uri, subject);
     }
 
+    @NonNull
     @Override
-    public int id() {
-        return id;
+    public Subject<Boolean, Boolean> subject() {
+        return subject;
     }
 
     @Override

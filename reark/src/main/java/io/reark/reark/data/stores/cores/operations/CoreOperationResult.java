@@ -29,34 +29,38 @@ import android.content.ContentProviderResult;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-public final class CoreOperationResult {
+import rx.subjects.Subject;
 
-    private final int id;
+public final class CoreOperationResult {
 
     @NonNull
     private final Uri uri;
 
+    @NonNull
+    private final Subject<Boolean, Boolean> subject;
+
     private final boolean success;
 
     public CoreOperationResult(@NonNull CoreOperation operation, boolean success) {
-        this.id = operation.id();
         this.uri = operation.uri();
+        this.subject = operation.subject();
         this.success = success;
     }
 
     public CoreOperationResult(@NonNull ContentProviderResult result, @NonNull CoreOperation operation) {
-        this.id = operation.id();
         this.uri = operation.uri();
+        this.subject = operation.subject();
         this.success = result.count == null || result.count > 0;
-    }
-
-    public int id() {
-        return id;
     }
 
     @NonNull
     public Uri uri() {
         return uri;
+    }
+
+    @NonNull
+    public Subject<Boolean, Boolean> subject() {
+        return subject;
     }
 
     public boolean success() {

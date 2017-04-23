@@ -175,7 +175,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
                 Observable.merge(
                         stream.window(groupMaxSize).skip(1),
                         stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS))))
-                .filter(list -> !list.isEmpty());
+                .filter(list -> !list.isEmpty())
+                .onBackpressureBuffer();
     }
 
     @NonNull
@@ -307,6 +308,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
+        checkNotNull(uri);
+
         return Observable.fromCallable(() -> queryList(uri))
                 .subscribeOn(Schedulers.io());
     }

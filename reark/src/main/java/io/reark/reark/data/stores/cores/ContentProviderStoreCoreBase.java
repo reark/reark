@@ -170,15 +170,18 @@ public abstract class ContentProviderStoreCoreBase<U> {
     /**
      * Implements grouping logic for batching the content provider operations. The default
      * logic buffers the operations with debounced timer while applying a hard limit for the
-     * number of operations. The data is serialized into a binder transaction. An attempt
-     * to pass a too large batch of operations will result in a failed binder transaction.
+     * number of operations.
+     *
+     * The data is serialized into a binder transaction. An attempt to pass here a too large
+     * batch of operations will result in a failed binder transaction.
      */
     @NonNull
     protected <R> Observable<List<R>> groupOperations(@NonNull final Observable<R> source) {
         return source.publish(stream -> stream.buffer(
                 Observable.merge(
                         stream.window(groupMaxSize).skip(1),
-                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS))));
+                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS))))
+                .filter(list -> !list.isEmpty());
     }
 
     @NonNull

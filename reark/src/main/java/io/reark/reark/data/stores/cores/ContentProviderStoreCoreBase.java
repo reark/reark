@@ -76,9 +76,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private final String TAG = getClass().getSimpleName();
 
-    private static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
+    public static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
 
-    private static final int DEFAULT_GROUP_MAX_SIZE = 30;
+    public static final int DEFAULT_GROUP_MAX_SIZE = 30;
 
     @NonNull
     private final ContentResolver contentResolver;
@@ -174,13 +174,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
      * to pass a too large batch of operations will result in a failed binder transaction.
      */
     @NonNull
-    protected Observable<List<CoreOperation>> groupOperations(@NonNull final Observable<CoreOperation> source) {
+    protected <R> Observable<List<R>> groupOperations(@NonNull final Observable<R> source) {
         return source.publish(stream -> stream.buffer(
-                Observable.amb(
-                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS),
-                        stream.skip(groupMaxSize - 1))
-                        .first() // Complete observable after the first reached trigger
-                        .repeatWhen(observable -> observable))); // Resubscribe immediately for the next buffer
+                Observable.merge(
+                        stream.window(groupMaxSize).skip(1),
+                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS))));
     }
 
     @NonNull

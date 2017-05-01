@@ -60,7 +60,7 @@ public class NetworkRequestStatusStoreCore extends ContentProviderStoreCore<Inte
 
     @NonNull
     @Override
-    protected Observable<List<CoreOperation>> groupOperations(@NonNull final Observable<CoreOperation> source) {
+    protected <R> Observable<List<R>> groupOperations(@NonNull Observable<R> source) {
         // NetworkRequestStatus updates should not be grouped to ensure fast processing.
         return source.map(Collections::singletonList);
     }

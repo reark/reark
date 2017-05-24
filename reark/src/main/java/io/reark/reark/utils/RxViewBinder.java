@@ -28,25 +28,25 @@ package io.reark.reark.utils;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class RxViewBinder {
 
     @Nullable
-    private CompositeSubscription compositeSubscription;
+    private CompositeDisposable compositeDisposable;
 
     public void bind() {
         unbind();
-        compositeSubscription = new CompositeSubscription();
-        bindInternal(compositeSubscription);
+        compositeDisposable = new CompositeDisposable();
+        bindInternal(compositeDisposable);
     }
 
     public void unbind() {
-        if (compositeSubscription != null) {
-            compositeSubscription.clear();
-            compositeSubscription = null;
+        if (compositeDisposable != null) {
+            compositeDisposable.clear();
+            compositeDisposable = null;
         }
     }
 
-    protected abstract void bindInternal(@NonNull final CompositeSubscription compositeSubscription);
+    protected abstract void bindInternal(@NonNull final CompositeDisposable compositeDisposable);
 }

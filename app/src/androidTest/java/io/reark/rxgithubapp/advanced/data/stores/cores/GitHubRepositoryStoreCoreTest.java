@@ -18,11 +18,11 @@ import org.junit.runner.RunWith;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.subscribers.TestSubscriber;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.generated.GitHubProvider;
 import io.reark.rxgithubapp.shared.Constants;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import rx.observers.TestSubscriber;
 
 import static io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
 import static java.util.Arrays.asList;
@@ -84,12 +84,12 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.getCached(200).subscribe(testSubscriber2);
 
         testSubscriber1.awaitTerminalEvent();
-        testSubscriber1.assertCompleted();
+        testSubscriber1.assertComplete();
         testSubscriber1.assertNoErrors();
         testSubscriber1.assertValue(value1);
 
         testSubscriber2.awaitTerminalEvent();
-        testSubscriber2.assertCompleted();
+        testSubscriber2.assertComplete();
         testSubscriber2.assertNoErrors();
         testSubscriber2.assertValue(value2);
     }
@@ -109,12 +109,12 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.put(200, value2);
 
         testSubscriber1.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber1.assertNotCompleted();
+        testSubscriber1.assertNotComplete();
         testSubscriber1.assertNoErrors();
         testSubscriber1.assertValue(value1);
 
         testSubscriber2.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber2.assertNotCompleted();
+        testSubscriber2.assertNotComplete();
         testSubscriber2.assertNoErrors();
         testSubscriber2.assertValue(value2);
     }
@@ -129,7 +129,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         gitHubRepositoryStoreCore.put(100, value);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(value);
     }
@@ -153,7 +153,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(asList(value1, value2));
     }
@@ -178,9 +178,9 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
 
         // ASSERT
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(value2, value3));
+        testSubscriber.assertResult(value2, value3);
     }
 
     @NonNull

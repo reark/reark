@@ -27,10 +27,11 @@ package io.reark.reark.data.utils;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.pojo.NetworkRequestStatus;
-import rx.Observable;
-import rx.functions.Func1;
+
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -40,21 +41,21 @@ public final class DataLayerUtils {
     }
 
     @NonNull
-    public static<T> Observable<DataStreamNotification<T>> createDataStreamNotificationObservable(
-            @NonNull final Observable<NetworkRequestStatus> networkRequestStatusObservable,
-            @NonNull final Observable<T> valueObservable) {
+    public static<T> Flowable<DataStreamNotification<T>> createDataStreamNotificationObservable(
+            @NonNull final Flowable<NetworkRequestStatus> networkRequestStatusObservable,
+            @NonNull final Flowable<T> valueObservable) {
 
-        final Observable<DataStreamNotification<T>> networkStatusStream =
+        final Flowable<DataStreamNotification<T>> networkStatusStream =
                 networkRequestStatusObservable
                         .map(DataLayerUtils.<T>fromNetworkRequestStatus());
 
-        final Observable<DataStreamNotification<T>> valueStream =
+        final Flowable<DataStreamNotification<T>> valueStream =
                 valueObservable.map(DataStreamNotification::onNext);
 
-        return Observable.merge(networkStatusStream, valueStream);
+        return Flowable.merge(networkStatusStream, valueStream);
     }
 
-    private static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
+    private static<T> Function<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
         return networkRequestStatus -> {
             checkNotNull(networkRequestStatus);
 

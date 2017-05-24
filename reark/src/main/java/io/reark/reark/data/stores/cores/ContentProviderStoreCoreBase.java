@@ -36,12 +36,20 @@ import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reark.reark.data.stores.cores.operations.CoreOperation;
 import io.reark.reark.data.stores.cores.operations.CoreOperationResult;
 import io.reark.reark.data.stores.cores.operations.CoreValue;
@@ -50,13 +58,8 @@ import io.reark.reark.data.stores.cores.operations.CoreValuePut;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.ObjectLockHandler;
 import io.reark.reark.utils.Preconditions;
-import rx.Observable;
-import rx.Single;
-import rx.Subscription;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
+import io.reactivex.Flowable;
+
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -84,16 +87,16 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final ContentResolver contentResolver;
 
     @NonNull
-    private final PublishSubject<CoreValue<U>> operationSubject = PublishSubject.create();
+    private final PublishProcessor<CoreValue<U>> operationSubject = PublishProcessor.create();
 
     @NonNull
-    private final ConcurrentMap<Integer, Subject<Boolean, Boolean>> completionNotifiers = new ConcurrentHashMap<>(20, 0.75f, 4);
+    private final ConcurrentMap<Integer, FlowableProcessor<Boolean>> completionNotifiers = new ConcurrentHashMap<>(20, 0.75f, 4);
 
     @NonNull
     private final ObjectLockHandler<Uri> locker = new ObjectLockHandler<>();
 
     @Nullable
-    private Subscription updateSubscription;
+    private Disposable updateSubscription;
 
     private final int groupMaxSize;
 
@@ -119,7 +122,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         contentResolver.registerContentObserver(getContentUri(), true, getContentObserver());
 
         // Observable transforming inserts, updates and deletes to ContentProviderOperations
-        Observable<CoreOperation> operationObservable = operationSubject
+        Flowable<CoreOperation> operationObservable = operationSubject
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(this::createCoreOperation);
@@ -139,13 +142,13 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<CoreOperationResult> applyOperations(@NonNull final List<CoreOperation> operations) {
-        return Observable.fromCallable(() -> {
+    private Flowable<CoreOperationResult> applyOperations(@NonNull final List<CoreOperation> operations) {
+        return Flowable.fromCallable(() -> {
                     ArrayList<ContentProviderOperation> contentOperations = contentOperations(operations);
                     return contentResolver.applyBatch(getAuthority(), contentOperations);
                 })
                 .doOnNext(result -> Log.v(TAG, String.format("Applied %s operations", result.length)))
-                .flatMap(Observable::from)
+                .flatMap(Flowable::fromArray)
                 .zipWith(operations, CoreOperationResult::new);
     }
 
@@ -174,18 +177,18 @@ public abstract class ContentProviderStoreCoreBase<U> {
      * to pass a too large batch of operations will result in a failed binder transaction.
      */
     @NonNull
-    protected Observable<List<CoreOperation>> groupOperations(@NonNull final Observable<CoreOperation> source) {
+    protected Flowable<List<CoreOperation>> groupOperations(@NonNull final Flowable<CoreOperation> source) {
         return source.publish(stream -> stream.buffer(
-                Observable.amb(
+                Flowable.ambArray(
                         stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS),
                         stream.skip(groupMaxSize - 1))
-                        .first() // Complete observable after the first reached trigger
+                        .first(new CoreOperation(-1, Uri.parse(""))) // Complete observable after the first reached trigger
                         .repeatWhen(observable -> observable))); // Resubscribe immediately for the next buffer
     }
 
     @NonNull
-    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValue<U> value) {
-        Observable<CoreOperation> valueObservable;
+    private Flowable<CoreOperation> createCoreOperation(@NonNull final CoreValue<U> value) {
+        Flowable<CoreOperation> valueObservable;
 
         switch (value.type()) {
             case PUT:
@@ -205,8 +208,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValueDelete<U> value) {
-        return Observable
+    private Flowable<CoreOperation> createCoreOperation(@NonNull final CoreValueDelete<U> value) {
+        return Flowable
                 .fromCallable(() -> {
                     Uri uri = value.uri();
 
@@ -221,8 +224,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Observable<CoreOperation> createCoreOperation(@NonNull final CoreValuePut<U> value) {
-        return Observable
+    private Flowable<CoreOperation> createCoreOperation(@NonNull final CoreValuePut<U> value) {
+        return Flowable
                 .fromCallable(() -> {
                     Uri uri = value.uri();
 
@@ -301,28 +304,31 @@ public abstract class ContentProviderStoreCoreBase<U> {
     }
 
     @NonNull
-    private Single<Boolean> createModifyingOperation(@NonNull final Func1<Integer, CoreValue<U>> valueFunc) {
+    private Single<Boolean> createModifyingOperation(@NonNull final Function<Integer, CoreValue<U>> valueFunc) {
         int index = ++nextOperationIndex;
 
-        completionNotifiers.put(index, PublishSubject.create());
-        operationSubject.onNext(valueFunc.call(index));
+        completionNotifiers.put(index, PublishProcessor.create());
+        try {
+            operationSubject.onNext(valueFunc.apply(index));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return completionNotifiers.get(index)
-                .first()
-                .toSingle();
+                .first(false);
     }
 
     @NonNull
-    protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
+    protected Flowable<List<U>> getAllOnce(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return Observable.just(uri)
+        return Flowable.just(uri)
                 .observeOn(Schedulers.io())
                 .map(this::queryList);
     }
 
     @NonNull
-    protected Observable<U> getOnce(@NonNull final Uri uri) {
+    protected Flowable<U> getOnce(@NonNull final Uri uri) {
         return getAllOnce(Preconditions.get(uri))
                 .filter(list -> !list.isEmpty())
                 .doOnNext(list -> {

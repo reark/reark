@@ -4,7 +4,6 @@ import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.util.Pair;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 
@@ -17,19 +16,16 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.generated.GitHubProvider;
 import io.reark.rxgithubapp.shared.Constants;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import rx.Observable;
-import rx.observers.AssertableSubscriber;
-import rx.observers.TestSubscriber;
 
 import static io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
 import static io.reark.rxgithubapp.shared.pojo.GitHubRepository.none;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static rx.schedulers.Schedulers.test;
 
 @RunWith(AndroidJUnit4.class)
 public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider> {
@@ -87,9 +83,9 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value));
+        testSubscriber.assertResult(value);
     }
 
     @Test
@@ -98,7 +94,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(none());
     }
@@ -114,9 +110,9 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.put(value2);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(none(), value1));
+        testSubscriber.assertResult(none(), value1);
     }
 
     @Test
@@ -134,9 +130,9 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.put(value3);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(none(), value1, value2, value3));
+        testSubscriber.assertResult(none(), value1, value2, value3);
     }
 
     @Test
@@ -150,9 +146,9 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.put(value);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(none(), value));
+        testSubscriber.assertResult(none(), value);
     }
 
     @Test
@@ -164,9 +160,9 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.getOnceAndStream(100).subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value));
+        testSubscriber.assertResult(value);
     }
 
     @Test
@@ -185,7 +181,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
         // Create the stream observable but do not subscribe immediately.
-        Observable<GitHubRepository> stream = gitHubRepositoryStore.getOnceAndStream(100);
+        Flowable<GitHubRepository> stream = gitHubRepositoryStore.getOnceAndStream(100);
 
         // Put new value into the store.
         gitHubRepositoryStore.put(value2);
@@ -196,9 +192,9 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         // Observe that the stream actually gives as the first item the cached value at the time of
         // creating the stream observable.
         testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
+        testSubscriber.assertNotComplete();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value1));
+        testSubscriber.assertResult(value1);
     }
 
     @Test
@@ -207,8 +203,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         gitHubRepositoryStore.put(value)
                 .test()
-                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .assertValue(true);
+                .assertResult(true);
     }
 
     @Test
@@ -220,7 +215,6 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         gitHubRepositoryStore.put(value2)
                 .test()
-                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertValue(true);
     }
 
@@ -232,7 +226,6 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
 
         gitHubRepositoryStore.put(value)
                 .test()
-                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
                 .assertValue(false);
     }
 
@@ -240,8 +233,7 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     public void delete_WithNoData_EmitsFalse() {
         gitHubRepositoryStore.delete(765)
                 .test()
-                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(false);
     }
 
@@ -251,16 +243,15 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.put(value);
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
-        AssertableSubscriber<Boolean> ts1 = gitHubRepositoryStore.delete(100).test();
+        TestObserver<Boolean> ts1 = gitHubRepositoryStore.delete(100).test();
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        AssertableSubscriber<GitHubRepository> ts2 = gitHubRepositoryStore.getOnce(100).test();
+        TestSubscriber<GitHubRepository> ts2 = gitHubRepositoryStore.getOnce(100).test();
 
-        ts1.assertCompleted()
+        ts1.assertComplete()
                 .assertValue(true);
-        ts2.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .assertCompleted()
+        ts2.assertComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(singletonList(none()));
+                .assertResult(none());
     }
 
     @Test
@@ -269,13 +260,12 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
         gitHubRepositoryStore.put(value);
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
-        AssertableSubscriber<GitHubRepository> ts = gitHubRepositoryStore.getOnceAndStream(100).test();
+        TestSubscriber<GitHubRepository> ts = gitHubRepositoryStore.getOnceAndStream(100).test();
         gitHubRepositoryStore.delete(100);
 
-        ts.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+        ts.assertNotComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(singletonList(value));
+                .assertResult(value);
     }
 
     @NonNull

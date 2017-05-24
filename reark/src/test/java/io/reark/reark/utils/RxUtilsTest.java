@@ -30,8 +30,10 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import rx.Observable;
-import rx.observers.TestSubscriber;
+
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,18 +46,19 @@ public class RxUtilsTest {
 
     @Test
     public void testToListReturnsCombinedListOfItems1() {
-        List<Observable<String>> list = Arrays.asList(Observable.just("1"),
-                                                      Observable.just("2"),
-                                                      Observable.just("1"),
-                                                      Observable.just("2"));
+        List<Flowable<String>> list = Arrays.asList(Flowable.just("1"),
+                                                      Flowable.just("2"),
+                                                      Flowable.just("1"),
+                                                      Flowable.just("2"));
         TestSubscriber<List<String>> observer = new TestSubscriber<>();
 
-        RxUtils.toObservableList(list)
+        RxUtils.toFlowableList(list)
                .subscribe(observer);
 
         observer.awaitTerminalEvent();
+        List listEvent = (List) observer.getEvents().get(0).get(0);
         assertEquals("Invalid number of repositories",
                      4,
-                     observer.getOnNextEvents().get(0).size());
+                     listEvent.size());
     }
 }

@@ -25,13 +25,15 @@
  */
 package io.reark.rxgithubapp.shared.viewmodels;
 
+import org.assertj.core.util.Compatibility;
 import org.junit.Test;
 
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
+import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.Observable;
-import rx.observers.TestSubscriber;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -46,20 +48,19 @@ public class RepositoryViewModelTest {
                                                                  4,
                                                                  mock(GitHubOwner.class));
         RepositoryViewModel repositoryViewModel = new RepositoryViewModel(
-                () -> Observable.just(new UserSettings(1)),
-                repositoryId -> Observable.just(gitHubRepository));
+                () -> Flowable.just(new UserSettings(1)),
+                repositoryId -> Flowable.just(gitHubRepository));
         TestSubscriber<GitHubRepository> observer = new TestSubscriber<>();
         repositoryViewModel.getRepository().subscribe(observer);
 
         repositoryViewModel.subscribeToDataStore();
 
-        observer.awaitTerminalEvent();
         assertEquals("Invalid number of repositories",
                      1,
-                     observer.getOnNextEvents().size());
+                     observer.getEvents().get(0).size());
         assertEquals("Provided GitHubRepository does not match",
                      gitHubRepository,
-                     observer.getOnNextEvents().get(0));
+                     observer.getEvents().get(0).get(0));
     }
 
 }

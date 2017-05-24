@@ -27,8 +27,8 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * StoreCore is the underlying persistence mechanism of a store. It is not mandatory for a store to
@@ -78,7 +78,7 @@ public interface StoreCoreInterface<T, U> {
      * data item is in the cache, it simply completes without emitting any items.
      */
     @NonNull
-    Observable<U> getCached(@NonNull final T id);
+    Flowable<U> getCached(@NonNull final T id);
 
     /**
      * Takes an identifier and returns an Observable that emits all _future_ items that are put into
@@ -91,5 +91,5 @@ public interface StoreCoreInterface<T, U> {
      * that are put into the core.
      */
     @NonNull
-    Observable<U> getStream(@NonNull final T id);
+    Flowable<U> getStream(@NonNull final T id);
 }

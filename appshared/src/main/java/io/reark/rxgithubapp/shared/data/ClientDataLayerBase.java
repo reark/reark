@@ -27,6 +27,7 @@ package io.reark.rxgithubapp.shared.data;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.Flowable;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
@@ -36,7 +37,7 @@ import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetche
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.Observable;
+
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -59,17 +60,17 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     }
 
     @NonNull
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
+    public Flowable<DataStreamNotification<GitHubRepositorySearch>> getGitHubRepositorySearch(@NonNull final String searchString) {
         checkNotNull(searchString);
 
         Log.d(TAG, "getGitHubRepositorySearch(" + searchString + ")");
 
-        final Observable<NetworkRequestStatus> networkRequestStatusObservable =
+        final Flowable<NetworkRequestStatus> networkRequestStatusObservable =
                 networkRequestStatusStore
                         .getOnceAndStream(GitHubRepositorySearchFetcher.getUniqueId(searchString).hashCode())
                         .filter(NetworkRequestStatus::isSome);
 
-        final Observable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
+        final Flowable<GitHubRepositorySearch> gitHubRepositorySearchObservable =
                 gitHubRepositorySearchStore
                         .getOnceAndStream(searchString)
                         .filter(GitHubRepositorySearch::isSome);
@@ -79,7 +80,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     }
 
     @NonNull
-    public Observable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(@NonNull final String searchString) {
+    public Flowable<DataStreamNotification<GitHubRepositorySearch>> fetchAndGetGitHubRepositorySearch(@NonNull final String searchString) {
         checkNotNull(searchString);
         Log.d(TAG, "fetchAndGetGitHubRepositorySearch(" + searchString + ")");
 
@@ -90,7 +91,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     protected abstract void fetchGitHubRepositorySearch(@NonNull final String searchString);
 
     @NonNull
-    public Observable<GitHubRepository> getGitHubRepository(@NonNull final Integer repositoryId) {
+    public Flowable<GitHubRepository> getGitHubRepository(@NonNull final Integer repositoryId) {
         checkNotNull(repositoryId);
 
         return gitHubRepositoryStore
@@ -99,7 +100,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     }
 
     @NonNull
-    public Observable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull final Integer repositoryId) {
+    public Flowable<GitHubRepository> fetchAndGetGitHubRepository(@NonNull final Integer repositoryId) {
         checkNotNull(repositoryId);
 
         fetchGitHubRepository(repositoryId);
@@ -109,7 +110,7 @@ public abstract class ClientDataLayerBase extends DataLayerBase {
     protected abstract void fetchGitHubRepository(@NonNull final Integer repositoryId);
 
     @NonNull
-    public Observable<UserSettings> getUserSettings() {
+    public Flowable<UserSettings> getUserSettings() {
         return userSettingsStore
                 .getOnceAndStream(DEFAULT_USER_ID)
                 .filter(UserSettings::isSome);

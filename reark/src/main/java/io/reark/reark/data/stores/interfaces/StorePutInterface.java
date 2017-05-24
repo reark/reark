@@ -27,7 +27,7 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
-import rx.Single;
+import io.reactivex.Single;
 
 /**
  * Interface for stores into which it is possible to insert data.

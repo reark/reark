@@ -76,9 +76,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private final String TAG = getClass().getSimpleName();
 
-    public static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
+    static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
 
-    public static final int DEFAULT_GROUP_MAX_SIZE = 30;
+    static final int DEFAULT_GROUP_MAX_SIZE = 30;
 
     @NonNull
     private final ContentResolver contentResolver;

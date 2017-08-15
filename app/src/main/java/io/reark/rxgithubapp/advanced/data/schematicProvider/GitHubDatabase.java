@@ -25,15 +25,47 @@
  */
 package io.reark.rxgithubapp.advanced.data.schematicProvider;
 
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+
 import net.simonvt.schematic.annotation.Database;
+import net.simonvt.schematic.annotation.OnUpgrade;
 import net.simonvt.schematic.annotation.Table;
+
+import io.reark.reark.utils.Log;
 
 @Database(version = GitHubDatabase.VERSION)
 public final class GitHubDatabase {
-    public static final int VERSION = 1;
+
+    private static final String TAG = GitHubDatabase.class.getSimpleName();
+
+    public static final int VERSION = 2;
 
     @Table(GitHubRepositoryColumns.class) public static final String GITHUB_REPOSITORIES = "repositories";
     @Table(GitHubRepositorySearchColumns.class) public static final String GITHUB_REPOSITORY_SEARCHES = "repositorySearches";
     @Table(NetworkRequestStatusColumns.class) public static final String NETWORK_REQUEST_STATUSES = "networkRequestStatuses";
     @Table(UserSettingsColumns.class) public static final String USER_SETTINGS = "userSettings";
+
+    private static final String[] MIGRATIONS = {
+            // Version 1 -> 2: request format was changed
+            "DELETE FROM " + NETWORK_REQUEST_STATUSES + ";"
+    };
+
+    @OnUpgrade
+    public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        for (int i = oldVersion; i < newVersion; i++) {
+            String migration = MIGRATIONS[i - 1];
+            db.beginTransaction();
+
+            try {
+                db.execSQL(migration);
+                db.setTransactionSuccessful();
+            } catch (SQLException e) {
+                Log.e(TAG, String.format("Error executing database migration: %s", migration), e);
+            } finally {
+                db.endTransaction();
+            }
+        }
+    }
+
 }

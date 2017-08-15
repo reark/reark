@@ -27,12 +27,16 @@ package io.reark.reark.network.fetchers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
+import io.reark.reark.utils.ObjectLockHandler;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -40,7 +44,14 @@ import rx.functions.Action1;
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
+/**
+ * Base class for Fetchers. The class implements tracking of request listeners and duplicate
+ * requests.
+ *
+ * @param <T> Type of the Service Uri used by the application.
+ */
 public abstract class FetcherBase<T> implements Fetcher<T> {
+
     private static final String TAG = FetcherBase.class.getSimpleName();
 
     private static final int NO_ERROR_CODE = -1;
@@ -49,60 +60,149 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
     private final Action1<NetworkRequestStatus> updateNetworkRequestStatus;
 
     @NonNull
-    private final Map<Integer, Subscription> requestMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Set<Integer>> listeners = new ConcurrentHashMap<>(20, 0.75f, 2);
 
-    protected FetcherBase(@NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+    @NonNull
+    private final Map<Integer, Subscription> requests = new ConcurrentHashMap<>(20, 0.75f, 2);
+
+    @NonNull
+    private final ObjectLockHandler<Integer> locker = new ObjectLockHandler<>();
+
+    protected FetcherBase(@NonNull Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
         this.updateNetworkRequestStatus = get(updateNetworkRequestStatus);
     }
 
-    protected void startRequest(@NonNull final String uri) {
-        checkNotNull(uri);
+    protected void startRequest(int requestId, @NonNull String uri) {
+        Log.v(TAG, String.format("startRequest(%s, %s)", requestId, get(uri)));
 
-        Log.v(TAG, "startRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.ongoing(uri));
+        lock(requestId);
+
+        updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
+                .uri(uri)
+                .listeners(getListeners(requestId))
+                .ongoing()
+                .build());
+
+        release(requestId);
     }
 
-    protected void errorRequest(@NonNull final String uri, int errorCode, @Nullable final String errorMessage) {
-        checkNotNull(uri);
+    protected void completeRequest(int requestId, @NonNull String uri) {
+        Log.v(TAG, String.format("completeRequest(%s, %s)", requestId, get(uri)));
 
-        Log.v(TAG, "errorRequest(" + uri + ", " + errorCode + ", " + errorMessage + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.error(uri, errorCode, errorMessage));
+        lock(requestId);
+
+        updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
+                .uri(uri)
+                .listeners(getListeners(requestId))
+                .completed()
+                .build());
+
+        release(requestId);
     }
 
-    protected void completeRequest(@NonNull final String uri) {
-        checkNotNull(uri);
+    protected void errorRequest(int requestId, @NonNull String uri, int errorCode, @Nullable String errorMessage) {
+        Log.v(TAG, String.format("errorRequest(%s, %s, %s, %s)", requestId, get(uri), errorCode, errorMessage));
 
-        Log.v(TAG, "completeRequest(" + uri + ")");
-        updateNetworkRequestStatus.call(NetworkRequestStatus.completed(uri));
+        lock(requestId);
+
+        updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
+                .uri(uri)
+                .listeners(getListeners(requestId))
+                .error()
+                .errorCode(errorCode)
+                .errorMessage(errorMessage)
+                .build());
+
+        release(requestId);
+    }
+
+    protected void addRequest(int requestId, @NonNull Subscription subscription) {
+        Log.v(TAG, String.format("addRequest(%s)", requestId));
+        checkNotNull(subscription);
+
+        lock(requestId);
+
+        if (requests.containsKey(requestId)) {
+            Subscription oldRequest = requests.remove(requestId);
+
+            if (!oldRequest.isUnsubscribed()) {
+                Log.w(TAG, "Unexpected subscribed request " + requestId);
+                oldRequest.unsubscribe();
+            }
+        }
+
+        requests.put(requestId, subscription);
+
+        release(requestId);
+    }
+
+    protected void addListener(int requestId, int listenerId) {
+        Log.v(TAG, String.format("addListener(%s, %s)", requestId, listenerId));
+
+        lock(requestId);
+
+        Set<Integer> newListeners = createListener(listenerId);
+
+        if (requests.containsKey(requestId)) {
+            newListeners.addAll(listeners.get(requestId));
+        }
+
+        listeners.put(requestId, newListeners);
+
+        release(requestId);
     }
 
     protected boolean isOngoingRequest(int requestId) {
-        Log.v(TAG, "isOngoingRequest(" + requestId + ")");
+        Log.v(TAG, String.format("isOngoingRequest(%s)", requestId));
 
-        return requestMap.containsKey(requestId)
-                && !requestMap.get(requestId).isUnsubscribed();
-    }
+        lock(requestId);
 
-    protected void addRequest(int requestId, @NonNull final Subscription subscription) {
-        Log.v(TAG, "addRequest(" + requestId + ")");
+        boolean isOngoing = requests.containsKey(requestId)
+                && !requests.get(requestId).isUnsubscribed();
 
-        requestMap.put(requestId, get(subscription));
+        release(requestId);
+
+        return isOngoing;
     }
 
     @NonNull
-    public Action1<Throwable> doOnError(@NonNull final String uri) {
+    private Set<Integer> getListeners(int requestId) {
+        return listeners.get(requestId);
+    }
+
+    @NonNull
+    private static Set<Integer> createListener(int listenerId) {
+        Set<Integer> set = new HashSet<>(1);
+        set.add(listenerId);
+        return set;
+    }
+
+    @NonNull
+    protected Action1<Throwable> doOnError(int requestId, @NonNull String uri) {
         checkNotNull(uri);
 
         return throwable -> {
             if (throwable instanceof HttpException) {
                 HttpException httpException = (HttpException) throwable;
                 int statusCode = httpException.code();
-                errorRequest(uri, statusCode, httpException.getMessage());
+                errorRequest(requestId, uri, statusCode, httpException.getMessage());
             } else {
-                Log.e(TAG, "The error was not a RetroFitError");
-                errorRequest(uri, NO_ERROR_CODE, null);
+                Log.w(TAG, "The error was not a RetrofitError");
+                errorRequest(requestId, uri, NO_ERROR_CODE, null);
             }
         };
+    }
+
+    private void lock(int id) {
+        try {
+            locker.acquire(id);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Lock acquisition failed!", e);
+        }
+    }
+
+    private void release(int id) {
+        locker.release(id);
     }
 
 }

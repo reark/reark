@@ -46,31 +46,37 @@ public class ServiceDataLayer extends DataLayerBase {
     @NonNull
     private final UriFetcherManager fetcherManager;
 
-    public ServiceDataLayer(@NonNull final UriFetcherManager fetcherManager,
-                            @NonNull final NetworkRequestStatusStore networkRequestStatusStore,
-                            @NonNull final GitHubRepositoryStore gitHubRepositoryStore,
-                            @NonNull final GitHubRepositorySearchStore gitHubRepositorySearchStore) {
+    public ServiceDataLayer(@NonNull UriFetcherManager fetcherManager,
+                            @NonNull NetworkRequestStatusStore networkRequestStatusStore,
+                            @NonNull GitHubRepositoryStore gitHubRepositoryStore,
+                            @NonNull GitHubRepositorySearchStore gitHubRepositorySearchStore) {
         super(networkRequestStatusStore, gitHubRepositoryStore, gitHubRepositorySearchStore);
 
         this.fetcherManager = get(fetcherManager);
     }
 
-    public void processIntent(@NonNull final Intent intent) {
+    public void processIntent(@NonNull Intent intent) {
         checkNotNull(intent);
 
-        final String serviceUriString = intent.getStringExtra("serviceUriString");
-
-        if (serviceUriString == null) {
-            Log.e(TAG, "No Uri defined");
+        if (!intent.hasExtra("serviceUriString")) {
+            Log.e(TAG, "No service uri defined");
             return;
         }
 
-        final Uri serviceUri = Uri.parse(serviceUriString);
-        final Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
+        if (!intent.hasExtra("listenerId")) {
+            Log.e(TAG, "No listener id defined");
+            return;
+        }
+
+        String serviceUriString = intent.getStringExtra("serviceUriString");
+        int listenerId = intent.getIntExtra("listenerId", 0);
+
+        Uri serviceUri = Uri.parse(serviceUriString);
+        Fetcher<Uri> matchingFetcher = fetcherManager.findFetcher(serviceUri);
 
         if (matchingFetcher != null) {
             Log.v(TAG, "Fetcher found for " + serviceUri);
-            matchingFetcher.fetch(intent);
+            matchingFetcher.fetch(intent, listenerId);
         } else {
             Log.e(TAG, "Unknown Uri " + serviceUri);
         }

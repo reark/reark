@@ -68,29 +68,26 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
     }
 
     @Override
-    public void fetch(@NonNull final Intent intent) {
+    public synchronized void fetch(@NonNull final Intent intent, int listenerId) {
         checkNotNull(intent);
 
-        final String searchString = intent.getStringExtra("searchString");
-
-        if (searchString != null) {
-            fetchGitHubSearch(searchString);
-        } else {
-            Log.e(TAG, "No searchString provided in the intent extras");
+        if (!intent.hasExtra("searchString")) {
+            Log.e(TAG, "Missing required fetch parameters!");
+            return;
         }
-    }
 
-    private void fetchGitHubSearch(@NonNull final String searchString) {
-        checkNotNull(searchString);
+        String searchString = intent.getStringExtra("searchString");
+        String uri = getUniqueId(searchString);
+        int requestId = searchString.hashCode();
 
-        Log.d(TAG, "fetchGitHubSearch(" + searchString + ")");
+        addListener(requestId, listenerId);
 
-        if (isOngoingRequest(searchString.hashCode())) {
+        if (isOngoingRequest(requestId)) {
             Log.d(TAG, "Found an ongoing request for repository " + searchString);
             return;
         }
 
-        final String uri = getUniqueId(searchString);
+        Log.d(TAG, "fetch(" + searchString + ")");
 
         Subscription subscription = createNetworkObservable(searchString)
                 .subscribeOn(Schedulers.computation())
@@ -102,13 +99,13 @@ public class GitHubRepositorySearchFetcher extends AppFetcherBase<Uri> {
                     }
                     return new GitHubRepositorySearch(searchString, repositoryIds);
                 })
-                .doOnSubscribe(() -> startRequest(uri))
-                .doOnCompleted(() -> completeRequest(uri))
-                .doOnError(doOnError(uri))
+                .doOnSubscribe(() -> startRequest(requestId, uri))
+                .doOnCompleted(() -> completeRequest(requestId, uri))
+                .doOnError(doOnError(requestId, uri))
                 .subscribe(gitHubRepositorySearchStore::put,
                         e -> Log.e(TAG, "Error fetching GitHub repository search for '" + searchString + "'", e));
 
-        addRequest(searchString.hashCode(), subscription);
+        addRequest(requestId, subscription);
     }
 
     @NonNull

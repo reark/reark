@@ -27,6 +27,7 @@ package io.reark.rxgithubapp.shared.viewmodels;
 
 import android.support.annotation.NonNull;
 
+import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.viewmodels.AbstractViewModel;
 import io.reark.rxgithubapp.shared.data.DataFunctions.FetchAndGetGitHubRepository;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetUserSettings;
@@ -64,8 +65,9 @@ public class RepositoryViewModel extends AbstractViewModel {
                 getUserSettings.call()
                         .map(UserSettings::getSelectedRepositoryId)
                         .switchMap(fetchAndGetGitHubRepository::call)
-                        .subscribe(repository)
-        );
+                        .filter(DataStreamNotification::isOnNext)
+                        .map(DataStreamNotification::getValue)
+                        .subscribe(repository::onNext));
     }
 
     @NonNull

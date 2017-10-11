@@ -72,8 +72,8 @@ public class GitHubRepositoryTest {
 
         repo1.overwrite(repo2);
 
-        assertFalse(repo1.equals(repo2));
-        assertEquals(100, repo1.getId());
+        assertEquals(repo1, repo2);
+        assertEquals(200, repo1.getId());
         assertEquals("bar", repo1.getName());
     }
 }

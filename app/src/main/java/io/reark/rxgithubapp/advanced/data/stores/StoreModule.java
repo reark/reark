@@ -25,9 +25,9 @@
  */
 package io.reark.rxgithubapp.advanced.data.stores;
 
-import com.google.gson.Gson;
-
 import android.content.ContentResolver;
+
+import com.google.gson.Gson;
 
 import javax.inject.Singleton;
 

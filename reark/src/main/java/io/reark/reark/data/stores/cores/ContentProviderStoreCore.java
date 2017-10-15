@@ -32,13 +32,14 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.subjects.PublishSubject;
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.Preconditions;
-import rx.Observable;
-import rx.Single;
-import rx.subjects.PublishSubject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static java.lang.String.format;
@@ -81,7 +82,7 @@ public abstract class ContentProviderStoreCore<T, U>
                 super.onChange(selfChange, uri);
 
                 getOnce(uri)
-                        .doOnNext(item -> Log.v(TAG, format("onChange(%1s)", uri)))
+                        .doOnSuccess(item -> Log.v(TAG, format("onChange(%1s)", uri)))
                         .map(item -> new StoreItem<>(getIdForUri(uri), item))
                         .subscribe(subjectCache::onNext,
                                    error -> Log.e(TAG, "Cannot retrieve the item: " + uri, error));
@@ -107,7 +108,7 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
-    public Observable<U> getCached(@NonNull final T id) {
+    public Maybe<U> getCached(@NonNull final T id) {
         checkNotNull(id);
 
         return getOnce(getUriForId(id));
@@ -115,7 +116,7 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
-    public Observable<List<U>> getCached() {
+    public Single<List<U>> getCached() {
         return getAllOnce(getContentUri());
     }
 
@@ -124,16 +125,14 @@ public abstract class ContentProviderStoreCore<T, U>
     public Observable<U> getStream(@NonNull final T id) {
         checkNotNull(id);
 
-        return subjectCache.asObservable()
-                .filter(item -> item.id().equals(id))
+        return subjectCache.filter(item -> item.id().equals(id))
                 .map(StoreItem::item);
     }
 
     @NonNull
     @Override
     public Observable<U> getStream() {
-        return subjectCache.asObservable()
-                .map(StoreItem::item);
+        return subjectCache.map(StoreItem::item);
     }
 
     /**

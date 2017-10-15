@@ -25,10 +25,10 @@
  */
 package io.reark.rxgithubapp.shared.injections;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
-
 import android.app.Application;
 import android.content.Context;
+
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.util.Collections;
 import java.util.List;

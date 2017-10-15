@@ -29,13 +29,12 @@ import android.net.Uri;
 
 import java.util.Map;
 
+import io.reactivex.Single;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearchResults;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
-import rx.Observable;
-import rx.Single;
 
 public interface GitHubService {
     Uri REPOSITORY_SEARCH = Uri.parse("github/search");

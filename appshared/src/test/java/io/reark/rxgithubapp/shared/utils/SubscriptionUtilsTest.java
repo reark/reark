@@ -25,6 +25,9 @@
  */
 package io.reark.rxgithubapp.shared.utils;
 
+import android.graphics.Color;
+import android.widget.TextView;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,12 +35,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import android.graphics.Color;
-import android.widget.TextView;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
@@ -52,7 +52,7 @@ public class SubscriptionUtilsTest {
     public void setUp() {
         // Mocking AndroidSchedulers.mainThread() as loopers are not mocked by android unit tests
         PowerMockito.stub(PowerMockito.method(AndroidSchedulers.class, "mainThread"))
-                .toReturn(Schedulers.immediate());
+                .toReturn(Schedulers.trampoline());
     }
 
     @Test

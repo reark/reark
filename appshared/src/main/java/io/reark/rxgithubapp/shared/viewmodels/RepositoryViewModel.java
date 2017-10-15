@@ -27,15 +27,15 @@ package io.reark.rxgithubapp.shared.viewmodels;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.viewmodels.AbstractViewModel;
 import io.reark.rxgithubapp.shared.data.DataFunctions.FetchAndGetGitHubRepository;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetUserSettings;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
-import rx.subscriptions.CompositeSubscription;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -58,20 +58,19 @@ public class RepositoryViewModel extends AbstractViewModel {
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
-        checkNotNull(compositeSubscription);
+    public void subscribeToDataStoreInternal(@NonNull final CompositeDisposable compositeDisposable) {
+        checkNotNull(compositeDisposable);
 
-        compositeSubscription.add(
-                getUserSettings.call()
-                        .map(UserSettings::getSelectedRepositoryId)
-                        .switchMap(fetchAndGetGitHubRepository::call)
-                        .filter(DataStreamNotification::isOnNext)
-                        .map(DataStreamNotification::getValue)
-                        .subscribe(repository::onNext));
+        compositeDisposable.add(getUserSettings.call()
+                .map(UserSettings::getSelectedRepositoryId)
+                .switchMap(fetchAndGetGitHubRepository::call)
+                .filter(DataStreamNotification::isOnNext)
+                .map(DataStreamNotification::getValue)
+                .subscribe(repository::onNext));
     }
 
     @NonNull
     public Observable<GitHubRepository> getRepository() {
-        return repository.asObservable();
+        return repository.hide();
     }
 }

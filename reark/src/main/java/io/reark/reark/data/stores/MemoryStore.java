@@ -27,8 +27,8 @@ package io.reark.reark.data.stores;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.functions.BiFunction;
 import io.reark.reark.data.stores.cores.MemoryStoreCore;
-import rx.functions.Func2;
 
 /**
  * Perhaps the most simple self-contained store. Use this as a starter or when you do not need
@@ -46,7 +46,7 @@ public class MemoryStore<T, U, R> extends DefaultStore<T, U, R> {
         super(new MemoryStoreCore<>(), getIdForItem, getNullSafe, getEmptyValue);
     }
 
-    public MemoryStore(@NonNull final Func2<U, U, U> putMergeFunction,
+    public MemoryStore(@NonNull final BiFunction<U, U, U> putMergeFunction,
                        @NonNull final GetIdForItem<T, U> getIdForItem,
                        @NonNull final GetNullSafe<U, R> getNullSafe,
                        @NonNull final GetEmptyValue<R> getEmptyValue) {

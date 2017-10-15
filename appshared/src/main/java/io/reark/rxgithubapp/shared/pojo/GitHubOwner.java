@@ -25,9 +25,9 @@
  */
 package io.reark.rxgithubapp.shared.pojo;
 
-import com.google.gson.annotations.SerializedName;
-
 import android.support.annotation.NonNull;
+
+import com.google.gson.annotations.SerializedName;
 
 import static io.reark.reark.utils.Preconditions.get;
 

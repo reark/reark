@@ -49,7 +49,7 @@ public class FetcherManagerBaseTest {
         Fetcher<String> foundFetcher = fetcherManager.findFetcher("path/to/resource");
 
         // Assert
-        assertEquals(foundFetcher, fetcher);
+        assertEquals(fetcher, foundFetcher);
     }
 
     @Test

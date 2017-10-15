@@ -28,7 +28,7 @@ package io.reark.reark.data.stores.cores.operations;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import rx.subjects.Subject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Interface holding the type of data update.
@@ -47,7 +47,7 @@ public interface CoreValue<U> {
     Type type();
 
     @NonNull
-    Subject<Boolean, Boolean> completionNotifier();
+    Subject<Boolean> completionNotifier();
 
     @NonNull
     CoreOperation noOperation();

@@ -25,10 +25,10 @@
  */
 package io.reark.rxgithubapp.advanced.data.stores;
 
-import com.google.gson.Gson;
-
 import android.content.ContentResolver;
 import android.support.annotation.NonNull;
+
+import com.google.gson.Gson;
 
 import io.reark.reark.data.stores.DefaultStore;
 import io.reark.rxgithubapp.advanced.data.stores.cores.GitHubRepositoryStoreCore;

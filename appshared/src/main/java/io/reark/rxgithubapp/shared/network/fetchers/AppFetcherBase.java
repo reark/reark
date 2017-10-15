@@ -27,10 +27,10 @@ package io.reark.rxgithubapp.shared.network.fetchers;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.functions.Consumer;
 import io.reark.reark.network.fetchers.FetcherBase;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
-import rx.functions.Action1;
 
 import static io.reark.reark.utils.Preconditions.get;
 
@@ -40,7 +40,7 @@ public abstract class AppFetcherBase<T> extends FetcherBase<T> {
     private final NetworkApi networkApi;
 
     protected AppFetcherBase(@NonNull final NetworkApi networkApi,
-                             @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus) {
+                             @NonNull final Consumer<NetworkRequestStatus> updateNetworkRequestStatus) {
         super(updateNetworkRequestStatus);
 
         this.networkApi = get(networkApi);

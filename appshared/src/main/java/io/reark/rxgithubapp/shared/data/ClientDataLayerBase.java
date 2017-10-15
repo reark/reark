@@ -30,6 +30,7 @@ import android.support.annotation.Nullable;
 
 import java.util.UUID;
 
+import io.reactivex.Observable;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
 import io.reark.reark.data.utils.DataLayerUtils;
@@ -40,7 +41,6 @@ import io.reark.rxgithubapp.shared.network.fetchers.GitHubRepositorySearchFetche
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;

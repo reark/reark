@@ -33,8 +33,8 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reactivex.Single;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
-import rx.Observable;
 
 /**
  * A simple store core implementing the methods content provider requires.
@@ -58,7 +58,7 @@ public class SimpleMockStoreCore extends ContentProviderStoreCore<Integer, Strin
 
     @NonNull
     @Override
-    public Observable<List<String>> getCached() {
+    public Single<List<String>> getCached() {
         return getAllOnce(getUriForId(0));
     }
 

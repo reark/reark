@@ -27,12 +27,13 @@ package io.reark.reark.utils;
 
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import io.reactivex.observers.TestObserver;
 
+import static io.reactivex.Observable.just;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class RxUtilsTest {
@@ -44,18 +45,11 @@ public class RxUtilsTest {
 
     @Test
     public void testToListReturnsCombinedListOfItems1() {
-        List<Observable<String>> list = Arrays.asList(Observable.just("1"),
-                                                      Observable.just("2"),
-                                                      Observable.just("1"),
-                                                      Observable.just("2"));
-        TestSubscriber<List<String>> observer = new TestSubscriber<>();
+        TestObserver<List<String>> observer = new TestObserver<>();
 
-        RxUtils.toObservableList(list)
-               .subscribe(observer);
-
-        observer.awaitTerminalEvent();
-        assertEquals("Invalid number of repositories",
-                     4,
-                     observer.getOnNextEvents().get(0).size());
+        RxUtils.toObservableList(asList(just("1"), just("2"), just("1"), just("2")))
+                .test()
+                .awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertValue(asList("1", "2", "1", "2"));
     }
 }

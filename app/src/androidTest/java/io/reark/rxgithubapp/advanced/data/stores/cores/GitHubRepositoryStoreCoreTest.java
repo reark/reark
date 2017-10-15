@@ -18,13 +18,13 @@ import org.junit.runner.RunWith;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.observers.TestObserver;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.generated.GitHubProvider;
-import io.reark.rxgithubapp.shared.Constants;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import rx.observers.TestSubscriber;
 
 import static io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
+import static io.reark.rxgithubapp.shared.Constants.Tests.PROVIDER_WAIT_TIME;
 import static java.util.Arrays.asList;
 
 @RunWith(AndroidJUnit4.class)
@@ -50,7 +50,7 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         contentProvider.attachInfo(InstrumentationRegistry.getTargetContext(), providerInfo);
         contentProvider.delete(GITHUB_REPOSITORIES, null, null);
 
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
+        Thread.sleep(PROVIDER_WAIT_TIME);
 
         final MockContentResolver contentResolver = new MockContentResolver();
         contentResolver.addProvider(GitHubProvider.AUTHORITY, contentProvider);
@@ -74,24 +74,24 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
     public void put_WithTwoDifferentIds_StoresTwoValues() throws InterruptedException {
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");
-        TestSubscriber<GitHubRepository> testSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<GitHubRepository> testSubscriber2 = new TestSubscriber<>();
+        TestObserver<GitHubRepository> testObserver1 = new TestObserver<>();
+        TestObserver<GitHubRepository> testObserver2 = new TestObserver<>();
 
         gitHubRepositoryStoreCore.put(100, value1);
         gitHubRepositoryStoreCore.put(200, value2);
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getCached(100).subscribe(testSubscriber1);
-        gitHubRepositoryStoreCore.getCached(200).subscribe(testSubscriber2);
+        Thread.sleep(PROVIDER_WAIT_TIME);
+        gitHubRepositoryStoreCore.getCached(100).subscribe(testObserver1);
+        gitHubRepositoryStoreCore.getCached(200).subscribe(testObserver2);
 
-        testSubscriber1.awaitTerminalEvent();
-        testSubscriber1.assertCompleted();
-        testSubscriber1.assertNoErrors();
-        testSubscriber1.assertValue(value1);
+        testObserver1.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue(value1);
 
-        testSubscriber2.awaitTerminalEvent();
-        testSubscriber2.assertCompleted();
-        testSubscriber2.assertNoErrors();
-        testSubscriber2.assertValue(value2);
+        testObserver2.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue(value2);
     }
 
     // GET CACHED
@@ -100,17 +100,17 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
     public void getCached_WithId_EmitsInitialValues_AndCompletes() throws InterruptedException {
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(100, "test name 2");
-        TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
+        TestObserver<GitHubRepository> testObserver = new TestObserver<>();
 
         gitHubRepositoryStoreCore.put(100, value1);
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getCached(100).subscribe(testSubscriber);
+        Thread.sleep(PROVIDER_WAIT_TIME);
+        gitHubRepositoryStoreCore.getCached(100).subscribe(testObserver);
         gitHubRepositoryStoreCore.put(100, value2);
 
-        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(value1);
+        testObserver.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue(value1);
     }
 
     // GET STREAM
@@ -119,40 +119,40 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
     public void getStream_WithId_EmitsValuesForId_AndDoesNotComplete() {
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");
-        TestSubscriber<GitHubRepository> testSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<GitHubRepository> testSubscriber2 = new TestSubscriber<>();
+        TestObserver<GitHubRepository> testObserver1 = new TestObserver<>();
+        TestObserver<GitHubRepository> testObserver2 = new TestObserver<>();
 
-        gitHubRepositoryStoreCore.getStream(100).subscribe(testSubscriber1);
-        gitHubRepositoryStoreCore.getStream(200).subscribe(testSubscriber2);
+        gitHubRepositoryStoreCore.getStream(100).subscribe(testObserver1);
+        gitHubRepositoryStoreCore.getStream(200).subscribe(testObserver2);
         gitHubRepositoryStoreCore.put(100, value1);
         gitHubRepositoryStoreCore.put(200, value2);
 
-        testSubscriber1.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber1.assertNotCompleted();
-        testSubscriber1.assertNoErrors();
-        testSubscriber1.assertValue(value1);
+        testObserver1.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValue(value1);
 
-        testSubscriber2.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber2.assertNotCompleted();
-        testSubscriber2.assertNoErrors();
-        testSubscriber2.assertValue(value2);
+        testObserver2.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValue(value2);
     }
 
     @Test
     public void getStream_DoesNotEmitInitialValue() throws InterruptedException {
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(100, "test name 2");
-        TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
+        TestObserver<GitHubRepository> testObserver = new TestObserver<>();
 
         gitHubRepositoryStoreCore.put(100, value1);
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getStream(100).subscribe(testSubscriber);
+        Thread.sleep(PROVIDER_WAIT_TIME);
+        gitHubRepositoryStoreCore.getStream(100).subscribe(testObserver);
         gitHubRepositoryStoreCore.put(100, value2);
 
-        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(value2);
+        testObserver.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValue(value2);
     }
 
     // GET ALL CACHED
@@ -163,20 +163,20 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");
         final GitHubRepository value3 = create(300, "test name 3");
-        TestSubscriber<List<GitHubRepository>> testSubscriber = new TestSubscriber<>();
+        TestObserver<List<GitHubRepository>> testObserver = new TestObserver<>();
 
         // ACT
         gitHubRepositoryStoreCore.put(100, value1);
         gitHubRepositoryStoreCore.put(200, value2);
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getCached().subscribe(testSubscriber);
+        Thread.sleep(PROVIDER_WAIT_TIME);
+        gitHubRepositoryStoreCore.getCached().subscribe(testObserver);
         gitHubRepositoryStoreCore.put(300, value3);
 
         // ASSERT
-        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(asList(value1, value2));
+        testObserver.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue(asList(value1, value2));
     }
 
     // GET ALL STREAM
@@ -187,21 +187,21 @@ public class GitHubRepositoryStoreCoreTest extends ProviderTestCase2<GitHubProvi
         final GitHubRepository value1 = create(100, "test name 1");
         final GitHubRepository value2 = create(200, "test name 2");
         final GitHubRepository value3 = create(300, "test name 3");
-        TestSubscriber<GitHubRepository> testSubscriber = new TestSubscriber<>();
+        TestObserver<GitHubRepository> testObserver = new TestObserver<>();
 
         // ACT
         gitHubRepositoryStoreCore.put(100, value1);
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
-        gitHubRepositoryStoreCore.getStream().subscribe(testSubscriber);
+        Thread.sleep(PROVIDER_WAIT_TIME);
+        gitHubRepositoryStoreCore.getStream().subscribe(testObserver);
         gitHubRepositoryStoreCore.put(200, value2);
-        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
+        Thread.sleep(PROVIDER_WAIT_TIME);
         gitHubRepositoryStoreCore.put(300, value3);
 
         // ASSERT
-        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertNotCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(asList(value2, value3));
+        testObserver.awaitDone(PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValues(value2, value3);
     }
 
     @NonNull

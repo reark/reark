@@ -28,11 +28,10 @@ package io.reark.reark.data.stores.cores;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 
 public class MemoryStoreCoreTest {
 
@@ -45,69 +44,81 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void put_StoresValue() {
-        TestSubscriber<Boolean> putSubscriber = new TestSubscriber<>();
-        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
-        memoryStoreCore.getStream(100).subscribe(getSubscriber);
+        TestObserver<Boolean> putObserver = new TestObserver<>();
+        TestObserver<String> getObserver = new TestObserver<>();
+        memoryStoreCore.getStream(100).subscribe(getObserver);
 
-        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber);
+        memoryStoreCore.put(100, "test value 1").subscribe(putObserver);
 
-        putSubscriber.assertValue(true);
-        getSubscriber.assertValue("test value 1");
+        putObserver.assertValue(true);
+        getObserver.assertValue("test value 1");
     }
 
     @Test
     public void put_WithTwoDifferentIds_StoresTwoValues() {
-        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
-        TestSubscriber<String> getSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<String> getSubscriber2 = new TestSubscriber<>();
-        memoryStoreCore.getStream(100).subscribe(getSubscriber1);
-        memoryStoreCore.getStream(200).subscribe(getSubscriber2);
+        TestObserver<Boolean> putObserver1 = new TestObserver<>();
+        TestObserver<Boolean> putObserver2 = new TestObserver<>();
+        TestObserver<String> getObserver1 = new TestObserver<>();
+        TestObserver<String> getObserver2 = new TestObserver<>();
+        memoryStoreCore.getStream(100).subscribe(getObserver1);
+        memoryStoreCore.getStream(200).subscribe(getObserver2);
 
-        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber1);
-        memoryStoreCore.put(200, "test value 2").subscribe(putSubscriber2);
+        memoryStoreCore.put(100, "test value 1").subscribe(putObserver1);
+        memoryStoreCore.put(200, "test value 2").subscribe(putObserver2);
 
-        putSubscriber1.assertValue(true);
-        putSubscriber2.assertValue(true);
-        getSubscriber1.assertValue("test value 1");
-        getSubscriber2.assertValue("test value 2");
+        putObserver1.assertValue(true);
+        putObserver2.assertValue(true);
+        getObserver1.assertValue("test value 1");
+        getObserver2.assertValue("test value 2");
     }
 
     @Test
     public void put_WithTwoSameIds_WithSameValues_StoresValueOnce() {
-        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
-        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        TestObserver<Boolean> putObserver1 = new TestObserver<>();
+        TestObserver<Boolean> putObserver2 = new TestObserver<>();
+        TestObserver<String> getSubscriber = new TestObserver<>();
         memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
-        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber1);
-        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber2);
+        memoryStoreCore.put(100, "test value 1").subscribe(putObserver1);
+        memoryStoreCore.put(100, "test value 1").subscribe(putObserver2);
 
-        putSubscriber1.assertValue(true);
-        putSubscriber2.assertValue(false);
+        putObserver1.assertValue(true);
+        putObserver2.assertValue(false);
         getSubscriber.assertValue("test value 1");
     }
 
     @Test
     public void put_WithTwoSameIds_WithDifferentValues_StoresValueTwice() {
-        TestSubscriber<Boolean> putSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<Boolean> putSubscriber2 = new TestSubscriber<>();
-        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        TestObserver<Boolean> putObserver1 = new TestObserver<>();
+        TestObserver<Boolean> putObserver2 = new TestObserver<>();
+        TestObserver<String> getSubscriber = new TestObserver<>();
         memoryStoreCore.getStream(100).subscribe(getSubscriber);
 
-        memoryStoreCore.put(100, "test value 1").subscribe(putSubscriber1);
-        memoryStoreCore.put(100, "test value 2").subscribe(putSubscriber2);
+        memoryStoreCore.put(100, "test value 1").subscribe(putObserver1);
+        memoryStoreCore.put(100, "test value 2").subscribe(putObserver2);
 
-        putSubscriber1.assertValue(true);
-        putSubscriber2.assertValue(true);
+        putObserver1.assertValue(true);
+        putObserver2.assertValue(true);
         getSubscriber.assertValues("test value 1", "test value 2");
+    }
+
+    @Test
+    public void put_WhenMergeThrows_Errors() {
+        memoryStoreCore = new MemoryStoreCore<>((s, s2) -> {
+            throw new IllegalStateException("Mock");
+        });
+
+        memoryStoreCore.put(100, "test value 1");
+        memoryStoreCore.put(100, "test value 2")
+                .test()
+                .assertError(IllegalStateException.class);
     }
 
     @Test
     public void delete_WithNoExistingValue_EmitsFalse() {
         memoryStoreCore.delete(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(false);
     }
 
@@ -117,107 +128,104 @@ public class MemoryStoreCoreTest {
 
         memoryStoreCore.delete(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertValue(true);
         memoryStoreCore.getCached(100)
                 .test()
-                .assertCompleted()
+                .assertComplete()
                 .assertNoValues();
     }
 
     @Test
     public void delete_DoesNotTriggerStream() {
-        TestSubscriber<String> getSubscriber = new TestSubscriber<>();
+        TestObserver<String> testObserver = new TestObserver<>();
         memoryStoreCore.put(100, "test value 1");
-        memoryStoreCore.getStream(100).subscribe(getSubscriber);
+        memoryStoreCore.getStream(100).subscribe(testObserver);
 
         memoryStoreCore.delete(100);
 
-        getSubscriber.assertNotCompleted();
-        getSubscriber.assertNoValues();
+        testObserver.assertNotComplete()
+                .assertNoValues();
     }
 
     @Test
     public void getStream_WithNoId_EmitsAllValues_AndDoesNotComplete() {
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        TestObserver<String> testObserver = new TestObserver<>();
 
         // Stream just gives all values the store receives.
-        memoryStoreCore.getStream().subscribe(testSubscriber);
+        memoryStoreCore.getStream().subscribe(testObserver);
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.put(200, "test value 2");
 
-        testSubscriber.assertNotCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList("test value 1", "test value 2"));
+        testObserver.assertNotComplete()
+                .assertNoErrors()
+                .assertValues("test value 1", "test value 2");
     }
 
     @Test
     public void getStream_WithNoId_DoesNotEmitInitialValue() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        TestObserver<String> testObserver = new TestObserver<>();
 
         memoryStoreCore.put(100, "test value 1");
-        memoryStoreCore.getStream().subscribe(testSubscriber);
+        memoryStoreCore.getStream().subscribe(testObserver);
         memoryStoreCore.put(200, "test value 2");
         memoryStoreCore.put(300, "test value 3");
 
-        testSubscriber.assertNotCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList("test value 2", "test value 3"));
+        testObserver.assertNotComplete()
+                .assertNoErrors()
+                .assertValues("test value 2", "test value 3");
     }
 
     @Test
     public void getStream_WithNoId_DoesNotEmitValues_BeforeSubscribing() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        TestObserver<String> testObserver = new TestObserver<>();
 
         Observable<String> stream = memoryStoreCore.getStream();
         memoryStoreCore.put(100, "test value 1");
-        stream.subscribe(testSubscriber);
+        stream.subscribe(testObserver);
         memoryStoreCore.put(200, "test value 2");
         memoryStoreCore.put(300, "test value 3");
 
-        testSubscriber.assertNotCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(
-                Arrays.asList("test value 2", "test value 3"));
+        testObserver.assertNotComplete()
+                .assertNoErrors()
+                .assertValues("test value 2", "test value 3");
     }
 
     @Test
     public void getStream_WithId_EmitsValuesForId_AndDoesNotComplete() {
         // MemoryStoreCore gives separate streams subscribable by id.
-        TestSubscriber<String> testSubscriber1 = new TestSubscriber<>();
-        TestSubscriber<String> testSubscriber2 = new TestSubscriber<>();
+        TestObserver<String> testObserver1 = new TestObserver<>();
+        TestObserver<String> testObserver2 = new TestObserver<>();
 
-        memoryStoreCore.getStream(100).subscribe(testSubscriber1);
-        memoryStoreCore.getStream(200).subscribe(testSubscriber2);
+        memoryStoreCore.getStream(100).subscribe(testObserver1);
+        memoryStoreCore.getStream(200).subscribe(testObserver2);
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.put(200, "test value 2");
 
-        testSubscriber1.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber1.assertNotCompleted();
-        testSubscriber1.assertNoErrors();
-        testSubscriber1.assertValue("test value 1");
+        testObserver1.awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValue("test value 1");
 
-        testSubscriber2.awaitTerminalEvent(50, TimeUnit.MILLISECONDS);
-        testSubscriber2.assertNotCompleted();
-        testSubscriber2.assertNoErrors();
-        testSubscriber2.assertValue("test value 2");
+        testObserver2.awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValue("test value 2");
     }
 
     @Test
     public void getStream_WithId_DoesNotEmitInitialValue() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
+        TestObserver<String> testObserver = new TestObserver<>();
 
         memoryStoreCore.put(100, "test value 1");
-        memoryStoreCore.getStream(100).subscribe(testSubscriber);
+        memoryStoreCore.getStream(100).subscribe(testObserver);
         memoryStoreCore.put(100, "test value 2");
 
-        testSubscriber.assertNotCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue("test value 2");
+        testObserver.assertNotComplete()
+                .assertNoErrors()
+                .assertValue("test value 2");
     }
 }

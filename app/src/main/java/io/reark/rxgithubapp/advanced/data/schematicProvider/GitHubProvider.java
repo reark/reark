@@ -25,14 +25,14 @@
  */
 package io.reark.rxgithubapp.advanced.data.schematicProvider;
 
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.support.annotation.NonNull;
+
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
 import net.simonvt.schematic.annotation.TableEndpoint;
-
-import android.net.Uri;
-import android.net.Uri.Builder;
-import android.support.annotation.NonNull;
 
 import static io.reark.reark.utils.Preconditions.get;
 

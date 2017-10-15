@@ -25,13 +25,13 @@
  */
 package io.reark.rxgithubapp.shared.glide;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
-
-import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 

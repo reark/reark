@@ -25,10 +25,10 @@
  */
 package io.reark.rxgithubapp.shared.utils;
 
+import android.app.Application;
+
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
-
-import android.app.Application;
 
 public class LeakCanaryTracing implements LeakTracing {
 

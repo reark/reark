@@ -27,6 +27,7 @@ package io.reark.reark.data.stores.cores;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -74,15 +75,24 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         this.putMergeFunction = get(putMergeFunction);
     }
 
-    /**
-     * Get a full stream of items with no identifier filtering. Whenever a store receives a new
-     * item with the id, it pushes it to the stream.
-     *
-     * @return An observable that first emits all future items as they are inserted into the store.
-     */
     @NonNull
-    protected Observable<StoreItem<T, U>> getStream() {
-        return subject.asObservable();
+    @Override
+    public Observable<U> getCached(@NonNull final T id) {
+        checkNotNull(id);
+
+        final U value = cache.get(getHashCodeForId(id));
+
+        return value == null
+                ? Observable.empty()
+                : Observable.just(value);
+    }
+
+    @NonNull
+    @Override
+    public Observable<List<U>> getCached() {
+        return Observable.from(() -> cache.keySet().iterator())
+                .map(cache::get)
+                .toList();
     }
 
     @NonNull
@@ -92,8 +102,16 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
         int hash = getHashCodeForId(id);
         subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
+
         return subjectCache.get(hash)
                 .asObservable();
+    }
+
+    @NonNull
+    @Override
+    public Observable<U> getStream() {
+        return subject.asObservable()
+                .map(StoreItem::item);
     }
 
     @NonNull
@@ -137,18 +155,6 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     @Override
     public Single<Boolean> delete(@NonNull final T id) {
         return Single.fromCallable(() -> cache.remove(getHashCodeForId(id)) != null);
-    }
-
-    @NonNull
-    @Override
-    public Observable<U> getCached(@NonNull final T id) {
-        checkNotNull(id);
-
-        final U value = cache.get(getHashCodeForId(id));
-
-        return value == null
-                ? Observable.empty()
-                : Observable.just(value);
     }
 
     protected int getHashCodeForId(@NonNull final T id) {

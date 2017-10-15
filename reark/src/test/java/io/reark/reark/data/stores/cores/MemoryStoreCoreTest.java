@@ -31,7 +31,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import io.reark.reark.data.stores.StoreItem;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
@@ -140,7 +139,7 @@ public class MemoryStoreCoreTest {
 
     @Test
     public void getStream_WithNoId_EmitsAllValues_AndDoesNotComplete() {
-        TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
 
         // Stream just gives all values the store receives.
         memoryStoreCore.getStream().subscribe(testSubscriber);
@@ -150,16 +149,13 @@ public class MemoryStoreCoreTest {
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        new StoreItem<>(100, "test value 1"),
-                        new StoreItem<>(200, "test value 2")
-                ));
+                Arrays.asList("test value 1", "test value 2"));
     }
 
     @Test
     public void getStream_WithNoId_DoesNotEmitInitialValue() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
 
         memoryStoreCore.put(100, "test value 1");
         memoryStoreCore.getStream().subscribe(testSubscriber);
@@ -169,18 +165,15 @@ public class MemoryStoreCoreTest {
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        new StoreItem<>(200, "test value 2"),
-                        new StoreItem<>(300, "test value 3")
-                ));
+                Arrays.asList("test value 2", "test value 3"));
     }
 
     @Test
     public void getStream_WithNoId_DoesNotEmitValues_BeforeSubscribing() {
         // MemoryStoreCore does not provide cached values as part of the stream.
-        TestSubscriber<StoreItem<Integer, String>> testSubscriber = new TestSubscriber<>();
+        TestSubscriber<String> testSubscriber = new TestSubscriber<>();
 
-        Observable<StoreItem<Integer, String>> stream = memoryStoreCore.getStream();
+        Observable<String> stream = memoryStoreCore.getStream();
         memoryStoreCore.put(100, "test value 1");
         stream.subscribe(testSubscriber);
         memoryStoreCore.put(200, "test value 2");
@@ -189,10 +182,7 @@ public class MemoryStoreCoreTest {
         testSubscriber.assertNotCompleted();
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(
-                Arrays.asList(
-                        new StoreItem<>(200, "test value 2"),
-                        new StoreItem<>(300, "test value 3")
-                ));
+                Arrays.asList("test value 2", "test value 3"));
     }
 
     @Test

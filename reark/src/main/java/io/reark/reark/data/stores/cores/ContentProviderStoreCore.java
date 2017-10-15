@@ -30,6 +30,8 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
@@ -87,17 +89,6 @@ public abstract class ContentProviderStoreCore<T, U>
         };
     }
 
-    /**
-     * Get a full stream of items with no identifier filtering. Whenever a store receives a new
-     * item with the id, it pushes it to the stream.
-     *
-     * @return An observable that first emits all future items as they are inserted into the store.
-     */
-    @NonNull
-    protected Observable<StoreItem<T, U>> getStream() {
-        return subjectCache.asObservable();
-    }
-
     @NonNull
     @Override
     public Single<Boolean> put(@NonNull final T id, @NonNull final U item) {
@@ -124,13 +115,25 @@ public abstract class ContentProviderStoreCore<T, U>
 
     @NonNull
     @Override
+    public Observable<List<U>> getCached() {
+        return getAllOnce(getContentUri());
+    }
+
+    @NonNull
+    @Override
     public Observable<U> getStream(@NonNull final T id) {
         checkNotNull(id);
 
-        return subjectCache
+        return subjectCache.asObservable()
                 .filter(item -> item.id().equals(id))
-                .map(StoreItem::item)
-                .asObservable();
+                .map(StoreItem::item);
+    }
+
+    @NonNull
+    @Override
+    public Observable<U> getStream() {
+        return subjectCache.asObservable()
+                .map(StoreItem::item);
     }
 
     /**

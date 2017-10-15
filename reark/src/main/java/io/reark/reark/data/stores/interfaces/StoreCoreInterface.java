@@ -27,6 +27,8 @@ package io.reark.reark.data.stores.interfaces;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import rx.Observable;
 import rx.Single;
 
@@ -70,7 +72,7 @@ public interface StoreCoreInterface<T, U> {
     /**
      * Takes an identifier and returns an Observable that emits that item as soon as it is read from
      * the underlying persisting structure (in case the store uses an in-memory strategy this could
-     * mean the item is emitted synchronously. In case no item with the specified id is available,
+     * mean the item is emitted synchronously). In case no item with the specified id is available,
      * the Observable completes without emitting any items.
      *
      * @param id Identifier for the data item to be retrieved from cache.
@@ -81,15 +83,37 @@ public interface StoreCoreInterface<T, U> {
     Observable<U> getCached(@NonNull final T id);
 
     /**
-     * Takes an identifier and returns an Observable that emits all _future_ items that are put into
-     * the core. Unlike most store getStream equivalents, the StoreCore getStream does not attempt
-     * to insert the last cached value into the stream. This is simply a stream for all future data
-     * items.
+     * Returns an Observable that emits all items from the underlying persisting structure (in case
+     * the store uses an in-memory strategy this could mean the items are emitted synchronously).
+     * In case no items exist, the Observable completes without emitting any items.
+     *
+     * @return An Observable that emits a list all data items and completes. In case no items are
+     * in the cache, an empty list is emitted.
+     */
+    @NonNull
+    Observable<List<U>> getCached();
+
+    /**
+     * Takes an identifier and returns an Observable that emits all matching _future_ items that are
+     * put into the core. Unlike most store getStream equivalents, the StoreCore getStream does not
+     * attempt to insert the last cached value into the stream. This is simply a stream for all
+     * future data items.
      *
      * @param id Identifier for the stream of data items.
+     * @return An Observable that does not immediately return anything, but emits all future items
+     * matching the given identifier that are put into the core.
+     */
+    @NonNull
+    Observable<U> getStream(@NonNull final T id);
+
+    /**
+     * Returns an Observable that emits all _future_ items that are put into the core. Unlike most
+     * store getStream equivalents, the StoreCore getStream does not attempt to insert the last
+     * cached value into the stream. This is simply a stream for all future data items.
+     *
      * @return An Observable that does not immediately return anything, but emits all future items
      * that are put into the core.
      */
     @NonNull
-    Observable<U> getStream(@NonNull final T id);
+    Observable<U> getStream();
 }

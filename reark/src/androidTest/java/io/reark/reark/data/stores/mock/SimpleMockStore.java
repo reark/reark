@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2013-2016 reark project contributors
+ * Copyright (c) 2013-2017 reark project contributors
  *
  * https://github.com/reark/reark/graphs/contributors
  *
@@ -23,17 +23,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.reark.reark.data.stores.interfaces;
+package io.reark.reark.data.stores.mock;
+
+import android.support.annotation.NonNull;
+
+import io.reark.reark.data.stores.ContentProviderStore;
 
 /**
- * A combined default interface for a store. A store acts as a data container, in which all data
- * items are identified with an id that can be deduced from the item itself. Usually this would be
- * done through a function such as U getId(T item), but it can be defined in the store
- * implementation itself.
- *
- * @param <T> Type of the id used in this store.
- * @param <U> Type of the data this store contains.
- * @param <R> Non-null type or wrapper for the data this store contains.
+ * A simple store containing String values tracked with Integer keys.
  */
-public interface StoreInterface<T, U, R> extends StorePutInterface<U>, StoreGetInterface<T, U, R>, StoreDeleteInterface<T> {
+public class SimpleMockStore extends ContentProviderStore<Integer, String, String> {
+
+    public static final String NONE = "";
+
+    public SimpleMockStore(@NonNull final SimpleMockStoreCore core) {
+        super(core,
+                SimpleMockStore::getIdFor,
+                value -> value != null ? value : NONE,
+                () -> NONE);
+    }
+
+    @NonNull
+    public static Integer getIdFor(@NonNull final String item) {
+        return item.hashCode();
+    }
+
 }

@@ -316,9 +316,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
     protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return Observable.just(uri)
-                .observeOn(Schedulers.io())
-                .map(this::queryList);
+        return Observable.fromCallable(() -> queryList(uri))
+                .subscribeOn(Schedulers.io());
     }
 
     @NonNull

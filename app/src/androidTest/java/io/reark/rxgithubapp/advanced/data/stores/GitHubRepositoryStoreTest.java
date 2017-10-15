@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.rxgithubapp.advanced.data.schematicProvider.generated.GitHubProvider;
@@ -28,6 +29,7 @@ import rx.observers.TestSubscriber;
 import static io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.GitHubRepositories.GITHUB_REPOSITORIES;
 import static io.reark.rxgithubapp.shared.pojo.GitHubRepository.none;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static rx.schedulers.Schedulers.test;
 
@@ -78,29 +80,56 @@ public class GitHubRepositoryStoreTest extends ProviderTestCase2<GitHubProvider>
     }
 
     @Test
-    public void getOne_WithData_ReturnsData_AndCompletes() throws InterruptedException {
+    public void getOnce_WithId_WithData_ReturnsData_AndCompletes() throws InterruptedException {
         final GitHubRepository value = create(100, "repository1");
-        gitHubRepositoryStore.put(value); // TODO synchronous init with contentProvider
+        gitHubRepositoryStore.put(value);
         Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
 
         // getOnce is expected to return a observable that emits the value and then completes.
-        gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
-
-        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(value));
+        gitHubRepositoryStore.getOnce(100)
+                .test()
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertCompleted()
+                .assertNoErrors()
+                .assertReceivedOnNext(singletonList(value));
     }
 
     @Test
-    public void getOne_WithNoData_ReturnsNoneValue_AndCompletes() {
+    public void getOnce_WithId_WithNoData_ReturnsNoneValue_AndCompletes() {
         // getOnce is expected to emit empty value in case no actual value exists.
-        gitHubRepositoryStore.getOnce(100).subscribe(testSubscriber);
+        gitHubRepositoryStore.getOnce(100)
+                .test()
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertCompleted()
+                .assertNoErrors()
+                .assertValue(none());
+    }
 
-        testSubscriber.awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS);
-        testSubscriber.assertCompleted();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(none());
+    @Test
+    public void getOnce_WithNoId_WithData_ReturnsAllData_AndCompletes() throws InterruptedException {
+        final GitHubRepository value1 = create(100, "repository1");
+        final GitHubRepository value2 = create(200, "repository2");
+        gitHubRepositoryStore.put(value1);
+        gitHubRepositoryStore.put(value2);
+        Thread.sleep(Constants.Tests.PROVIDER_WAIT_TIME);
+
+        // getOnce with no id is expected to return a observable that emits all values and then completes.
+        gitHubRepositoryStore.getOnce()
+                .test()
+                .awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertCompleted()
+                .assertNoErrors()
+                .assertValue(asList(value1, value2));
+    }
+
+    @Test
+    public void getOnce_WithNoId_WithNoData_ReturnsEmptyList_AndCompletes() {
+        // getOnce with no id is expected to emit empty list in case no values exist.
+        gitHubRepositoryStore.getOnce()
+                .test().awaitTerminalEvent(Constants.Tests.PROVIDER_WAIT_TIME, TimeUnit.MILLISECONDS)
+                .assertCompleted()
+                .assertNoErrors()
+                .assertValue(emptyList());
     }
 
     @Test

@@ -76,9 +76,9 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private final String TAG = getClass().getSimpleName();
 
-    private static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
+    static final int DEFAULT_GROUPING_TIMEOUT_MS = 100;
 
-    private static final int DEFAULT_GROUP_MAX_SIZE = 30;
+    static final int DEFAULT_GROUP_MAX_SIZE = 30;
 
     @NonNull
     private final ContentResolver contentResolver;
@@ -170,17 +170,18 @@ public abstract class ContentProviderStoreCoreBase<U> {
     /**
      * Implements grouping logic for batching the content provider operations. The default
      * logic buffers the operations with debounced timer while applying a hard limit for the
-     * number of operations. The data is serialized into a binder transaction. An attempt
-     * to pass a too large batch of operations will result in a failed binder transaction.
+     * number of operations.
+     *
+     * The data is serialized into a binder transaction. An attempt to pass here a too large
+     * batch of operations will result in a failed binder transaction.
      */
     @NonNull
-    protected Observable<List<CoreOperation>> groupOperations(@NonNull final Observable<CoreOperation> source) {
+    protected <R> Observable<List<R>> groupOperations(@NonNull final Observable<R> source) {
         return source.publish(stream -> stream.buffer(
-                Observable.amb(
-                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS),
-                        stream.skip(groupMaxSize - 1))
-                        .first() // Complete observable after the first reached trigger
-                        .repeatWhen(observable -> observable))); // Resubscribe immediately for the next buffer
+                Observable.merge(
+                        stream.window(groupMaxSize).skip(1),
+                        stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS))))
+                .filter(list -> !list.isEmpty());
     }
 
     @NonNull

@@ -41,13 +41,13 @@ public interface CoreValue<U> {
     }
 
     @NonNull
-    Subject<Boolean, Boolean> subject();
-
-    @NonNull
     Uri uri();
 
     @NonNull
     Type type();
+
+    @NonNull
+    Subject<Boolean, Boolean> completionNotifier();
 
     @NonNull
     CoreOperation noOperation();

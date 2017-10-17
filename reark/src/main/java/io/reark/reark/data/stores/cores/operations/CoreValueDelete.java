@@ -40,33 +40,21 @@ public final class CoreValueDelete<U> implements CoreValue<U> {
     private final Uri uri;
 
     @NonNull
-    private final Subject<Boolean, Boolean> subject;
+    private final Subject<Boolean, Boolean> completionNotifier;
 
-    private CoreValueDelete(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> subject) {
+    private CoreValueDelete(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier) {
         this.uri = uri;
-        this.subject = subject;
+        this.completionNotifier = completionNotifier;
     }
 
     @NonNull
-    public static <U> CoreValueDelete<U> create(@NonNull Subject<Boolean, Boolean> subject, @NonNull Uri uri) {
-        return new CoreValueDelete<>(uri, subject);
+    public static <U> CoreValueDelete<U> create(@NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull Uri uri) {
+        return new CoreValueDelete<>(uri, completionNotifier);
     }
 
     @NonNull
     public CoreOperation toDeleteOperation() {
-        return new CoreOperation(uri, subject, ContentProviderOperation.newDelete(uri).build());
-    }
-
-    @Override
-    @NonNull
-    public CoreOperation noOperation() {
-        return new CoreOperation(uri, subject);
-    }
-
-    @NonNull
-    @Override
-    public Subject<Boolean, Boolean> subject() {
-        return subject;
+        return new CoreOperation(uri, completionNotifier, ContentProviderOperation.newDelete(uri).build());
     }
 
     @Override
@@ -79,6 +67,18 @@ public final class CoreValueDelete<U> implements CoreValue<U> {
     @Override
     public Type type() {
         return Type.DELETE;
+    }
+
+    @NonNull
+    @Override
+    public Subject<Boolean, Boolean> completionNotifier() {
+        return completionNotifier;
+    }
+
+    @Override
+    @NonNull
+    public CoreOperation noOperation() {
+        return new CoreOperation(uri, completionNotifier);
     }
 
 }

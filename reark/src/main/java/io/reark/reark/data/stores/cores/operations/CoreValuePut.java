@@ -44,22 +44,22 @@ public final class CoreValuePut<U> implements CoreValue<U> {
     private final U item;
 
     @NonNull
-    private final Subject<Boolean, Boolean> subject;
+    private final Subject<Boolean, Boolean> completionNotifier;
 
-    private CoreValuePut(@NonNull Uri uri, @NonNull U item, @NonNull Subject<Boolean, Boolean> subject) {
+    private CoreValuePut(@NonNull Uri uri, @NonNull U item, @NonNull Subject<Boolean, Boolean> completionNotifier) {
         this.uri = uri;
         this.item = item;
-        this.subject = subject;
+        this.completionNotifier = completionNotifier;
     }
 
     @NonNull
-    public static <U> CoreValuePut<U> create(@NonNull Subject<Boolean, Boolean> subject, @NonNull Uri uri, @NonNull U item) {
-        return new CoreValuePut<>(uri, item, subject);
+    public static <U> CoreValuePut<U> create(@NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull Uri uri, @NonNull U item) {
+        return new CoreValuePut<>(uri, item, completionNotifier);
     }
 
     @NonNull
     public CoreOperation toInsertOperation(@NonNull ContentValues values) {
-        return new CoreOperation(uri, subject, ContentProviderOperation
+        return new CoreOperation(uri, completionNotifier, ContentProviderOperation
                 .newInsert(uri)
                 .withValues(values)
                 .build());
@@ -67,22 +67,10 @@ public final class CoreValuePut<U> implements CoreValue<U> {
 
     @NonNull
     public CoreOperation toUpdateOperation(@NonNull ContentValues values) {
-        return new CoreOperation(uri, subject, ContentProviderOperation
+        return new CoreOperation(uri, completionNotifier, ContentProviderOperation
                 .newUpdate(uri)
                 .withValues(values)
                 .build());
-    }
-
-    @Override
-    @NonNull
-    public CoreOperation noOperation() {
-        return new CoreOperation(uri, subject);
-    }
-
-    @NonNull
-    @Override
-    public Subject<Boolean, Boolean> subject() {
-        return subject;
     }
 
     @Override
@@ -100,6 +88,18 @@ public final class CoreValuePut<U> implements CoreValue<U> {
     @Override
     public Type type() {
         return Type.PUT;
+    }
+
+    @NonNull
+    @Override
+    public Subject<Boolean, Boolean> completionNotifier() {
+        return completionNotifier;
+    }
+
+    @Override
+    @NonNull
+    public CoreOperation noOperation() {
+        return new CoreOperation(uri, completionNotifier);
     }
 
 }

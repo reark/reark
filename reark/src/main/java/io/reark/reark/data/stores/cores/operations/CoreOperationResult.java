@@ -37,19 +37,19 @@ public final class CoreOperationResult {
     private final Uri uri;
 
     @NonNull
-    private final Subject<Boolean, Boolean> subject;
+    private final Subject<Boolean, Boolean> completionNotifier;
 
     private final boolean success;
 
     public CoreOperationResult(@NonNull CoreOperation operation, boolean success) {
         this.uri = operation.uri();
-        this.subject = operation.subject();
+        this.completionNotifier = operation.completionNotifier();
         this.success = success;
     }
 
     public CoreOperationResult(@NonNull ContentProviderResult result, @NonNull CoreOperation operation) {
         this.uri = operation.uri();
-        this.subject = operation.subject();
+        this.completionNotifier = operation.completionNotifier();
         this.success = result.count == null || result.count > 0;
     }
 
@@ -58,13 +58,7 @@ public final class CoreOperationResult {
         return uri;
     }
 
-    @NonNull
-    public Subject<Boolean, Boolean> subject() {
-        return subject;
+    public void notifyCompletion() {
+        completionNotifier.onNext(success);
     }
-
-    public boolean success() {
-        return success;
-    }
-
 }

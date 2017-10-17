@@ -44,18 +44,18 @@ public final class CoreOperation {
     private final Uri uri;
 
     @NonNull
-    private final Subject<Boolean, Boolean> subject;
+    private final Subject<Boolean, Boolean> completionNotifier;
 
     @NonNull
     private final ContentProviderOperation operation;
 
-    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> subject) {
-        this(uri, subject, NO_OP);
+    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier) {
+        this(uri, completionNotifier, NO_OP);
     }
 
-    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> subject, @NonNull ContentProviderOperation operation) {
+    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull ContentProviderOperation operation) {
         this.uri = uri;
-        this.subject = subject;
+        this.completionNotifier = completionNotifier;
         this.operation = operation;
     }
 
@@ -65,8 +65,8 @@ public final class CoreOperation {
     }
 
     @NonNull
-    public Subject<Boolean, Boolean> subject() {
-        return subject;
+    public Subject<Boolean, Boolean> completionNotifier() {
+        return completionNotifier;
     }
 
     @NonNull

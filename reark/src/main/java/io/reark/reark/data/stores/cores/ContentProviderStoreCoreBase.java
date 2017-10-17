@@ -103,7 +103,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver,
                                            final int groupingTimeout,
                                            final int groupMaxSize) {
-        this.contentResolver = Preconditions.get(contentResolver);
+        this.contentResolver = get(contentResolver);
         this.groupingTimeout = groupingTimeout;
         this.groupMaxSize = groupMaxSize;
 
@@ -265,7 +265,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         try {
             locker.release(operation.uri());
             // Emit whether the operation was executed successfully.
-            operation.subject().onNext(operation.success());
+            operation.notifyCompletion();
         } catch (IllegalStateException e) {
             // Release may throw if the lock wasn't successfully acquired.
             Log.e(TAG, "Couldn't release lock!", e);
@@ -284,25 +284,25 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     protected Single<Boolean> put(@NonNull final Uri uri, @NonNull final U item) {
-        checkNotNull(item);
         checkNotNull(uri);
+        checkNotNull(item);
 
-        return createModifyingOperation(subject -> CoreValuePut.create(subject, uri, item));
+        return createModifyingOperation(notifier -> CoreValuePut.create(notifier, uri, item));
     }
 
     @NonNull
     protected Single<Boolean> delete(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return createModifyingOperation(subject -> CoreValueDelete.create(subject, uri));
+        return createModifyingOperation(notifier -> CoreValueDelete.create(notifier, uri));
     }
 
     @NonNull
     private Single<Boolean> createModifyingOperation(@NonNull final Func1<Subject<Boolean, Boolean>, CoreValue<U>> valueFunc) {
-        BehaviorSubject<Boolean> subject = BehaviorSubject.create();
-        operationSubject.onNext(valueFunc.call(subject));
+        BehaviorSubject<Boolean> completionNotifier = BehaviorSubject.create();
+        operationSubject.onNext(valueFunc.call(completionNotifier));
 
-        return subject.first()
+        return completionNotifier.first()
                 .toSingle();
     }
 

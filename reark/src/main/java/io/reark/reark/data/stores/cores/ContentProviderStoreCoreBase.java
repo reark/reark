@@ -59,6 +59,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
+import static io.reark.reark.utils.Preconditions.get;
 
 /**
  * ContentProviderStoreCoreBase implements an Observable based item store that uses a content provider as
@@ -315,15 +316,12 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
-        checkNotNull(uri);
-
-        return Observable.fromCallable(() -> queryList(uri))
-                .subscribeOn(Schedulers.io());
+        return Observable.fromCallable(() -> queryList(get(uri)));
     }
 
     @NonNull
     protected Observable<U> getOnce(@NonNull final Uri uri) {
-        return getAllOnce(Preconditions.get(uri))
+        return getAllOnce(get(uri))
                 .filter(list -> !list.isEmpty())
                 .doOnNext(list -> {
                     if (list.size() > 1) {

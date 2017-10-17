@@ -34,12 +34,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.COMPLETED_WITHOUT_VALUE;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.COMPLETED_WITH_ERROR;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.COMPLETED_WITH_VALUE;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.NONE;
+import static io.reark.reark.pojo.NetworkRequestStatus.Status.ONGOING;
+
 import io.reark.reark.utils.Log;
 
-import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_COMPLETED;
-import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ERROR;
-import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_NONE;
-import static io.reark.reark.pojo.NetworkRequestStatus.Status.NETWORK_STATUS_ONGOING;
 import static io.reark.reark.utils.Preconditions.get;
 
 /**
@@ -49,8 +51,8 @@ public final class NetworkRequestStatus {
 
     private static final String TAG = NetworkRequestStatus.class.getSimpleName();
 
-    private static final NetworkRequestStatus NONE =
-            new NetworkRequestStatus(Collections.emptySet(), "", NETWORK_STATUS_NONE, 0, null);
+    private static final NetworkRequestStatus NO_STATUS =
+            new NetworkRequestStatus(Collections.emptySet(), "", NONE, 0, null);
 
     @NonNull
     private final String uri;
@@ -67,10 +69,11 @@ public final class NetworkRequestStatus {
     private final String errorMessage;
 
     public enum Status {
-        NETWORK_STATUS_NONE("networkStatusNone"),
-        NETWORK_STATUS_ONGOING("networkStatusOngoing"),
-        NETWORK_STATUS_COMPLETED("networkStatusCompleted"),
-        NETWORK_STATUS_ERROR("networkStatusError");
+        NONE("none"),
+        ONGOING("ongoing"),
+        COMPLETED_WITH_VALUE("completedWithValue"),
+        COMPLETED_WITHOUT_VALUE("completedWithoutValue"),
+        COMPLETED_WITH_ERROR("completedWithError");
 
         private final String status;
 
@@ -97,7 +100,7 @@ public final class NetworkRequestStatus {
 
     @NonNull
     public static NetworkRequestStatus none() {
-        return NONE;
+        return NO_STATUS;
     }
 
     @NonNull
@@ -124,23 +127,27 @@ public final class NetworkRequestStatus {
     }
 
     public boolean isSome() {
-        return status != NETWORK_STATUS_NONE;
+        return status != NONE;
     }
 
     public boolean isNone() {
-        return status == NETWORK_STATUS_NONE;
+        return status == NONE;
     }
 
     public boolean isOngoing() {
-        return status == NETWORK_STATUS_ONGOING;
+        return status == ONGOING;
     }
 
-    public boolean isError() {
-        return status == NETWORK_STATUS_ERROR;
+    public boolean isCompletedWithValue() {
+        return status == COMPLETED_WITH_VALUE;
     }
 
-    public boolean isCompleted() {
-        return status == NETWORK_STATUS_COMPLETED;
+    public boolean isCompletedWithoutValue() {
+        return status == COMPLETED_WITHOUT_VALUE;
+    }
+
+    public boolean isCompletedWithError() {
+        return status == COMPLETED_WITH_ERROR;
     }
 
     @Override
@@ -165,19 +172,19 @@ public final class NetworkRequestStatus {
 
         @NonNull
         public Builder ongoing() {
-            this.status = NETWORK_STATUS_ONGOING;
+            this.status = ONGOING;
             return this;
         }
 
         @NonNull
         public Builder error() {
-            this.status = NETWORK_STATUS_ERROR;
+            this.status = COMPLETED_WITH_ERROR;
             return this;
         }
 
         @NonNull
-        public Builder completed() {
-            this.status = NETWORK_STATUS_COMPLETED;
+        public Builder completed(boolean withValue) {
+            this.status = withValue ? COMPLETED_WITH_VALUE : COMPLETED_WITHOUT_VALUE;
             return this;
         }
 

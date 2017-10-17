@@ -33,10 +33,11 @@ import static io.reark.reark.utils.Preconditions.get;
 public final class DataStreamNotification<T> {
 
     public enum Type {
-        FETCHING_START,
-        FETCHING_COMPLETED,
-        FETCHING_ERROR,
-        ON_NEXT
+        ONGOING,
+        ON_NEXT,
+        COMPLETED_WITH_VALUE,
+        COMPLETED_WITHOUT_VALUE,
+        COMPLETED_WITH_ERROR
     }
 
     @NonNull
@@ -46,11 +47,11 @@ public final class DataStreamNotification<T> {
     private final T value;
 
     @Nullable
-    private final Throwable error;
+    private final String error;
 
-    private DataStreamNotification(@NonNull final Type type,
-                                   @Nullable final T value,
-                                   @Nullable final Throwable error) {
+    private DataStreamNotification(@NonNull Type type,
+                                   @Nullable T value,
+                                   @Nullable String error) {
         this.type = get(type);
         this.value = value;
         this.error = error;
@@ -67,13 +68,13 @@ public final class DataStreamNotification<T> {
     }
 
     @Nullable
-    public Throwable getError() {
+    public String getError() {
         return error;
     }
 
     @NonNull
-    public static<T> DataStreamNotification<T> fetchingStart() {
-        return new DataStreamNotification<>(Type.FETCHING_START, null, null);
+    public static<T> DataStreamNotification<T> ongoing() {
+        return new DataStreamNotification<>(Type.ONGOING, null, null);
     }
 
     @NonNull
@@ -82,29 +83,46 @@ public final class DataStreamNotification<T> {
     }
 
     @NonNull
-    public static<T> DataStreamNotification<T> fetchingCompleted() {
-        return new DataStreamNotification<>(Type.FETCHING_COMPLETED, null, null);
+    public static<T> DataStreamNotification<T> completedWithValue() {
+        return new DataStreamNotification<>(Type.COMPLETED_WITH_VALUE, null, null);
     }
 
     @NonNull
-    public static<T> DataStreamNotification<T> fetchingError() {
-        return new DataStreamNotification<>(Type.FETCHING_ERROR, null, null);
+    public static<T> DataStreamNotification<T> completedWithoutValue() {
+        return new DataStreamNotification<>(Type.COMPLETED_WITHOUT_VALUE, null, null);
     }
 
-    public boolean isFetchingStart() {
-        return type == Type.FETCHING_START;
+    @NonNull
+    public static<T> DataStreamNotification<T> completedWithError(@Nullable String error) {
+        return new DataStreamNotification<>(Type.COMPLETED_WITH_ERROR, null, error);
+    }
+
+    public boolean isOngoing() {
+        return type == Type.ONGOING;
     }
 
     public boolean isOnNext() {
         return type == Type.ON_NEXT;
     }
 
-    public boolean isFetchingCompleted() {
-        return type == Type.FETCHING_COMPLETED;
+    public boolean isCompletedWithValue() {
+        return type == Type.COMPLETED_WITH_VALUE;
     }
 
-    public boolean isFetchingError() {
-        return type == Type.FETCHING_ERROR;
+    public boolean isCompletedWithoutValue() {
+        return type == Type.COMPLETED_WITHOUT_VALUE;
+    }
+
+    public boolean isCompletedWithError() {
+        return type == Type.COMPLETED_WITH_ERROR;
+    }
+
+    public boolean isCompletedWithSuccess() {
+        return isCompletedWithValue() || isCompletedWithoutValue();
+    }
+
+    public boolean isCompleted() {
+        return isCompletedWithSuccess() || isCompletedWithError();
     }
 
     @Override

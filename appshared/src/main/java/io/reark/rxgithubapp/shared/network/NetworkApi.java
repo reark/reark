@@ -36,7 +36,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
+import rx.Single;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -59,13 +59,13 @@ public class NetworkApi {
     }
 
     @NonNull
-    public Observable<List<GitHubRepository>> search(Map<String, String> search) {
+    public Single<List<GitHubRepository>> search(Map<String, String> search) {
         return gitHubService.search(search)
                             .map(GitHubRepositorySearchResults::getItems);
     }
 
     @NonNull
-    public Observable<GitHubRepository> getRepository(int id) {
+    public Single<GitHubRepository> getRepository(int id) {
         return gitHubService.getRepository(id);
     }
 }

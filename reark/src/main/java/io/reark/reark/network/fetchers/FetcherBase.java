@@ -27,7 +27,6 @@ package io.reark.reark.network.fetchers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -86,15 +85,15 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
         release(requestId);
     }
 
-    protected void completeRequest(int requestId, @NonNull String uri) {
-        Log.v(TAG, String.format("completeRequest(%s, %s)", requestId, get(uri)));
+    protected void completeRequest(int requestId, @NonNull String uri, boolean withValue) {
+        Log.v(TAG, String.format("completeRequest(%s, %s, %s)", requestId, get(uri), withValue));
 
         lock(requestId);
 
         updateNetworkRequestStatus.call(new NetworkRequestStatus.Builder()
                 .uri(uri)
                 .listeners(getListeners(requestId))
-                .completed()
+                .completed(withValue)
                 .build());
 
         release(requestId);
@@ -187,7 +186,7 @@ public abstract class FetcherBase<T> implements Fetcher<T> {
                 int statusCode = httpException.code();
                 errorRequest(requestId, uri, statusCode, httpException.getMessage());
             } else {
-                Log.w(TAG, "The error was not a RetrofitError");
+                Log.w(TAG, "The error was not a RetrofitError", throwable);
                 errorRequest(requestId, uri, NO_ERROR_CODE, null);
             }
         };

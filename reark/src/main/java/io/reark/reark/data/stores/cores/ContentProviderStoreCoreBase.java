@@ -38,8 +38,6 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reark.reark.data.stores.cores.operations.CoreOperation;
@@ -55,6 +53,7 @@ import rx.Single;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -88,9 +87,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private final PublishSubject<CoreValue<U>> operationSubject = PublishSubject.create();
 
     @NonNull
-    private final ConcurrentMap<Integer, Subject<Boolean, Boolean>> completionNotifiers = new ConcurrentHashMap<>(20, 0.75f, 4);
-
-    @NonNull
     private final ObjectLockHandler<Uri> locker = new ObjectLockHandler<>();
 
     @Nullable
@@ -100,8 +96,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     private final int groupingTimeout;
 
-    private int nextOperationIndex = 0;
-
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver) {
         this(contentResolver, DEFAULT_GROUPING_TIMEOUT_MS, DEFAULT_GROUP_MAX_SIZE);
     }
@@ -109,7 +103,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
     protected ContentProviderStoreCoreBase(@NonNull final ContentResolver contentResolver,
                                            final int groupingTimeout,
                                            final int groupMaxSize) {
-        this.contentResolver = Preconditions.get(contentResolver);
+        this.contentResolver = get(contentResolver);
         this.groupingTimeout = groupingTimeout;
         this.groupMaxSize = groupMaxSize;
 
@@ -122,7 +116,6 @@ public abstract class ContentProviderStoreCoreBase<U> {
         // Observable transforming inserts, updates and deletes to ContentProviderOperations
         Observable<CoreOperation> operationObservable = operationSubject
                 .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
                 .flatMap(this::createCoreOperation);
 
         // Group the operations to a list that should be executed in one batch. The default
@@ -131,7 +124,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         updateSubscription = groupOperations(operationObservable)
                 .observeOn(Schedulers.computation())
                 .doOnNext(operations -> Log.v(TAG, "Grouped list of " + operations.size()))
-                .concatMap(this::applyOperations)
+                .flatMap(this::applyOperations) // No guarantees on operation ordering
                 .subscribe(this::release,
                         // On error we can't release the processing lock, as the Uri reference
                         // is lost. It's perhaps better to error out of the subscription than
@@ -182,7 +175,8 @@ public abstract class ContentProviderStoreCoreBase<U> {
                 Observable.merge(
                         stream.window(groupMaxSize).skip(1),
                         stream.debounce(groupingTimeout, TimeUnit.MILLISECONDS))))
-                .filter(list -> !list.isEmpty());
+                .filter(list -> !list.isEmpty())
+                .onBackpressureBuffer();
     }
 
     @NonNull
@@ -201,6 +195,7 @@ public abstract class ContentProviderStoreCoreBase<U> {
         }
 
         return valueObservable
+                .subscribeOn(Schedulers.io())
                 .onErrorReturn(__ -> value.noOperation())
                 .doOnNext(this::releaseIfNoOp)
                 .filter(CoreOperation::isValid);
@@ -269,11 +264,11 @@ public abstract class ContentProviderStoreCoreBase<U> {
     private void release(@NonNull final CoreOperationResult operation) {
         try {
             locker.release(operation.uri());
-            // Remove the operation completion listener and emit whether the operation was executed.
-            completionNotifiers.remove(operation.id()).onNext(operation.success());
+            // Emit whether the operation was executed successfully.
+            operation.notifyCompletion();
         } catch (IllegalStateException e) {
             // Release may throw if the lock wasn't successfully acquired.
-            Log.w(TAG, "Couldn't release lock!", e);
+            Log.e(TAG, "Couldn't release lock!", e);
         }
     }
 
@@ -289,34 +284,34 @@ public abstract class ContentProviderStoreCoreBase<U> {
 
     @NonNull
     protected Single<Boolean> put(@NonNull final Uri uri, @NonNull final U item) {
-        checkNotNull(item);
         checkNotNull(uri);
+        checkNotNull(item);
 
-        return createModifyingOperation(index -> CoreValuePut.create(index, uri, item));
+        return createModifyingOperation(notifier -> CoreValuePut.create(notifier, uri, item));
     }
 
     @NonNull
     protected Single<Boolean> delete(@NonNull final Uri uri) {
         checkNotNull(uri);
 
-        return createModifyingOperation(index -> CoreValueDelete.create(index, uri));
+        return createModifyingOperation(notifier -> CoreValueDelete.create(notifier, uri));
     }
 
     @NonNull
-    private Single<Boolean> createModifyingOperation(@NonNull final Func1<Integer, CoreValue<U>> valueFunc) {
-        int index = ++nextOperationIndex;
+    private Single<Boolean> createModifyingOperation(@NonNull final Func1<Subject<Boolean, Boolean>, CoreValue<U>> valueFunc) {
+        BehaviorSubject<Boolean> completionNotifier = BehaviorSubject.create();
+        operationSubject.onNext(valueFunc.call(completionNotifier));
 
-        completionNotifiers.put(index, PublishSubject.create());
-        operationSubject.onNext(valueFunc.call(index));
-
-        return completionNotifiers.get(index)
-                .first()
+        return completionNotifier.first()
                 .toSingle();
     }
 
     @NonNull
     protected Observable<List<U>> getAllOnce(@NonNull final Uri uri) {
-        return Observable.fromCallable(() -> queryList(get(uri)));
+        checkNotNull(uri);
+
+        return Observable.fromCallable(() -> queryList(uri))
+                .subscribeOn(Schedulers.io());
     }
 
     @NonNull

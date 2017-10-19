@@ -29,29 +29,28 @@ import android.content.ContentProviderResult;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-public final class CoreOperationResult {
+import rx.subjects.Subject;
 
-    private final int id;
+public final class CoreOperationResult {
 
     @NonNull
     private final Uri uri;
 
+    @NonNull
+    private final Subject<Boolean, Boolean> completionNotifier;
+
     private final boolean success;
 
     public CoreOperationResult(@NonNull CoreOperation operation, boolean success) {
-        this.id = operation.id();
         this.uri = operation.uri();
+        this.completionNotifier = operation.completionNotifier();
         this.success = success;
     }
 
     public CoreOperationResult(@NonNull ContentProviderResult result, @NonNull CoreOperation operation) {
-        this.id = operation.id();
         this.uri = operation.uri();
+        this.completionNotifier = operation.completionNotifier();
         this.success = result.count == null || result.count > 0;
-    }
-
-    public int id() {
-        return id;
     }
 
     @NonNull
@@ -59,8 +58,7 @@ public final class CoreOperationResult {
         return uri;
     }
 
-    public boolean success() {
-        return success;
+    public void notifyCompletion() {
+        completionNotifier.onNext(success);
     }
-
 }

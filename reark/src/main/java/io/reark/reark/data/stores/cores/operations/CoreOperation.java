@@ -29,6 +29,8 @@ import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import rx.subjects.Subject;
+
 /**
  * A class wrapping ContentProviderOperation, the operation Uri, and operation identifier.
  */
@@ -38,31 +40,33 @@ public final class CoreOperation {
     private static final ContentProviderOperation NO_OP =
             ContentProviderOperation.newInsert(Uri.EMPTY).build();
 
-    private final int id;
-
     @NonNull
     private final Uri uri;
 
     @NonNull
+    private final Subject<Boolean, Boolean> completionNotifier;
+
+    @NonNull
     private final ContentProviderOperation operation;
 
-    CoreOperation(int id, @NonNull Uri uri) {
-        this(id, uri, NO_OP);
+    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier) {
+        this(uri, completionNotifier, NO_OP);
     }
 
-    CoreOperation(int id, @NonNull Uri uri, @NonNull ContentProviderOperation operation) {
-        this.id = id;
+    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull ContentProviderOperation operation) {
         this.uri = uri;
+        this.completionNotifier = completionNotifier;
         this.operation = operation;
-    }
-
-    public int id() {
-        return id;
     }
 
     @NonNull
     public Uri uri() {
         return uri;
+    }
+
+    @NonNull
+    public Subject<Boolean, Boolean> completionNotifier() {
+        return completionNotifier;
     }
 
     @NonNull

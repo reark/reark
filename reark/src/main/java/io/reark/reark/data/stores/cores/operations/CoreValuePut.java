@@ -30,12 +30,12 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import rx.subjects.Subject;
+
 /**
  * A class used to represent a change to the database.
  */
 public final class CoreValuePut<U> implements CoreValue<U> {
-
-    private final int id;
 
     @NonNull
     private final Uri uri;
@@ -43,20 +43,23 @@ public final class CoreValuePut<U> implements CoreValue<U> {
     @NonNull
     private final U item;
 
-    private CoreValuePut(int id, @NonNull Uri uri, @NonNull U item) {
-        this.id = id;
+    @NonNull
+    private final Subject<Boolean, Boolean> completionNotifier;
+
+    private CoreValuePut(@NonNull Uri uri, @NonNull U item, @NonNull Subject<Boolean, Boolean> completionNotifier) {
         this.uri = uri;
         this.item = item;
+        this.completionNotifier = completionNotifier;
     }
 
     @NonNull
-    public static <U> CoreValuePut<U> create(int id, @NonNull Uri uri, @NonNull U item) {
-        return new CoreValuePut<>(id, uri, item);
+    public static <U> CoreValuePut<U> create(@NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull Uri uri, @NonNull U item) {
+        return new CoreValuePut<>(uri, item, completionNotifier);
     }
 
     @NonNull
     public CoreOperation toInsertOperation(@NonNull ContentValues values) {
-        return new CoreOperation(id, uri, ContentProviderOperation
+        return new CoreOperation(uri, completionNotifier, ContentProviderOperation
                 .newInsert(uri)
                 .withValues(values)
                 .build());
@@ -64,21 +67,10 @@ public final class CoreValuePut<U> implements CoreValue<U> {
 
     @NonNull
     public CoreOperation toUpdateOperation(@NonNull ContentValues values) {
-        return new CoreOperation(id, uri, ContentProviderOperation
+        return new CoreOperation(uri, completionNotifier, ContentProviderOperation
                 .newUpdate(uri)
                 .withValues(values)
                 .build());
-    }
-
-    @Override
-    @NonNull
-    public CoreOperation noOperation() {
-        return new CoreOperation(id, uri);
-    }
-
-    @Override
-    public int id() {
-        return id;
     }
 
     @Override
@@ -96,6 +88,18 @@ public final class CoreValuePut<U> implements CoreValue<U> {
     @Override
     public Type type() {
         return Type.PUT;
+    }
+
+    @NonNull
+    @Override
+    public Subject<Boolean, Boolean> completionNotifier() {
+        return completionNotifier;
+    }
+
+    @Override
+    @NonNull
+    public CoreOperation noOperation() {
+        return new CoreOperation(uri, completionNotifier);
     }
 
 }

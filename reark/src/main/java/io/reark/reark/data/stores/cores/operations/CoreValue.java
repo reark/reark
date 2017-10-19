@@ -28,6 +28,8 @@ package io.reark.reark.data.stores.cores.operations;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import rx.subjects.Subject;
+
 /**
  * Interface holding the type of data update.
  */
@@ -38,13 +40,14 @@ public interface CoreValue<U> {
         DELETE
     }
 
-    int id();
-
     @NonNull
     Uri uri();
 
     @NonNull
     Type type();
+
+    @NonNull
+    Subject<Boolean, Boolean> completionNotifier();
 
     @NonNull
     CoreOperation noOperation();

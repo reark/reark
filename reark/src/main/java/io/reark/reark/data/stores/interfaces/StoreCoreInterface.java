@@ -29,8 +29,9 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * StoreCore is the underlying persistence mechanism of a store. It is not mandatory for a store to
@@ -76,22 +77,22 @@ public interface StoreCoreInterface<T, U> {
      * the Observable completes without emitting any items.
      *
      * @param id Identifier for the data item to be retrieved from cache.
-     * @return An Observable that emits the data item for the given id and completes, or, in case no
-     * data item is in the cache, it simply completes without emitting any items.
+     * @return Maybe that emits the data item for the given id, or in case no data item is in
+     * the cache, simply completes without emitting any items.
      */
     @NonNull
-    Observable<U> getCached(@NonNull final T id);
+    Maybe<U> getCached(@NonNull final T id);
 
     /**
      * Returns an Observable that emits all items from the underlying persisting structure (in case
      * the store uses an in-memory strategy this could mean the items are emitted synchronously).
      * In case no items exist, the Observable completes without emitting any items.
      *
-     * @return An Observable that emits a list all data items and completes. In case no items are
+     * @return Single that emits a list all data items and completes. In case no items are
      * in the cache, an empty list is emitted.
      */
     @NonNull
-    Observable<List<U>> getCached();
+    Single<List<U>> getCached();
 
     /**
      * Takes an identifier and returns an Observable that emits all matching _future_ items that are

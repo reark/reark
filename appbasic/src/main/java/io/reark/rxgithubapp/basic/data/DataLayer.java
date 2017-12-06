@@ -39,7 +39,6 @@ import io.reark.rxgithubapp.basic.data.stores.UserSettingsStore;
 import io.reark.rxgithubapp.shared.data.ClientDataLayerBase;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 
-import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
 
 public class DataLayer extends ClientDataLayerBase {

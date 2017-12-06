@@ -25,6 +25,8 @@
  */
 package io.reark.reark.utils;
 
+import android.support.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +35,12 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import android.support.annotation.NonNull;
-
-import rx.android.schedulers.AndroidSchedulers;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -54,28 +54,27 @@ public class RxViewBinderTest {
 
     private RxViewBinder binder;
 
-    private Subject<String, String> testSubject;
+    private Subject<String> testSubject;
 
-    private TestSubscriber<String> testSubscriber;
+    private TestObserver<String> testObserver;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         // Mocking AndroidSchedulers.mainThread() as loopers are not mocked by android unit tests
         PowerMockito.stub(PowerMockito.method(AndroidSchedulers.class, "mainThread"))
-                    .toReturn(Schedulers.immediate());
+                    .toReturn(Schedulers.single());
 
         testSubject = PublishSubject.create();
 
         binder = new RxViewBinder() {
             @Override
-            protected void bindInternal(@NonNull final CompositeSubscription compositeSubscription) {
-                assertNull(testSubscriber);
+            protected void bindInternal(@NonNull final CompositeDisposable compositeDisposable) {
+                assertNull(testObserver);
 
                 // It is not possible to subscribe multiple with the same subscriber.
-                testSubscriber = new TestSubscriber<>();
-
-                compositeSubscription.add(testSubject.subscribe(testSubscriber));
+                testObserver = new TestObserver<>();
+                compositeDisposable.add(testSubject.subscribeWith(testObserver));
             }
         };
     }
@@ -84,14 +83,14 @@ public class RxViewBinderTest {
     public void testInitialState() throws Exception {
         testSubject.onNext("testString");
 
-        assertNull(testSubscriber);
+        assertNull(testObserver);
     }
 
     @Test
     public void testInitialUnbind() throws Exception {
         binder.unbind();
 
-        assertNull(testSubscriber);
+        assertNull(testObserver);
     }
 
     @Test
@@ -99,10 +98,10 @@ public class RxViewBinderTest {
         binder.bind();
         testSubject.onNext("testString");
 
-        assertNotNull(testSubscriber);
-        assertFalse(testSubscriber.isUnsubscribed());
-        assertEquals(1, testSubscriber.getOnNextEvents().size());
-        assertEquals("testString", testSubscriber.getOnNextEvents().get(0));
+        assertNotNull(testObserver);
+        assertFalse(testObserver.isDisposed());
+        assertEquals(1, testObserver.getEvents().get(0).size());
+        assertEquals("testString", testObserver.getEvents().get(0).get(0));
     }
 
     @Test
@@ -111,9 +110,9 @@ public class RxViewBinderTest {
         binder.unbind();
         testSubject.onNext("testString");
 
-        assertNotNull(testSubscriber);
-        assertTrue(testSubscriber.isUnsubscribed());
-        assertEquals(0, testSubscriber.getOnNextEvents().size());
+        assertNotNull(testObserver);
+        assertTrue(testObserver.isDisposed());
+        assertEquals(0, testObserver.getEvents().get(0).size());
     }
 
     @Test
@@ -122,19 +121,19 @@ public class RxViewBinderTest {
         binder.unbind();
 
         // The test subscriber changes with each bind.
-        TestSubscriber<String> firstTestSubscriber = testSubscriber;
-        testSubscriber = null;
+        TestObserver<String> firstTestObserver = testObserver;
+        testObserver = null;
 
         binder.bind();
         testSubject.onNext("testString");
 
-        assertNotNull(firstTestSubscriber);
-        assertNotNull(testSubscriber);
-        assertTrue(firstTestSubscriber.isUnsubscribed());
-        assertFalse(testSubscriber.isUnsubscribed());
-        assertEquals(0, firstTestSubscriber.getOnNextEvents().size());
-        assertEquals(1, testSubscriber.getOnNextEvents().size());
-        assertEquals("testString", testSubscriber.getOnNextEvents().get(0));
+        assertNotNull(firstTestObserver);
+        assertNotNull(testObserver);
+        assertTrue(firstTestObserver.isDisposed());
+        assertFalse(testObserver.isDisposed());
+        assertEquals(0, firstTestObserver.getEvents().get(0).size());
+        assertEquals(1, testObserver.getEvents().get(0).size());
+        assertEquals("testString", testObserver.getEvents().get(0).get(0));
     }
 
     @Test
@@ -142,18 +141,18 @@ public class RxViewBinderTest {
         binder.bind();
 
         // The test subscriber changes with each bind.
-        TestSubscriber<String> firstTestSubscriber = testSubscriber;
-        testSubscriber = null;
+        TestObserver<String> firstTestObserver = testObserver;
+        testObserver = null;
 
         binder.bind();
         testSubject.onNext("testString");
 
-        assertNotNull(firstTestSubscriber);
-        assertNotNull(testSubscriber);
-        assertTrue(firstTestSubscriber.isUnsubscribed());
-        assertFalse(testSubscriber.isUnsubscribed());
-        assertEquals(0, firstTestSubscriber.getOnNextEvents().size());
-        assertEquals(1, testSubscriber.getOnNextEvents().size());
-        assertEquals("testString", testSubscriber.getOnNextEvents().get(0));
+        assertNotNull(firstTestObserver);
+        assertNotNull(testObserver);
+        assertTrue(firstTestObserver.isDisposed());
+        assertFalse(testObserver.isDisposed());
+        assertEquals(0, firstTestObserver.getEvents().get(0).size());
+        assertEquals(1, testObserver.getEvents().get(0).size());
+        assertEquals("testString", testObserver.getEvents().get(0).get(0));
     }
 }

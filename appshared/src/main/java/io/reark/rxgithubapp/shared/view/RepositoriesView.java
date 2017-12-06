@@ -25,8 +25,6 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
-import com.jakewharton.rxbinding.widget.RxTextView;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,18 +35,20 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
+
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoriesViewModel.ProgressStatus;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -132,7 +132,7 @@ public class RepositoriesView extends FrameLayout {
         }
 
         @Override
-        protected void bindInternal(@NonNull final CompositeSubscription s) {
+        protected void bindInternal(@NonNull final CompositeDisposable s) {
             s.add(viewModel.getRepositories()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setRepositories));
@@ -142,13 +142,7 @@ public class RepositoriesView extends FrameLayout {
             s.add(view.searchStringObservable
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(viewModel::setSearchString));
-            s.add(Observable.create(
-                    subscriber -> {
-                        view.repositoriesAdapter.setOnClickListener(
-                                this::repositoriesAdapterOnClick);
-                        subscriber.add(Subscriptions.create(() ->
-                                view.repositoriesAdapter.setOnClickListener(null)));
-                    })
+            s.add(Completable.fromAction(() -> view.repositoriesAdapter.setOnClickListener(this::repositoriesAdapterOnClick))
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribe());
         }

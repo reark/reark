@@ -39,13 +39,13 @@ dependencies {
     releaseCompile project(path: ':reark', configuration: 'release')
 
     // Support libraries
-    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
 
     // Retrofit
     compile 'com.squareup.okhttp3:okhttp-android-support:3.5.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
 
     // Glide
     compile 'com.github.bumptech.glide:glide:3.7.0'

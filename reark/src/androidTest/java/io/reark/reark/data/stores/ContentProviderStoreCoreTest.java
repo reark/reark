@@ -32,16 +32,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.functions.Consumer;
 import io.reark.reark.data.stores.mock.SimpleMockContentProvider;
 import io.reark.reark.data.stores.mock.SimpleMockStore;
 import io.reark.reark.data.stores.mock.SimpleMockStoreCore;
-import rx.functions.Action1;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 @RunWith(AndroidJUnit4.class)
 public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockContentProvider> {
@@ -61,14 +60,13 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
     @Test
     public void getCached_WithId_WithData_ReturnsData_AndCompletes() {
         new ArrangeBuilder().withTestData();
-        List<String> expected = singletonList("parsnip");
 
         core.getCached(SimpleMockStore.getIdFor("parsnip"))
                 .test()
-                .awaitTerminalEvent()
-                .assertCompleted()
+                .awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(expected);
+                .assertValue("parsnip");
     }
 
     @Test
@@ -77,8 +75,8 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
 
         core.getCached(SimpleMockStore.getIdFor("parsnip"))
                 .test()
-                .awaitTerminalEvent()
-                .assertCompleted()
+                .awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertComplete()
                 .assertNoErrors()
                 .assertNoValues();
     }
@@ -86,27 +84,25 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
     @Test
     public void getCached_WithNoId_WithData_ReturnsAllData_AndCompletes() {
         new ArrangeBuilder().withTestData();
-        List<List<String>> expected = singletonList(asList("parsnip", "lettuce", "spinach"));
 
         core.getCached()
                 .test()
-                .awaitTerminalEvent()
-                .assertCompleted()
+                .awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(expected);
+                .assertValue(asList("parsnip", "lettuce", "spinach"));
     }
 
     @Test
     public void getCached_WithNoId_WithNoData_ReturnsEmptyList_AndCompletes() {
         new ArrangeBuilder();
-        List<List<String>> expected = singletonList(emptyList());
 
         core.getCached()
                 .test()
-                .awaitTerminalEvent()
-                .assertCompleted()
+                .awaitDone(50, TimeUnit.MILLISECONDS)
+                .assertComplete()
                 .assertNoErrors()
-                .assertReceivedOnNext(expected);
+                .assertValue(emptyList());
     }
 
     private class ArrangeBuilder {
@@ -116,19 +112,21 @@ public class ContentProviderStoreCoreTest extends ProviderTestCase2<SimpleMockCo
         }
 
         ArrangeBuilder withTestData() {
-            Action1<String> insert = value ->
+            Consumer<String> insert = value ->
                     getProvider().insert(
                             core.getUriForId(SimpleMockStore.getIdFor(value)),
                             core.getContentValuesForItem(value)
                     );
 
             // Prepare the mock content provider with values
-            insert.call("parsnip");
-            insert.call("lettuce");
-            insert.call("spinach");
+            try {
+                insert.accept("parsnip");
+                insert.accept("lettuce");
+                insert.accept("spinach");
+            } catch (Exception ignored) {
+            }
 
             return this;
         }
     }
-
 }

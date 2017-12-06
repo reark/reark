@@ -29,13 +29,12 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.rxgithubapp.shared.pojo.GitHubOwner;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.UserSettings;
-import rx.Observable;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
 
 public class RepositoryViewModelTest {
@@ -52,9 +51,8 @@ public class RepositoryViewModelTest {
 
         repositoryViewModel.getRepository()
                 .test()
-                .awaitTerminalEvent(100, TimeUnit.MILLISECONDS)
-                .assertNoTerminalEvent()
-                .assertReceivedOnNext(singletonList(testRepository));
+                .awaitDone(100, TimeUnit.MILLISECONDS)
+                .assertNoErrors()
+                .assertValue(testRepository);
     }
-
 }

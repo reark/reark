@@ -30,7 +30,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -51,7 +51,7 @@ public final class RxUtils {
     static <T> List<T> toList(@NonNull final Object... args) {
         checkNotNull(args);
 
-        final List<T> list = new ArrayList<>();
+        final List<T> list = new ArrayList<>(args.length);
         for (Object item : args) {
             list.add((T) item);
         }

@@ -36,15 +36,14 @@ import com.google.gson.Gson;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reark.reark.data.stores.cores.ContentProviderStoreCore;
-import io.reark.reark.data.stores.cores.operations.CoreOperation;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Preconditions;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.GitHubProvider.NetworkRequestStatuses;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.JsonIdColumns;
 import io.reark.rxgithubapp.advanced.data.schematicProvider.NetworkRequestStatusColumns;
-import rx.Observable;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 

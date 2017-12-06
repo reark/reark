@@ -29,7 +29,7 @@ import android.content.ContentProviderResult;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import rx.subjects.Subject;
+import io.reactivex.subjects.Subject;
 
 public final class CoreOperationResult {
 
@@ -37,7 +37,7 @@ public final class CoreOperationResult {
     private final Uri uri;
 
     @NonNull
-    private final Subject<Boolean, Boolean> completionNotifier;
+    private final Subject<Boolean> completionNotifier;
 
     private final boolean success;
 

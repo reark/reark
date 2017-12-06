@@ -29,10 +29,10 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.data.stores.interfaces.StoreInterface;
-import rx.Observable;
-import rx.Single;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -95,15 +95,13 @@ public class DefaultStore<T, U, R> implements StoreInterface<T, U, R> {
 
         return core.getCached(id)
                 .map(getNullSafe::call)
-                .defaultIfEmpty(getEmptyValue.call())
-                .toSingle();
+                .toSingle(getEmptyValue.call());
     }
 
     @NonNull
     @Override
     public Single<List<U>> getOnce() {
-        return core.getCached()
-                .toSingle();
+        return core.getCached();
     }
 
     @NonNull

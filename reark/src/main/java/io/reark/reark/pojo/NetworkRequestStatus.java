@@ -34,14 +34,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reark.reark.utils.Log;
+
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.COMPLETED_WITHOUT_VALUE;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.COMPLETED_WITH_ERROR;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.COMPLETED_WITH_VALUE;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.NONE;
 import static io.reark.reark.pojo.NetworkRequestStatus.Status.ONGOING;
-
-import io.reark.reark.utils.Log;
-
 import static io.reark.reark.utils.Preconditions.get;
 
 /**

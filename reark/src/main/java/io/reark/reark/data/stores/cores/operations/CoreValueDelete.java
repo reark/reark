@@ -29,7 +29,7 @@ import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import rx.subjects.Subject;
+import io.reactivex.subjects.Subject;
 
 /**
  * A class used to represent a deletion from the database.
@@ -40,15 +40,15 @@ public final class CoreValueDelete<U> implements CoreValue<U> {
     private final Uri uri;
 
     @NonNull
-    private final Subject<Boolean, Boolean> completionNotifier;
+    private final Subject<Boolean> completionNotifier;
 
-    private CoreValueDelete(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier) {
+    private CoreValueDelete(@NonNull Uri uri, @NonNull Subject<Boolean> completionNotifier) {
         this.uri = uri;
         this.completionNotifier = completionNotifier;
     }
 
     @NonNull
-    public static <U> CoreValueDelete<U> create(@NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull Uri uri) {
+    public static <U> CoreValueDelete<U> create(@NonNull Subject<Boolean> completionNotifier, @NonNull Uri uri) {
         return new CoreValueDelete<>(uri, completionNotifier);
     }
 
@@ -71,7 +71,7 @@ public final class CoreValueDelete<U> implements CoreValue<U> {
 
     @NonNull
     @Override
-    public Subject<Boolean, Boolean> completionNotifier() {
+    public Subject<Boolean> completionNotifier() {
         return completionNotifier;
     }
 

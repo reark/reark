@@ -32,14 +32,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import io.reark.reark.data.stores.StoreItem;
 import io.reark.reark.data.stores.interfaces.StoreCoreInterface;
 import io.reark.reark.utils.Log;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func2;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -56,7 +57,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     private static final String TAG = MemoryStoreCore.class.getSimpleName();
 
     @NonNull
-    private final Func2<U, U, U> putMergeFunction;
+    private final BiFunction<U, U, U> putMergeFunction;
 
     @NonNull
     private final Map<Integer, U> cache = new ConcurrentHashMap<>(10);
@@ -65,32 +66,32 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     private final PublishSubject<StoreItem<T, U>> subject = PublishSubject.create();
 
     @NonNull
-    private final ConcurrentMap<Integer, Subject<U, U>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
+    private final ConcurrentMap<Integer, Subject<U>> subjectCache = new ConcurrentHashMap<>(20, 0.75f, 4);
 
     public MemoryStoreCore() {
         this((v1, v2) -> v2);
     }
 
-    public MemoryStoreCore(@NonNull final Func2<U, U, U> putMergeFunction) {
+    public MemoryStoreCore(@NonNull final BiFunction<U, U, U> putMergeFunction) {
         this.putMergeFunction = get(putMergeFunction);
     }
 
     @NonNull
     @Override
-    public Observable<U> getCached(@NonNull final T id) {
+    public Maybe<U> getCached(@NonNull final T id) {
         checkNotNull(id);
 
         final U value = cache.get(getHashCodeForId(id));
 
         return value == null
-                ? Observable.empty()
-                : Observable.just(value);
+                ? Maybe.empty()
+                : Maybe.just(value);
     }
 
     @NonNull
     @Override
-    public Observable<List<U>> getCached() {
-        return Observable.from(() -> cache.keySet().iterator())
+    public Single<List<U>> getCached() {
+        return Observable.fromCallable(() -> cache.keySet().iterator())
                 .map(cache::get)
                 .toList();
     }
@@ -101,17 +102,15 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
         checkNotNull(id);
 
         int hash = getHashCodeForId(id);
-        subjectCache.putIfAbsent(hash, PublishSubject.<U>create());
+        subjectCache.putIfAbsent(hash, PublishSubject.create());
 
-        return subjectCache.get(hash)
-                .asObservable();
+        return subjectCache.get(hash);
     }
 
     @NonNull
     @Override
     public Observable<U> getStream() {
-        return subject.asObservable()
-                .map(StoreItem::item);
+        return subject.map(StoreItem::item);
     }
 
     @NonNull
@@ -131,7 +130,11 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
 
             if (!valuesEqual) {
                 Log.v(TAG, "Merging values at " + id);
-                newItem = putMergeFunction.call(currentItem, newItem);
+                try {
+                    newItem = putMergeFunction.apply(currentItem, newItem);
+                } catch (Exception e) {
+                    return Single.error(e);
+                }
                 valuesEqual = newItem.equals(currentItem);
             }
         }

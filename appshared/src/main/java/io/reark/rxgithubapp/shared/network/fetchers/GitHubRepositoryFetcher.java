@@ -29,17 +29,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.schedulers.Schedulers;
 import io.reark.reark.data.stores.interfaces.StorePutInterface;
 import io.reark.reark.pojo.NetworkRequestStatus;
 import io.reark.reark.utils.Log;
 import io.reark.rxgithubapp.shared.network.GitHubService;
 import io.reark.rxgithubapp.shared.network.NetworkApi;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
-import rx.Single;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Actions;
-import rx.schedulers.Schedulers;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -50,7 +50,7 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
     private final StorePutInterface<GitHubRepository> gitHubRepositoryStore;
 
     public GitHubRepositoryFetcher(@NonNull final NetworkApi networkApi,
-                                   @NonNull final Action1<NetworkRequestStatus> updateNetworkRequestStatus,
+                                   @NonNull final Consumer<NetworkRequestStatus> updateNetworkRequestStatus,
                                    @NonNull final StorePutInterface<GitHubRepository> gitHubRepositoryStore) {
         super(networkApi, updateNetworkRequestStatus);
 
@@ -80,16 +80,16 @@ public class GitHubRepositoryFetcher extends AppFetcherBase<Uri> {
 
         Log.d(TAG, "fetch(" + repositoryId + ")");
 
-        Subscription subscription = createNetworkObservable(repositoryId)
+        Disposable disposable = createNetworkObservable(repositoryId)
                 .subscribeOn(Schedulers.computation())
                 .flatMap(gitHubRepositoryStore::put)
-                .doOnSubscribe(() -> startRequest(repositoryId, uri))
+                .doOnSubscribe(__ -> startRequest(repositoryId, uri))
                 .doOnError(doOnError(repositoryId, uri))
                 .doOnSuccess(updated -> completeRequest(repositoryId, uri, updated))
-                .subscribe(Actions.empty(),
+                .subscribe(Functions.emptyConsumer(),
                         Log.onError(TAG, "Error fetching GitHub repository " + repositoryId));
 
-        addRequest(repositoryId, subscription);
+        addRequest(repositoryId, disposable);
     }
 
     @NonNull

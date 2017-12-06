@@ -25,11 +25,11 @@
  */
 package io.reark.rxgithubapp.shared.utils;
 
+import android.content.Context;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-
-import android.content.Context;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;

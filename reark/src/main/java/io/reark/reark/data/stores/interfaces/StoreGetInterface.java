@@ -29,8 +29,8 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Interface for stores from which one can get data in the form of a single item or a stream of

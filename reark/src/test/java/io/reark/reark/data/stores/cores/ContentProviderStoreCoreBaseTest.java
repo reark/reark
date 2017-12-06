@@ -13,8 +13,7 @@ import org.mockito.Mockito;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Emitter.BackpressureMode;
-import rx.Observable;
+import io.reactivex.Observable;
 
 import static io.reark.reark.data.stores.cores.ContentProviderStoreCoreBase.DEFAULT_GROUPING_TIMEOUT_MS;
 import static io.reark.reark.data.stores.cores.ContentProviderStoreCoreBase.DEFAULT_GROUP_MAX_SIZE;
@@ -29,19 +28,16 @@ public class ContentProviderStoreCoreBaseTest {
     }
 
     private static Observable<Integer> createSource(int numItems) {
-        return Observable.fromEmitter(publisher -> {
-            for (int i = 1; i <= numItems; i++) {
-                publisher.onNext(i);
-            }
-        }, BackpressureMode.BUFFER);
+        return Observable.range(1, numItems)
+                .concatWith(Observable.never());
     }
 
     @Test
     public void groupOperations_WithNoElements_DoesNotEmit() {
-        contentStoreCore.groupOperations(Observable.never())
+        contentStoreCore.<Integer>groupOperations(Observable.never())
                 .test()
-                .awaitTerminalEvent(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+                .awaitDone(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
                 .assertNoValues();
     }
 
@@ -49,8 +45,8 @@ public class ContentProviderStoreCoreBaseTest {
     public void groupOperations_WithOneElement_EmitsOneGroup() {
         contentStoreCore.groupOperations(createSource(1))
                 .test()
-                .awaitTerminalEvent(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+                .awaitDone(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
                 .assertValueCount(1);
     }
 
@@ -58,8 +54,8 @@ public class ContentProviderStoreCoreBaseTest {
     public void groupOperations_WithGroupMaxSizeElements_EmitsOneGroup() {
         contentStoreCore.groupOperations(createSource(DEFAULT_GROUP_MAX_SIZE))
                 .test()
-                .awaitTerminalEvent(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+                .awaitDone(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
                 .assertValueCount(1);
     }
 
@@ -67,8 +63,8 @@ public class ContentProviderStoreCoreBaseTest {
     public void groupOperations_WithOneOverGroupMaxSizeElements_EmitsTwoGroups() {
         contentStoreCore.groupOperations(createSource(DEFAULT_GROUP_MAX_SIZE + 1))
                 .test()
-                .awaitTerminalEvent(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+                .awaitDone(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
                 .assertValueCount(2);
     }
 
@@ -76,8 +72,8 @@ public class ContentProviderStoreCoreBaseTest {
     public void groupOperations_WithThreeTimesGroupMaxSizeElements_EmitsThreeGroups() {
         contentStoreCore.groupOperations(createSource(3 * DEFAULT_GROUP_MAX_SIZE))
                 .test()
-                .awaitTerminalEvent(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .assertNotCompleted()
+                .awaitDone(2 * DEFAULT_GROUPING_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .assertNotComplete()
                 .assertValueCount(3);
     }
 

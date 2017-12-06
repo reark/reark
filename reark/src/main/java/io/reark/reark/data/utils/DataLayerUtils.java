@@ -27,10 +27,10 @@ package io.reark.reark.data.utils;
 
 import android.support.annotation.NonNull;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.pojo.NetworkRequestStatus;
-import rx.Observable;
-import rx.functions.Func1;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 
@@ -54,7 +54,7 @@ public final class DataLayerUtils {
         return Observable.merge(networkStatusStream, valueStream);
     }
 
-    private static<T> Func1<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
+    private static<T> Function<NetworkRequestStatus, DataStreamNotification<T>> fromNetworkRequestStatus() {
         return networkRequestStatus -> {
             checkNotNull(networkRequestStatus);
 

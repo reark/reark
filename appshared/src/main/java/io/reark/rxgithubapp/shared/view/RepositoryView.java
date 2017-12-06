@@ -25,9 +25,6 @@
  */
 package io.reark.rxgithubapp.shared.view;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -35,13 +32,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reark.reark.utils.RxViewBinder;
 import io.reark.rxgithubapp.shared.R;
 import io.reark.rxgithubapp.shared.glide.SerialTarget;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.viewmodels.RepositoryViewModel;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -104,7 +104,7 @@ public class RepositoryView extends FrameLayout {
         }
 
         @Override
-        protected void bindInternal(@NonNull final CompositeSubscription s) {
+        protected void bindInternal(@NonNull final CompositeDisposable s) {
             s.add(viewModel.getRepository()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(view::setRepository));

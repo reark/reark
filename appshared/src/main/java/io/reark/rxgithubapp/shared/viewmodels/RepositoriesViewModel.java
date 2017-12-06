@@ -30,6 +30,12 @@ import android.support.annotation.NonNull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Function;
+import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
 import io.reark.reark.data.DataStreamNotification;
 import io.reark.reark.utils.Log;
 import io.reark.reark.utils.RxUtils;
@@ -38,12 +44,6 @@ import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepository;
 import io.reark.rxgithubapp.shared.data.DataFunctions.GetGitHubRepositorySearch;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepository;
 import io.reark.rxgithubapp.shared.pojo.GitHubRepositorySearch;
-import rx.Observable;
-import rx.functions.Func1;
-import rx.observables.ConnectableObservable;
-import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 
 import static io.reark.reark.utils.Preconditions.checkNotNull;
 import static io.reark.reark.utils.Preconditions.get;
@@ -84,17 +84,17 @@ public class RepositoriesViewModel extends AbstractViewModel {
 
     @NonNull
     public Observable<GitHubRepository> getSelectRepository() {
-        return selectRepository.asObservable();
+        return selectRepository.hide();
     }
 
     @NonNull
     public Observable<List<GitHubRepository>> getRepositories() {
-        return repositories.asObservable();
+        return repositories.hide();
     }
 
     @NonNull
     public Observable<ProgressStatus> getNetworkRequestStatusText() {
-        return networkRequestStatusText.asObservable();
+        return networkRequestStatusText.hide();
     }
 
     public void setSearchString(@NonNull final String searchString) {
@@ -110,7 +110,7 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @NonNull
-    static Func1<DataStreamNotification<GitHubRepositorySearch>, ProgressStatus> toProgressStatus() {
+    static Function<DataStreamNotification<GitHubRepositorySearch>, ProgressStatus> toProgressStatus() {
         return notification -> {
             if (notification.isOngoing()) {
                 return ProgressStatus.LOADING;
@@ -123,8 +123,8 @@ public class RepositoriesViewModel extends AbstractViewModel {
     }
 
     @Override
-    public void subscribeToDataStoreInternal(@NonNull final CompositeSubscription compositeSubscription) {
-        checkNotNull(compositeSubscription);
+    public void subscribeToDataStoreInternal(@NonNull final CompositeDisposable compositeDisposable) {
+        checkNotNull(compositeDisposable);
         Log.v(TAG, "subscribeToDataStoreInternal");
 
         ConnectableObservable<DataStreamNotification<GitHubRepositorySearch>> repositorySearchSource =
@@ -136,12 +136,12 @@ public class RepositoriesViewModel extends AbstractViewModel {
                         .switchMap(getGitHubRepositorySearch::call)
                         .publish();
 
-        compositeSubscription.add(repositorySearchSource
+        compositeDisposable.add(repositorySearchSource
                 .map(toProgressStatus())
                 .doOnNext(progressStatus -> Log.d(TAG, "Progress status: " + progressStatus.name()))
                 .subscribe(this::setNetworkStatusText));
 
-        compositeSubscription.add(repositorySearchSource
+        compositeDisposable.add(repositorySearchSource
                 .filter(DataStreamNotification::isOnNext)
                 .map(DataStreamNotification::getValue)
                 .map(GitHubRepositorySearch::getItems)
@@ -149,15 +149,16 @@ public class RepositoriesViewModel extends AbstractViewModel {
                 .doOnNext(list -> Log.d(TAG, "Publishing " + list.size() + " repositories from the ViewModel"))
                 .subscribe(repositories::onNext));
 
-        compositeSubscription.add(repositorySearchSource.connect());
+        compositeDisposable.add(repositorySearchSource.connect());
     }
 
     @NonNull
-    Func1<List<Integer>, Observable<List<GitHubRepository>>> toGitHubRepositoryList() {
-        return repositoryIds -> Observable.from(repositoryIds)
+    Function<List<Integer>, Observable<List<GitHubRepository>>> toGitHubRepositoryList() {
+        return repositoryIds -> Observable.fromIterable(repositoryIds)
                 .take(MAX_REPOSITORIES_DISPLAYED)
                 .map(this::getGitHubRepositoryObservable)
                 .toList()
+                .toObservable()
                 .flatMap(RxUtils::toObservableList);
     }
 

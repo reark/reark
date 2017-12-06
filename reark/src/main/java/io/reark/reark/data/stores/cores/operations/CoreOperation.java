@@ -29,7 +29,7 @@ import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import rx.subjects.Subject;
+import io.reactivex.subjects.Subject;
 
 /**
  * A class wrapping ContentProviderOperation, the operation Uri, and operation identifier.
@@ -44,16 +44,16 @@ public final class CoreOperation {
     private final Uri uri;
 
     @NonNull
-    private final Subject<Boolean, Boolean> completionNotifier;
+    private final Subject<Boolean> completionNotifier;
 
     @NonNull
     private final ContentProviderOperation operation;
 
-    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier) {
+    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean> completionNotifier) {
         this(uri, completionNotifier, NO_OP);
     }
 
-    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean, Boolean> completionNotifier, @NonNull ContentProviderOperation operation) {
+    CoreOperation(@NonNull Uri uri, @NonNull Subject<Boolean> completionNotifier, @NonNull ContentProviderOperation operation) {
         this.uri = uri;
         this.completionNotifier = completionNotifier;
         this.operation = operation;
@@ -65,7 +65,7 @@ public final class CoreOperation {
     }
 
     @NonNull
-    public Subject<Boolean, Boolean> completionNotifier() {
+    public Subject<Boolean> completionNotifier() {
         return completionNotifier;
     }
 

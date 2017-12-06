@@ -1,15 +1,11 @@
-apply plugin: 'com.github.ben-manes.versions'
-
 buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'me.tatarka:gradle-retrolambda:3.4.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
     }
 }
@@ -17,18 +13,6 @@ buildscript {
 allprojects {
     repositories {
         mavenCentral()
-    }
-}
-
-dependencyUpdates.resolutionStrategy = {
-    componentSelection { rules ->
-        rules.all { ComponentSelection selection ->
-            boolean rejected = ['alpha', 'beta', 'rc'].any { qualifier ->
-                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-            }
-            if (rejected) {
-                selection.reject('Release candidate')
-            }
-        }
+        google()
     }
 }

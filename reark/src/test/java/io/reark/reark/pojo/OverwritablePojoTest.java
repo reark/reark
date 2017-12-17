@@ -67,8 +67,8 @@ public class OverwritablePojoTest {
 
         pojo1.overwrite(pojo2);
 
-        assertFalse(pojo1.equals(pojo2));
-        assertEquals(100, pojo1.id);
+        assertEquals(pojo1, pojo2);
+        assertEquals(200, pojo1.id);
         assertEquals("bar", pojo1.value);
     }
 

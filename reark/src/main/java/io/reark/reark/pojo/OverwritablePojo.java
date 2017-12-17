@@ -60,8 +60,8 @@ public abstract class OverwritablePojo<T extends OverwritablePojo<T>> {
                 continue;
             }
 
-            if (!Modifier.isPublic(modifiers)) {
-                // We want to overwrite also protected and private fields. This allows field access
+            if (!Modifier.isPublic(modifiers) || Modifier.isFinal(modifiers)) {
+                // We want to overwrite also private and final fields. This allows field access
                 // for this instance of the field. The actual field of the class isn't modified.
                 field.setAccessible(true);
             }
@@ -79,9 +79,7 @@ public abstract class OverwritablePojo<T extends OverwritablePojo<T>> {
     }
 
     protected boolean hasIllegalAccessModifiers(int modifiers) {
-        return Modifier.isFinal(modifiers)
-                || Modifier.isStatic(modifiers)
-                || Modifier.isTransient(modifiers);
+        return Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers);
     }
 
     protected boolean isEmpty(@NonNull final Field field, @NonNull final OverwritablePojo<T> pojo) {

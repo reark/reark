@@ -33,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.observers.TestObserver;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+
 public class MemoryStoreCoreTest {
 
     private MemoryStoreCore<Integer, String> memoryStoreCore;
@@ -145,6 +148,44 @@ public class MemoryStoreCoreTest {
         memoryStoreCore.delete(100);
 
         testObserver.assertNotComplete()
+                .assertNoValues();
+    }
+
+    @Test
+    public void getCached_ReturnsAllValues() {
+        memoryStoreCore.put(100, "test value 1");
+        memoryStoreCore.put(200, "test value 2");
+
+        memoryStoreCore.getCached()
+                .test()
+                .assertValue(asList("test value 1", "test value 2"));
+    }
+
+    @Test
+    public void getCached_WhenEmptyStore_ReturnsEmptyList() {
+        memoryStoreCore.getCached()
+                .test()
+                .assertValue(emptyList());
+    }
+
+    @Test
+    public void getCached_WithId_ReturnsValue() {
+        memoryStoreCore.put(100, "test value 1");
+        memoryStoreCore.put(200, "test value 2");
+
+        memoryStoreCore.getCached(200)
+                .test()
+                .assertValue("test value 2");
+    }
+
+    @Test
+    public void getCached_WithId_WhenNoValue_Completes() {
+        memoryStoreCore.put(100, "test value 1");
+        memoryStoreCore.put(200, "test value 2");
+
+        memoryStoreCore.getCached(300)
+                .test()
+                .assertComplete()
                 .assertNoValues();
     }
 

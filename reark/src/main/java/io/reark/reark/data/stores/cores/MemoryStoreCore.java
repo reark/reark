@@ -91,7 +91,7 @@ public class MemoryStoreCore<T, U> implements StoreCoreInterface<T, U> {
     @NonNull
     @Override
     public Single<List<U>> getCached() {
-        return Observable.fromIterable(() -> cache.keySet().iterator())
+        return Observable.fromIterable(cache.keySet())
                 .map(cache::get)
                 .toList();
     }

@@ -17,6 +17,9 @@ android:
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-24
 
+before_install:
+  - yes | sdkmanager "platforms;android-27"
+
 before_script:
   - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
   - emulator -avd test -no-window &

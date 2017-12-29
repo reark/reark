@@ -40,7 +40,7 @@ repositories {
 }
 
 android {
-    compile 'io.reark:reark:0.2-ALPHA'
+    implementation 'io.reark:reark:0.2-ALPHA'
 }
 ```
 

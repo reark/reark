@@ -1,23 +1,22 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'spoon'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-    publishNonDefault true
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
+        debug {}
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -38,33 +37,28 @@ configurations {
 
 dependencies {
     // Support libraries
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:support-annotations:25.3.1'
-
-    // Retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.2.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support:support-annotations:27.0.2'
 
     // RxJava
-    compile 'io.reactivex.rxjava2:rxjava:2.1.5'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    // RxBinding wrappers
-    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 
     // Unit test build
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.6'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.6'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
 
     // Android test build
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support:support-annotations:27.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
 
     // Javadoc generation needs dependencies in classpath
-    javadocDeps 'com.android.support:support-annotations:25.3.1'
-    javadocDeps 'io.reactivex.rxjava2:rxjava:2.1.5'
+    javadocDeps 'com.android.support:support-annotations:27.0.2'
+    javadocDeps 'io.reactivex.rxjava2:rxjava:2.1.7'
     javadocDeps 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
 

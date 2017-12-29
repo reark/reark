@@ -1,14 +1,12 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -24,6 +22,7 @@ android {
         }
     }
     buildTypes {
+        debug {}
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../appshared/proguard-rules.pro'
@@ -37,10 +36,28 @@ android {
 }
 
 dependencies {
-    debugCompile project(path: ':appshared', configuration: 'debug')
-    releaseCompile project(path: ':appshared', configuration: 'release')
+    implementation project(':appshared')
+    implementation project(':reark')
+
+    // Support libraries
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+
+    // RxJava
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+
+    // Retrofit
+    implementation 'com.squareup.okhttp3:okhttp-android-support:3.9.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:3.8.0'
 
     // Dagger
-    apt 'com.google.guava:guava:20.0'
-    apt 'com.google.dagger:dagger-compiler:2.8'
+    implementation 'com.google.dagger:dagger:2.13'
+    annotationProcessor 'com.google.guava:guava:23.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.13'
 }

@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
 apply plugin: 'spoon'
 
 android {
@@ -61,5 +59,3 @@ dependencies {
     javadocDeps 'io.reactivex.rxjava2:rxjava:2.1.7'
     javadocDeps 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
-
-apply from: 'gradle-mvn-push.gradle'

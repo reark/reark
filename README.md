@@ -1,24 +1,7 @@
-[![Build Status](https://travis-ci.org/reark/reark.svg?branch=master)](https://travis-ci.org/reark/reark)
-
-Latest Updates
-==============
-
-* Support for merging values to avoid overwrites with partial data
-* Comparison of existing ContentProvider data to avoid unnecessary writes
-* ContentProvider reads and writes off the main thread
-* TextWatcherObservable wrapper replaced with [RxBinding](https://github.com/JakeWharton/RxBinding) library
-* Library module that can be included in projects
-* Breaking changes to the old version: you can keep using it and start replacing core classes as the library module progresses
-* All network requests moved into NetworkService that runs in a remote process
-* Fetchers added for keeping track of duplicate requests
-* NetworkRequestStatusStore added for monitoring the state of the requests
-* ContentProvider and Store layer heavily refactored and almost ready to be chipped into a proper library
-* DataStreamNotification added to support a non-completing stream of data with events for fetchStart and fetchError
-* The network layer roughly follows [Dobjanschi's REST architecture](https://www.youtube.com/watch?v=xHXn3Kg2IQE)
-
-
 Reference Architecture for Android using RxJava
 ===============================================
+[![](https://jitpack.io/v/reark/reark.svg)](https://jitpack.io/#reark/reark)
+[![Build Status](https://travis-ci.org/reark/reark.svg?branch=master)](https://travis-ci.org/reark/reark)
 
 This is an ambitious reference project of what can be done with RxJava to create an app based on streams of data.
 
@@ -32,17 +15,20 @@ The project uses the open GitHub repositories API. You might hit a rate limit if
 Including in an Android Project
 ===============================
 
-We are working in moving the core classes into the library module that can be include in a project as a dependency. You can already include the library in your project, though it is quite empty until the migration is finished. Pull requests moving classes into the shared library are welcome.
-
 ```groovy
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+      ...
+      maven { url 'https://jitpack.io' }
+    }
 }
 
-android {
-    implementation 'io.reark:reark:0.2-ALPHA'
+dependencies {
+    implementation 'com.github.reark:reark:0.3'
 }
 ```
+
+Alternatively, you may consider including Reark as a Git submodule.
 
 
 Application Structure
@@ -108,7 +94,7 @@ The View Model Life Cycle
 
 View Model has two important responsibilities:
 
-  * Retrieve data from a data source</li>
+  * Retrieve data from a data source
   * Expose the data as simple values to the view layer (fragments)
 
 The suggested VM life cycle is much like that of fragment, and not by coincidence.
@@ -138,7 +124,7 @@ Threading and Testing View Models
 
 While it is possible to use TestSchedulers, I believe it is best to keep the VMs simple and not to include threading in them. If there is a risk some of the inputs to the VM come from different threads you can use thread-safe types or declare fields as volatile.
 
-The safest way to ensure the main thread is to use .observeOn(AndroidSchedulers.mainThread()) when the fragment subscribes to the VM properties. This makes the subscription to always trigger asynchronously, but usually it is more of a benefit than a disadvantage.
+The safest way to ensure the main thread is to use `.observeOn(AndroidSchedulers.mainThread())` when the fragment subscribes to the VM properties. This makes the subscription to always trigger asynchronously, but usually it is more of a benefit than a disadvantage.
 
 
 Data Layer
@@ -192,7 +178,7 @@ License
 
     The MIT License
 
-    Copyright (c) 2013-2016 reark project contributors
+    Copyright (c) 2013-2017 reark project contributors
 
     https://github.com/reark/reark/graphs/contributors
 
